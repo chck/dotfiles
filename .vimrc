@@ -72,11 +72,10 @@ let g:jedi#auto_vim_configuration = 0
 let g:neocomplete#force_omni_input_patterns.python = '\h\w*\|[^. \t]\.\w*'
 
 
-" rename用のマッピングを無効にしたため、代わりにコマンドを定義
 command! -nargs=0 JediRename :call jedi#rename()
 " pythonのrename用のマッピングがquickrunとかぶるため回避させる
 let g:jedi#rename_command = ""
-let g:jedi#pydoc = "k"
+let g:jedi#documentation_command = "k"
 
 "let g:neobundle_default_git_protocol='git'
 ":e をvimfilerに置き換え
