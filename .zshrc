@@ -121,7 +121,7 @@ alias git add='git add --all'
 setopt auto_cd
 cdpath=(.. ~ ~/src)
 function chpwd() { ls }
-#eval "$(rbenv init -)"
+eval "$(rbenv init -)"
 export PATH=./vendor/bin:$PATH
 #pyenv
 export PATH="$HOME/.pyenv/bin:$PATH"
