@@ -5,12 +5,14 @@ export ZSH=$HOME/.oh-my-zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
+#ZSH_THEME="robbyrussell"
 #ZSH_THEME="random"
-#"3den"
-ZSH_THEME="pmcgee"
-#"pure"
-#"robbyrussell"
-#"rkj"
+#ZSH_THEME="theunraveler"
+#ZSH_THEME="tjkirch"
+#ZSH_THEME="candy"
+#ZSH_THEME="bureau"
+#ZSH_THEME="pmcgee"
+ZSH_THEME="wedisagree"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -56,40 +58,22 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-#パスの設定
-########################################
-export LANG=ja_JP.UTF-8   #環境変数
-export PATH="/Users/a13446/.rbenv/shims:/usr/local/bin:/Users/a13446/.rbenv/shims:/Users/a13446/.rbenv/shims:/usr/local/bin:/Users/a13446/.rbenv/shims:/usr/local/opt/pyenv/shims:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin"
-export CLASSPATH=$CLASSPATH:.:/Applications/XAMPP/apache-tomcat-7.0.54/lib/servlet-api.jar
-#HOMEBREW_PATH=/usr/local
-export PYENV_ROOT=$HOMEBREW_PATH/opt/pyenv
-if [ -s $HOMEBREW_PATH/bin/pyenv ] ; then
-  eval "$(pyenv init -)"
-  pyenv global 2.7.6
-  pyenv version | sed -e 's/ .*//'
-fi
-#if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
-#export PATH="$HOME/.gem/ruby/2.0.0/bin:$PATH"
+export PATH="/Applications/SublimeText.app/Contents/SharedSupport/bin:/Users/chck/.rbenv/shims:/usr/local/opt/pyenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin"
+export LANG=en_US.UTF-8
+#export PYENV_ROOT=$HOMEBREW_PATH/opt/pyenv
+#if [ -s $HOMEBREW_PATH/bin/pyenv ] ; then
+#  eval "$(pyenv init -)"
+#  pyenv global 2.7.6
+#  pyenv version | sed -e 's/ .*//'
+#fi ]
 #java encoding
 JAVAC='javac -encoding UTF-8 -J-Dfile.encoding=UTF-8'
 alias javac=$JAVAC
 JAVA='java -Dfile.encoding=UTF-8'
 alias java=$JAVA
-#PATHをあえて指定することで、homebrewのパスの優先度を高める。
-export PATH=/usr/local/bin:$PATH
-export GRADLE_HOME="usr/local/Cellar/gradle/1.10/libexec/"
 
 #便利機能
 ########################################
-# cdコマンド実行後、lsを実行する
-function cd() {
-  builtin cd $@ && ls;
-}
-
-# プロンプト2行表示
-#PROMPT="%{${fg[red]}%}[%n@%m]%{${reset_color}%} %~
-#%# "
-
 # cd したら自動的にpushdする
 setopt auto_pushd
 # 重複したディレクトリを追加しない
@@ -113,66 +97,35 @@ setopt extended_glob
 # ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
 bindkey '^R' history-incremental-pattern-search-backward
 
-# エイリアス
+#エイリアス
+alias vim='/usr/local/bin/vim'
+alias vi='vim'
 alias la='ls -a'
-alias ll='ls -l'
 alias lf='ls -F | grep /'
 alias lt='ls -ltr'
 alias rm='rmtrash'    #~/.Trashがゴミ箱
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
-alias vim='/usr/local/bin/vim'
-alias vi='vim'
+#alias vim='/usr/local/bin/vim'
+#alias vi='vim'
 alias mkdir='mkdir -p'
 alias sudo='sudo '    # sudo の後のコマンドでエイリアスを有効にする
 # グローバルエイリアス
 alias -g L='| less'
 alias -g G='| grep'
-alias sc='sbt clean'
-#alias gb='grunt build'
-
-#ログイン時にfortuneをcowsay
-#function random_cowsay() {
-#  COWS=`brew --prefix`/usr/local/Cellar/cowsay/3.03/share/cows
-#  NBRE_COWS=$(ls -1 $COWS | wc -l)
-#  COWS_RANDOM=$(expr $RANDOM % $NBRE_COWS + 1)
-#  COW_NAME=$(ls -1 $COWS | awk -F\. -v COWS_RANDOM_AWK=$COWS_RANDOM 'NR == COWS_RANDOM_AWK {print $1}')
-#  cowsay -f $COW_NAME "`Fortune -s`"
-#}
-#if which fortune cowsay >/dev/null; then
-#  while :
-#  do
-#    random_cowsay 2>/dev/null && break
-#  done
-#fi && unset -f random_cowsay
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/dsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+#systemに同じgemがあったらそちらが使われるのを回避
+alias bundle install="bundle install --path vendor/bundle  --disable-shared-gems"
+alias tac='tail -r'
+alias git add='git add --all'
+setopt auto_cd
+cdpath=(.. ~ ~/src)
+function chpwd() { ls }
+#eval "$(rbenv init -)"
+export PATH=./vendor/bin:$PATH
+#pyenv
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
 
 #zshrc.localがあればそちらを読み込む
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local ]

@@ -83,6 +83,13 @@ let g:vimfiler_as_default_explorer=1
 " safe mode 解除
 let g:vimfiler_safe_mode_by_default=0
 
+" indent_guides
+let g:indent_guides_enable_on_vim_startup=1
+"let g:indent_guides_start_level=2
+let g:indent_guides_auto_colors=0
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=#444433 ctermbg=black
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=#333344 ctermbg=darkgray
+let g:indent_guides_guide_size=1
 
 "------------------------------------
 " neocomplete.vim
@@ -136,6 +143,8 @@ set nowrapscan "検索をファイルの先頭へループしない
 set incsearch "インクリメンタルサーチ（1文字入力する毎に検索）を実行.
 set backspace=indent,eol,start "vimでdelete,backspaceが効かない対応
 set clipboard+=unnamed "vimでクリップボード
+set ts=2
+filetype plugin indent on
 "タブ、空白、改行の可視化
 set list
 set listchars=tab:>.,trail:_,eol:↲,extends:>,precedes:<,nbsp:%
@@ -190,11 +199,6 @@ function! s:Javac()
     :echo "=======\r\nCompile Failure\r\n".ret
   endif
 endfunction
-
-"自動インデント
-set ts=2
-set autoindent
-filetype plugin indent on
 
 "easymotion
 " もっともよく使うであろう'<Leadr><Leader>s'motion を`s`に割り当てます"
