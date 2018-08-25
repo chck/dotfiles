@@ -1,0 +1,3 @@
+*.swp
+.vim/bundles/*
+!.vim/bundles/repos/github.com/Shougo/dein.vim
