@@ -1,4 +1,5 @@
 source ~/.zsh/lib/plugins.zsh
+source ~/.zsh/lib/basic.zsh
 source ~/.zsh/lib/aliases.zsh
 source ~/.zsh/lib/completion.zsh
 source ~/.zsh/lib/functions.zsh

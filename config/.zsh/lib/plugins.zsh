@@ -11,3 +11,5 @@ zplug "b4b4r07/emoji-cli", if:"which jq"
 
 zplug check --verbose || zplug install
 zplug load
+
+plugins=(git history history-substring-search mysql ruby rails gem brew rake zsh-completions kubectl)
