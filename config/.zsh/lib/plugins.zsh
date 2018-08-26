@@ -1,5 +1,6 @@
 source ~/.zplug/init.zsh
 
+zplug "themes/wedisagree", from:oh-my-zsh
 zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
 zplug "b4b4r07/enhancd", use:init.sh
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
