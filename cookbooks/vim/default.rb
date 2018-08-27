@@ -6,5 +6,6 @@
 
 dotfile '.vim'
 dotfile '.vimrc'
+dotfile '.ideavimrc' if node[:platform] == 'darwin'
 
 execute "vim -c 'call dein#install() | q!'"
