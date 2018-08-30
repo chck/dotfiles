@@ -1,3 +1,6 @@
 # Anyenv
-export PATH="$HOME/.anyenv/bin:$PATH"
+export PATH=$HOME/.anyenv/bin:$PATH
 eval "$(anyenv init -)"
+
+# Rust
+export PATH=$HOME/.cargo/bin:$PATH
