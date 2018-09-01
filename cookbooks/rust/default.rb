@@ -30,3 +30,5 @@ define :cargo do
     not_if %Q[cargo install --list | grep "^#{params[:name]} "]
   end
 end
+
+package 'cmake'

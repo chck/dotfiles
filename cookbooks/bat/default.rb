@@ -1,0 +1,1 @@
+execute "cargo install bat"
