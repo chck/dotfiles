@@ -2,9 +2,10 @@ node.reverse_merge!(
   os: run_command('uname').stdout.strip.downcase,
 )
 
-define :dotfile, source: nil do
+define :dotfile, source: nil, destination: nil do
+  destination ||= ENV['HOME']
   source = params[:source] || params[:name]
-  link File.join(ENV['HOME'], params[:name]) do
+  link File.join(destination, params[:name]) do
     to File.expand_path("../../../config/#{source}", __FILE__)
     user node[:user]
   end
