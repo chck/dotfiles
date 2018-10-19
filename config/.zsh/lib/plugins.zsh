@@ -14,3 +14,7 @@ zplug check --verbose || zplug install
 zplug load
 
 plugins=(git history history-substring-search mysql ruby rails gem brew rake zsh-completions kubectl)
+
+# enhancd
+export ENHANCD_HOOK_AFTER_CD=ls
+
