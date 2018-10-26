@@ -13,6 +13,14 @@ gem install itamae
 
 ## Usage
 ```sh
-./install.sh -n  # dry-run
-./install.sh     # apply
+# dry-run
+./install.sh -n
+
+# apply
+./install.sh
+
+# add new cookbook
+itamae g cookbook <NEW_APP>  # generate template
+vi cookbooks/<NEW_APP>/default.rb  # add install operation
+vi roles/$(uname)/default.rb  # add include_cookbook <NEW_APP>
 ```
