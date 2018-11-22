@@ -7,3 +7,4 @@ export PATH=$HOME/.cargo/bin:$PATH
 
 # Go
 export GOPATH=$HOME/go
+PATH=$GOPATH/bin:$PATH
