@@ -14,3 +14,11 @@ export SAVEHIST=60000000
 
 # don't logout by EOF
 setopt ignore_eof
+
+# readline for compiler
+export CFLAGS="-I/usr/local/opt/readline/include $CFLAGS"
+export LDFLAGS="-L/usr/local/opt/readline/lib $LDFLAGS"
+
+# openssl for compiler
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include $CFLAGS"
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib $LDFLAGS"
