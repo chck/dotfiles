@@ -5,3 +5,7 @@ compinit
 # complete / of dir name
 setopt auto_param_slash
 setopt mark_dirs
+
+# Pipenv
+eval "$(pipenv --completion)"
+export PIPENV_VENV_IN_PROJECT=1
