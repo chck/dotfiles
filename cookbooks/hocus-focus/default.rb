@@ -1,4 +1,4 @@
-brew cask install hocus-focuscase node[:platform]
+case node[:platform]
 when 'darwin'
   execute 'brew cask install hocus-focus'
 else
