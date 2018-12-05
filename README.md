@@ -13,6 +13,9 @@ gem install itamae
 
 ## Usage
 ```sh
+# clone
+git clone --recursive https://github.com/chck/dotfiles.git
+
 # dry-run
 ./install.sh -n
 
