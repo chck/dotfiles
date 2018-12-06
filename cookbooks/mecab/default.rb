@@ -1,4 +1,5 @@
 package 'mecab'
+package 'mecab-ipadic'
 package 'xz' # mecab dependencies
 
 git "install mecab-ipadic-neologd" do
@@ -12,4 +13,6 @@ directory "/usr/local/lib/mecab/dic" do
 end
 
 execute "/tmp/neologd/bin/install-mecab-ipadic-neologd -n -u -y && rm -rf /tmp/neologd"
-dotfile 'mecabrc' '/usr/local/etc'
+dotfile 'mecabrc' do
+  destination '/usr/local/etc'
+end
