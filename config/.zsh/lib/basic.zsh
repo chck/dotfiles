@@ -15,6 +15,11 @@ export SAVEHIST=60000000
 # don't logout by EOF
 setopt ignore_eof
 
+# colorized ls
+export LSCOLORS=gxfxcxdxbxegedabagacad
+export LS_COLORS='di=34:ln=35:so=32:pi=33:ex=31:bd=46;34:cd=43;34:su=41;30:sg=46;30:tw=42;30:ow=43;30'
+zstyle ':completion:*' list-colors 'di=34' 'ln=35' 'so=32' 'ex=31' 'bd=46;34' 'cd=43;34'
+
 # readline for compiler
 export CFLAGS="-I/usr/local/opt/readline/include $CFLAGS"
 export LDFLAGS="-L/usr/local/opt/readline/lib $LDFLAGS"

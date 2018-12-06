@@ -1,2 +1,2 @@
 alias ..="cd .."
-alias ls="ls -a"
+alias ls="ls -aGF"
