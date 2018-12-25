@@ -1,6 +1,6 @@
-# package 'vim' do
-#   options '--with-python3 --with-lua'
-# end
+package 'vim' do
+  options '--with-lua --with-override-system-vi --with-python3'
+end
 
 #execute 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)" ~/.vim/bundles'
 
