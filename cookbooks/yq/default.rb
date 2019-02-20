@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew install yq'
+  execute 'pip install yq'
 else
   raise NotImplementedError
 end
