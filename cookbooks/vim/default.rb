@@ -8,4 +8,6 @@ dotfile '.vim'
 dotfile '.vimrc'
 dotfile '.ideavimrc' if node[:platform] == 'darwin'
 
-execute "vim -c 'call dein#install() | q!'"
+execute "vim -c 'call dein#install() | q!'" do
+  not_if 'test -d ~/.vim/bundles/repos/github.com/Shougo/dein.vim'
+end

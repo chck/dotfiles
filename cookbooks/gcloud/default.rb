@@ -6,4 +6,6 @@
 
 #execute '/usr/local/bin/google-cloud-sdk/install.sh --quiet'
 
-execute 'sh -c "$(curl -fsSL https://sdk.cloud.google.com)"'
+execute 'sh -c "$(curl -fsSL https://sdk.cloud.google.com)"' do
+  not_if "which gcloud"
+end
