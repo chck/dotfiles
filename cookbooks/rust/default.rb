@@ -32,3 +32,7 @@ define :cargo do
 end
 
 package 'cmake'
+
+cargo cargo-edit
+cargo cargo-script
+cargo carho-update
