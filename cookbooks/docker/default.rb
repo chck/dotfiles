@@ -1,6 +1,8 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install docker'
+  execute 'brew cask install docker' do
+    not_if 'which docker'
+  end
 else
   raise NotImplementedError
 end

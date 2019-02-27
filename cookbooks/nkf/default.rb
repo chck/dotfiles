@@ -1,6 +1,8 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew install nkf'
+  execute 'brew install nkf' do
+    not_if 'which nkf'
+  end
 when 'ubuntu'
   execute 'apt-get install nkf'
 when 'redhat'
