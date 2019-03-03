@@ -25,14 +25,8 @@ unless ENV['PATH'].include?("#{ENV['HOME']}/.cargo/bin:")
   ENV['PATH'] = "#{ENV['HOME']}/.cargo/bin:#{ENV['PATH']}"
 end
 
-define :cargo do
-  execute "cargo install --verbose #{params[:name]}" do
-    not_if %Q[cargo install --list | grep "^#{params[:name]} "]
-  end
-end
-
 package 'cmake'
 
-cargo cargo-edit
-cargo cargo-script
-cargo carho-update
+cargo 'cargo-edit'
+cargo 'cargo-script'
+cargo 'cargo-update'
