@@ -17,8 +17,15 @@ if dein#load_state(s:dein_dir)
  endif
  let g:deoplete#enable_at_startup = 1
 
+ call dein#load_toml('~/.vim/dein.toml', {'lazy': 0})
+ call dein#load_toml('~/.vim/dein_lazy.toml', {'lazy': 1})
+
  call dein#end()
  call dein#save_state()
+endif
+
+if dein#check_install()
+  call dein#install()
 endif
 
 filetype plugin indent on
