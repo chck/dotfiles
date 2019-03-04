@@ -6,7 +6,11 @@ end
 
 dotfile '.vim'
 dotfile '.vimrc'
-dotfile '.ideavimrc' if node[:platform] == 'darwin'
+if node[:platform] == 'darwin'
+  dotfile '.ideavimrc' do
+    not_if 'test -f ~/.ideavimrc'
+  end
+end
 
 execute "vim -c 'call dein#install() | q!'" do
   not_if 'test -d ~/.vim/bundles/repos/github.com/Shougo/dein.vim'
