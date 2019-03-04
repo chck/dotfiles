@@ -1,2 +1,5 @@
 [[plugins]]
 repo = 'Shougo/denite.nvim'
+
+[[plugins]]
+repo = 'scrooloose/nerdtree'
