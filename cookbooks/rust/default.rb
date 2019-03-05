@@ -27,6 +27,8 @@ end
 
 package 'cmake'
 
+cargo 'rustfmt'
+cargo 'racer'
 cargo 'cargo-edit'
 cargo 'cargo-script'
 cargo 'cargo-update'
