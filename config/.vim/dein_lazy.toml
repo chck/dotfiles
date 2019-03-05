@@ -1,11 +1,35 @@
 [[plugins]]
+repo = 'rcmdnk/vim-markdown'
+on_ft = ['md', 'markdown']
+
+[[plugins]]
 repo = 'fatih/vim-go'
 on_ft = ['go']
 
 [[plugins]]
 repo = 'rust-lang/rust.vim'
-on_ft = ['rs']
+on_ft = ['rust']
+hook_source = '''
+    let g:rustfmt_autosave=1
+'''
 
 [[plugins]]
-repo = 'rcmdnk/vim-markdown'
-on_ft = ['md', 'markdown']
+repo = 'sebastianmarkow/deoplete-rust'
+on_ft = 'rust'
+depends = ['deoplete.nvim']
+hook_source = '''
+    let g:deoplete#sources#rust#racer_binary=systemlist('which racer')[0]
+    let g:deoplete#sources#rust#rust_source_path=systemlist('rustc --print sysroot')[0] . '/lib/rustlib/src/rust/src'
+    let g:deoplete#sources#rust#show_duplicates=1
+    let g:deoplete#sources#rust#disable_keymap=1
+    nmap <buffer> gd <plug>DeopleteRustGoToDefinitionDefault
+    nmap <buffer> K  <plug>DeopleteRustShowDocumentation
+'''
+
+[[plugins]]
+repo = 'racer-rust/vim-racer'
+on_ft = 'rust'
+hook_source = '''
+    let g:racer_cmd=systemlist('which racer')[0]
+    let $RUST_SRC_PATH=systemlist('rustc --print sysroot')[0] . '/lib/rustlib/src/rust/src'
+'''
