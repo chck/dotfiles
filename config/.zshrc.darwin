@@ -1,2 +1,2 @@
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-
+alias up="brew update && brew upgrade && brew cleanup && brew cu -y --cleanup && gcloud components update --quiet && cargo install-update -a"
