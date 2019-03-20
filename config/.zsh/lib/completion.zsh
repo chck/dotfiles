@@ -8,6 +8,3 @@ setopt mark_dirs
 
 # case insensitive
 zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}'
-
-# Pipenv
-export PIPENV_VENV_IN_PROJECT=1
