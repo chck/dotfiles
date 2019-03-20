@@ -20,3 +20,7 @@ export ENHANCD_HOOK_AFTER_CD=ls
 
 # Pipenv
 export PIPENV_VENV_IN_PROJECT=1
+
+# direnv
+export EDITOR=vim
+eval "$(direnv hook zsh)"
