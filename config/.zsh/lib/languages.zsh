@@ -7,4 +7,7 @@ export PATH=$HOME/.cargo/bin:$PATH
 
 # Go
 export GOPATH=$HOME/go
-PATH=$GOPATH/bin:$PATH
+export PATH=$GOPATH/bin:$PATH
+
+# Python
+export PATH=$HOME/.poetry/bin:$PATH
