@@ -9,3 +9,6 @@ source ~/.zsh/lib/gcloud.zsh
 # Environment-local configurations
 if [ -f ~/.zshrc.`uname` ]; then source ~/.zshrc.`uname`; fi
 if [ -f ~/.zshrc.local ]; then source ~/.zshrc.local; fi
+
+# added by travis gem
+[ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
