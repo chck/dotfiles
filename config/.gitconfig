@@ -1,44 +1,44 @@
 [user]
-  name = chck
-  email = deadline.is.today@gmail.com
+  	name = chck
+  	email = deadline.is.today@gmail.com
 [include]
-  path = .gitconfig.local
+  	path = .gitconfig.local
 [color]
-  ui = true
+  	ui = true
 [core]
-  excludesfile = ~/.gitignore_global
-  editor = vim
-  filemode = true
+  	excludesfile = ~/.gitignore_global
+  	editor = vim
+  	filemode = true
 [alias]
-  co = checkout
-  st = status -sb
-  pr = pull --rebase
-  fo = fetch origin
-  ro = rebase origin
-  rc = rebase --continue
-  wd = diff --word-diff
-  gp = grep -n
-  lg = log --graph --pretty=oneline --decorate --date=short --abbrev-commit --branches
-  c = commit -v
+  	co = checkout
+  	st = status -sb
+  	pr = pull --rebase
+  	fo = fetch origin
+  	ro = rebase origin
+  	rc = rebase --continue
+  	wd = diff --word-diff
+  	gp = grep -n
+  	lg = log --graph --pretty=oneline --decorate --date=short --abbrev-commit --branches
+  	c = commit -v
 [push]
-  default = simple
+  	default = simple
 [branch]
-  autosetuprebase = always
+  	autosetuprebase = always
 [pull]
-  rebase = true
+  	rebase = true
 [ghq]
-  root = ~/Works
+  	root = ~/Works
 [url "git@github.com:"]
-  pushInsteadOf = https://github.com/
-  pushInsteadOf = git://github.com/
+ 	 pushInsteadOf = https://github.com/
+  	pushInsteadOf = git://github.com/
 [url "git@gist.github.com:"]
-  pushInsteadOf = https://gist.github.com/
-  pushInsteadOf = git://gist.github.com/
+  	pushInsteadOf = https://gist.github.com/
+  	pushInsteadOf = git://gist.github.com/
 [submodule]
-  recurse = true
+  	recurse = true
 [difftool "sourcetree"]
-  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-  path = 
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
 [mergetool "sourcetree"]
-  cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-  trustExitCode = true
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
