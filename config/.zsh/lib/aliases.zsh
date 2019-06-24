@@ -6,3 +6,5 @@ alias g="git"
 alias s="git status -sb"
 
 alias rust="cargo-script"
+
+alias rg="rg --hidden"
