@@ -1,6 +1,6 @@
 [user]
   	name = chck
-  	email = deadline.is.today@gmail.com
+  	email = shimekiri.today@gmail.com
 [include]
   	path = .gitconfig.local
 [color]
