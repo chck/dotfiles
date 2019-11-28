@@ -6,3 +6,11 @@ when 'darwin'
 else
   raise NotImplementedError
 end
+
+execute '''cat <<EOF >> ~/.zsh/lib/languages.zsh
+# Python
+export PATH=$HOME/.poetry/bin:$PATH
+EOF
+''' do
+  not_if 'grep poetry ~/.zsh/lib/languages.zsh'
+end
