@@ -14,3 +14,7 @@ EOF
 ''' do
   not_if 'grep poetry ~/.zsh/lib/languages.zsh'
 end
+
+execute 'poetry completions zsh > $(brew --prefix)/share/zsh/site-functions/_poetry' do
+  not_if 'test -f $(brew --prefix)/share/zsh/site-functions/_poetry'
+end
