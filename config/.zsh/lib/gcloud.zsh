@@ -7,3 +7,5 @@ fi
 if [ -f ${HOME}/google-cloud-sdk/completion.zsh.inc ]; then
   source ${HOME}/google-cloud-sdk/completion.zsh.inc
 fi
+
+export CLOUDSDK_PYTHON=python3
