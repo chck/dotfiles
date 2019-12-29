@@ -18,3 +18,7 @@ end
 execute 'poetry completions zsh > $(brew --prefix)/share/zsh/site-functions/_poetry' do
   not_if 'test -f $(brew --prefix)/share/zsh/site-functions/_poetry'
 end
+
+execute 'poetry config virtualenvs.in-project true' do
+  not_if 'test true == $(poetry config virtualenvs.in-project)'
+end
