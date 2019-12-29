@@ -1,15 +1,12 @@
 # dotfiles
 > Accio, My Utensils!
 
-## Requirements
-```sh
-ruby ~> 2.3.7
-```
+## Prerequisites
 
-## Installation
-```sh
-gem install itamae
-```
+| Software                 | Install                     |
+|--------------------------|-----------------------------|
+| ruby ~> 2.7.0            | `rbenv install 2.7.0`       |
+| itamae ~> 1.10.6         | `gem install itamae`        |
 
 ## Usage
 ```sh
