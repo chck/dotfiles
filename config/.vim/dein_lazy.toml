@@ -1,6 +1,9 @@
 [[plugins]]
 repo = 'rcmdnk/vim-markdown'
 on_ft = ['md', 'markdown']
+hook_source = '''
+    let g:vim_markdown_folding_disabled=1
+'''
 
 [[plugins]]
 repo = 'fatih/vim-go'
