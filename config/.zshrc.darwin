@@ -1,4 +1,5 @@
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 alias up="brew update && brew upgrade && brew cleanup && brew cask upgrade && gcloud components update --quiet && anyenv update -v && tldr --update && rustup update nightly && cargo install-update -a"
 alias find="mdfind"
+alias nproc="sysctl -n hw.logicalcpu"
 export PATH="/usr/local/sbin:$PATH"
