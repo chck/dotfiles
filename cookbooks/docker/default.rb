@@ -15,6 +15,7 @@ execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
 
 # Docker
 export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
 EOF
 ''' do
   not_if 'grep DOCKER_BUILDKIT ~/.zsh/lib/apps.zsh'
