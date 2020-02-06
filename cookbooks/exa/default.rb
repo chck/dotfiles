@@ -6,3 +6,11 @@ when 'darwin'
 else
   raise NotImplementedError
 end
+
+execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
+# exa
+alias ls="exa -a"
+EOF
+''' do
+  not_if 'grep exa ~/.zsh/lib/aliases.zsh'
+end
