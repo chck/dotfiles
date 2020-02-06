@@ -35,3 +35,12 @@ cargo 'cargo-update'
 cargo 'cargo-graph'
 cargo 'cargo-benchcmp'
 cargo 'cargo-expand'
+
+execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
+# rust
+alias rust="cargo-script"
+EOF
+''' do
+  not_if 'grep cargo-script ~/.zsh/lib/aliases.zsh'
+end
+
