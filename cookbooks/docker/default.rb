@@ -20,3 +20,14 @@ EOF
 ''' do
   not_if 'grep DOCKER_BUILDKIT ~/.zsh/lib/apps.zsh'
 end
+
+execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
+
+# Kubernetes
+source <(kubectl completion zsh)
+alias k=kubectl
+complete -o default -F __start_kubectl k
+EOF
+''' do
+  not_if 'grep kubectl ~/.zsh/lib/aliases.zsh'
+end
