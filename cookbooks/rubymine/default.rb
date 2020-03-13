@@ -8,3 +8,7 @@ else
 end
 
 dotfile '.gemrc'
+
+execute 'bundler config --global path vendor/bundle' do
+  not_if 'test -f ~/.bundle/config'
+end
