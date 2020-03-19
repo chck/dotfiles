@@ -3,3 +3,4 @@ alias up="brew update && brew upgrade && brew cleanup && brew cask upgrade && gc
 alias find="mdfind"
 alias nproc="sysctl -n hw.logicalcpu"
 export PATH="/usr/local/sbin:$PATH"
+export PATH="/usr/local/opt/libarchive/bin:$PATH"
