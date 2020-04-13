@@ -26,7 +26,7 @@ unless ENV['PATH'].include?("#{ENV['HOME']}/.cargo/bin:")
 end
 
 package 'cmake'
-
+execute 'rustup toolchain install nightly'
 cargo 'rustfmt'
 cargo 'racer'
 cargo 'cargo-edit'
