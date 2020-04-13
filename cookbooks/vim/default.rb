@@ -1,6 +1,4 @@
-package 'vim' do
-  options '--with-lua --with-override-system-vi --with-python3'
-end
+package 'vim'
 
 dotfile '.vim'
 dotfile '.vimrc'
