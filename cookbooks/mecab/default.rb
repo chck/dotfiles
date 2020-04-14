@@ -3,7 +3,7 @@ package 'mecab-ipadic'
 package 'xz' # mecab dependencies
 
 git "install mecab-ipadic-neologd" do
-  not_if 'which mecab'
+  not_if 'test -d /usr/local/lib/mecab/dic/mecab-ipadic-neologd/'
   repository "https://github.com/neologd/mecab-ipadic-neologd.git"
   depth 1
   destination "/tmp/neologd"
