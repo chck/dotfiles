@@ -17,3 +17,7 @@ git "install anyenv-git" do
   repository "https://github.com/znz/anyenv-git.git"
   destination dest
 end
+
+execute "anyenv install --init --force" do
+  not_if "test -d #{ENV['HOME']}/.config/anyenv/anyenv-install"
+end
