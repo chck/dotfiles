@@ -37,7 +37,7 @@ cargo 'cargo-benchcmp'
 cargo 'cargo-expand'
 
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
-# rust
+# cargo-script
 alias rust="cargo-script"
 EOF
 ''' do

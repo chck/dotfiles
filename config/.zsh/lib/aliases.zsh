@@ -4,14 +4,17 @@ alias ...="cd ../.."
 alias g="git"
 alias s="git status -sb"
 
-# rust
+# cargo-script
 alias rust="cargo-script"
 # bat
 alias cat="bat"
-# lazydocker
-alias lzd="lazydocker"
 # exa
 alias ls="exa -a"
+# procs
+alias ps="procs"
+
+# lazydocker
+alias lzd="lazydocker"
 
 # Kubernetes
 source <(kubectl completion zsh)
