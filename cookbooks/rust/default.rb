@@ -35,6 +35,7 @@ cargo 'cargo-update'
 cargo 'cargo-graph'
 cargo 'cargo-benchcmp'
 cargo 'cargo-expand'
+cargo 'cargo-make'
 
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
 # cargo-script
