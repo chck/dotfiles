@@ -9,3 +9,8 @@
 execute 'sh -c "$(curl -fsSL https://sdk.cloud.google.com)"' do
   not_if "which gcloud"
 end
+
+github_binary "cloud_sql_proxy" do
+  raw_url "https://storage.googleapis.com/cloudsql-proxy/v1.17/cloud_sql_proxy.darwin.amd64"
+  not_if "which cloud_sql_proxy"
+end
