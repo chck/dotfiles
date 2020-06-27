@@ -3,7 +3,7 @@ execute "cargo install procs" do
 end
 
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
-# procs
+# procs replaces ps
 alias ps="procs"
 EOF
 ''' do

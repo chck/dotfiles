@@ -6,11 +6,11 @@ alias s="git status -sb"
 
 # cargo-script
 alias rust="cargo-script"
-# bat
+# bat replaces cat
 alias cat="bat"
-# exa
+# exa replaces ls
 alias ls="exa -a"
-# procs
+# procs replaces ps
 alias ps="procs"
 
 # lazydocker
@@ -20,3 +20,5 @@ alias lzd="lazydocker"
 source <(kubectl completion zsh)
 alias k=kubectl
 complete -o default -F __start_kubectl k
+# fd replaces find
+alias find="fd"

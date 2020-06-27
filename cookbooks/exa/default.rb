@@ -8,7 +8,7 @@ else
 end
 
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
-# exa
+# exa replaces ls
 alias ls="exa -a"
 EOF
 ''' do
