@@ -3,7 +3,7 @@ execute "cargo install bat" do
 end
 
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
-# bat
+# bat replaces cat
 alias cat="bat"
 EOF
 ''' do
