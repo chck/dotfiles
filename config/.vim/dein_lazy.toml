@@ -49,3 +49,7 @@ on_ft = ['hcl', 'tf', 'terraform']
 hook_source = '''
     let g:terraform_fmt_on_save=1
 '''
+
+[[plugins]]
+repo = 'cespare/vim-toml'
+on_ft = 'toml'
