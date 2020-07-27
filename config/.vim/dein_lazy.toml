@@ -51,5 +51,21 @@ hook_source = '''
 '''
 
 [[plugins]]
+repo = 'vim-syntastic/syntastic'
+
+[[plugins]]
+repo = 'juliosueiras/vim-terraform-completion'
+on_ft = 'terraform'
+depends = ['syntastic', 'vim-terraform']
+hook_add = '''
+    let g:deoplete#omni_patterns = {}
+    let g:deoplete#omni_patterns.terraform = '[^ *\t"{=$]\w*'
+    let g:deoplete#enable_at_startup = 1
+'''
+hook_post_source = '''
+    call deoplete#initialize()
+'''
+
+[[plugins]]
 repo = 'cespare/vim-toml'
 on_ft = 'toml'
