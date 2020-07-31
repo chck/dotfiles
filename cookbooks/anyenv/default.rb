@@ -21,3 +21,12 @@ end
 execute "anyenv install --init --force" do
   not_if "test -d #{ENV['HOME']}/.config/anyenv/anyenv-install"
 end
+
+execute "anyenv install pyenv" do
+  not_if "which pyenv"
+end
+
+python_version = "3.7.8"
+execute "pyenv install #{python_version} && pyenv global #{python_version}" do
+  not_if "test #{python_version} == $(python -V | sed -e 's/Python //g')"
+end
