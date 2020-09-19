@@ -12,10 +12,8 @@ alias cat="bat"
 alias ls="exa -a"
 # procs replaces ps
 alias ps="procs"
-
 # lazydocker
 alias lzd="lazydocker"
-
 # Kubernetes
 source <(kubectl completion zsh)
 alias k=kubectl
