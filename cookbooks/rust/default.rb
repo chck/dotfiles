@@ -39,6 +39,8 @@ cargo 'cargo-benchcmp'
 cargo 'cargo-expand'
 cargo 'cargo-make'
 cargo 'cargo-generate'
+cargo 'hexyl'
+cargo 'hyperfine'
 cargo 'wasm-pack'
 
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
