@@ -14,9 +14,11 @@ alias ls="exa -a"
 alias ps="procs"
 # lazydocker
 alias lzd="lazydocker"
-# Kubernetes
+# kubernetes
 source <(kubectl completion zsh)
 alias k=kubectl
 complete -o default -F __start_kubectl k
 # fd replaces find
 alias find="fd"
+# terraform
+alias tf="terraform"
