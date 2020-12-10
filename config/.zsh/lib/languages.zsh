@@ -14,3 +14,6 @@ export PATH=$HOME/.poetry/bin:$PATH
 export PIPENV_VENV_IN_PROJECT=true
 # https://github.com/pypa/pipenv/issues/1914
 export PIPENV_SKIP_LOCK=true
+
+# Deno
+export PATH=$HOME/.deno/bin:$PATH
