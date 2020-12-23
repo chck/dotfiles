@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install xquartz' do
+  execute 'brew install --cask xquartz' do
     not_if 'brew cask list | grep xquartz'
   end
   execute 'brew install mplayer' do
