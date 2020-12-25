@@ -22,3 +22,5 @@ complete -o default -F __start_kubectl k
 alias find="fd"
 # terraform
 alias tf="terraform"
+# gcloud
+alias gcurl='curl --header "Authorization: Bearer $(gcloud auth print-identity-token)"'
