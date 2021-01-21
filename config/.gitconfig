@@ -1,12 +1,12 @@
 [user]
-  	name = chck
-  	email = shimekiri.today@gmail.com
+	name = chck
+	email = shimekiri.today@gmail.com
 [include]
   	path = .gitconfig.local
 [color]
   	ui = true
 [core]
-  	excludesfile = ~/.gitignore_global
+	excludesfile = /Users/chck/.gitignore_global
   	editor = vim
   	filemode = true
 [alias]
@@ -42,3 +42,5 @@
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
+[commit]
+	template = /Users/chck/.stCommitMsg
