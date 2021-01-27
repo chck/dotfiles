@@ -45,7 +45,6 @@ end
 
 define :user_service, action: [] do
   name = params[:name]
-
   Array(params[:action]).each do |action|
     case action
     when :enable
