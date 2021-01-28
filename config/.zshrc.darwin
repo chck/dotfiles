@@ -1,5 +1,6 @@
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-alias up="brew update && brew upgrade && brew cleanup && brew upgrade --cask && gcloud components update --quiet && anyenv update -v && tldr --update && rustup update nightly && cargo install-update -a"
-alias nproc="sysctl -n hw.logicalcpu"
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/opt/libarchive/bin:$PATH"
+alias up="brew update && brew upgrade && brew cleanup && brew upgrade --cask && gcloud components update --quiet && anyenv update -v && tldr --update && rustup update nightly && cargo install-update -a"
+alias nproc="sysctl -n hw.logicalcpu"
+alias clion="open -na 'CLion.app'"
