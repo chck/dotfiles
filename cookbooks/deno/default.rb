@@ -6,3 +6,8 @@ when 'darwin'
 else
   raise NotImplementedError
 end
+
+# https://www.secondstate.io/articles/ssvmup/
+execute 'curl https://raw.githubusercontent.com/second-state/ssvmup/master/installer/init.sh -sSf | sh' do
+  not_if 'which ssvmup'
+end
