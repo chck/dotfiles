@@ -25,3 +25,5 @@ alias find="fd"
 alias tf="terraform"
 # gcloud
 alias gcurl='curl --header "Authorization: Bearer $(gcloud auth print-identity-token)"'
+# Docker
+alias d=docker
