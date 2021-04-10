@@ -31,3 +31,12 @@ EOF
 ''' do
   not_if 'grep kubectl ~/.zsh/lib/aliases.zsh'
 end
+
+
+execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
+# Docker
+alias d=docker
+EOF
+''' do
+  not_if 'grep "# Docker" ~/.zsh/lib/aliases.zsh'
+end
