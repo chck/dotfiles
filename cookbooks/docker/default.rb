@@ -3,12 +3,11 @@ when 'darwin'
   execute 'brew cask install docker' do
     not_if 'which docker'
   end
+  execute 'brew install docker-slim' do
+    not_if 'which docker-slim'
+  end
 else
   raise NotImplementedError
-end
-
-github_binary 'docker-clean' do
-  raw_url 'https://raw.githubusercontent.com/ZZROTDesign/docker-clean/v2.0.4/docker-clean'
 end
 
 execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
