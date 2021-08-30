@@ -26,7 +26,7 @@ execute "anyenv install pyenv" do
   not_if "which pyenv"
 end
 
-python_version = "3.8.10"
+python_version = "3.8.11"
 execute "pyenv install #{python_version} && pyenv global #{python_version}" do
   not_if "test #{python_version} == $(python -V | sed -e 's/Python //g')"
 end
