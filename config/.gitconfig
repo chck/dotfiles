@@ -46,3 +46,5 @@
 	template = /Users/chck/.stCommitMsg
 [init]
 	defaultBranch = master
+[credential]
+	helper = osxkeychain
