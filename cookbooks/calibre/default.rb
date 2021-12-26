@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install calibre' do
+  execute 'brew install --cask calibre' do
     not_if 'test -d /Applications/calibre.app/'
   end
 else

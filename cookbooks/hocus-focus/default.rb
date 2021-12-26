@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install hocus-focus' do
+  execute 'brew install --cask hocus-focus' do
     not_if 'test -d /Applications/Hocus\ Focus.app/'
   end
 else

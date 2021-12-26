@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install google-japanese-ime' do
+  execute 'brew install --cask google-japanese-ime' do
     not_if 'test -d /Applications/GoogleJapaneseInput.localized/'
   end
 else
