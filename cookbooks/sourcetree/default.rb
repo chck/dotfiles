@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install sourcetree' do
+  execute 'brew install --cask sourcetree' do
     not_if 'test -d /Applications/Sourcetree.app/'
   end
 else

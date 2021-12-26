@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install vlc' do
+  execute 'brew install --cask vlc' do
     not_if 'test -d /Applications/VLC.app/'
   end
 else

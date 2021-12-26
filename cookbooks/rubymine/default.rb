@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install rubymine' do
+  execute 'brew install --cask rubymine' do
     not_if 'test -d /Applications/RubyMine.app/'
   end
 else

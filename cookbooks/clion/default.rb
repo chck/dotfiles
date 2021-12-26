@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install clion' do
+  execute 'brew install --cask clion' do
     not_if 'test -d /Applications/CLion.app/'
   end
 else

@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install datagrip' do
+  execute 'brew install --cask datagrip' do
     not_if 'test -d /Applications/DataGrip.app/'
   end
 else

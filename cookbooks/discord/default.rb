@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install discord' do
+  execute 'brew install --cask discord' do
     not_if 'test -d /Applications/Discord.app/'
   end
 else

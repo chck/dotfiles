@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install grammarly' do
+  execute 'brew install --cask grammarly' do
     not_if 'test -d /Applications/Grammarly.app/'
   end
 else

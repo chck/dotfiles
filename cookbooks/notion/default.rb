@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew cask install notion' do
+  execute 'brew install --cask notion' do
     not_if 'test -d /Applications/Notion.app/'
   end
 else
