@@ -1,5 +1,10 @@
-execute "cargo install bat" do
-  not_if "which bat"
+case node[:platform]
+when 'darwin'
+  execute 'brew install bat' do
+    not_if "which bat"
+  end
+else
+  raise NotImplementedError
 end
 
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
