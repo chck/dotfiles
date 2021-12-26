@@ -5,7 +5,9 @@ node.reverse_merge!(
 define :dotfile, source: nil, destination: nil do
   destination ||= ENV['HOME']
   source = params[:source] || params[:name]
-  link File.join(destination, params[:name]) do
+  filepath = File.join(destination, params[:name])
+  File.delete(filepath) if File.exist?(filepath) && params[:name] == ".zshrc"
+  link filepath do
     to File.expand_path("../../../config/#{source}", __FILE__)
     user node[:user]
   end
