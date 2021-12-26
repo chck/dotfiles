@@ -63,7 +63,7 @@ end
 
 define :cargo, action: [] do
   name = params[:name]
-  execute "cargo +nightly install --force --verbose #{name}" do
+  execute "cargo install --force --verbose #{name}" do
     not_if %Q[cargo install --list | grep "^#{name}"]
   end
 end
