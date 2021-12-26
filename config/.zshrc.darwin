@@ -4,3 +4,9 @@ export PATH="/usr/local/opt/libarchive/bin:$PATH"
 alias up="brew update && brew upgrade && brew cleanup && brew upgrade --cask && gcloud components update --quiet && anyenv update -v && tldr --update && rustup update nightly && cargo install-update -a"
 alias nproc="sysctl -n hw.logicalcpu"
 alias clion="open -na 'CLion.app'"
+
+# Ruby
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+# you must edit the version if ruby's latest changes in brew
+export PATH="/opt/homebrew/lib/ruby/gems/3.0.0/bin:$PATH"
+
