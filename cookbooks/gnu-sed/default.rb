@@ -8,7 +8,6 @@ else
 end
 
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
-
 # GNU sed
 alias sed=gsed
 EOF
