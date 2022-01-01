@@ -1,4 +1,3 @@
-package 'vim'
 case node[:platform]
 when 'darwin'
   execute 'brew install --HEAD tree-sitter luajit neovim' do
@@ -9,7 +8,6 @@ else
 end
 
 dotfile '.vim'
-dotfile '.vimrc'
 if node[:platform] == 'darwin'
   dotfile '.ideavimrc' do
     not_if 'test -f ~/.ideavimrc'
