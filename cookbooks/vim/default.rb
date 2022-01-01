@@ -8,7 +8,6 @@ else
   raise NotImplementedError
 end
 
-
 dotfile '.vim'
 dotfile '.vimrc'
 if node[:platform] == 'darwin'
@@ -17,6 +16,14 @@ if node[:platform] == 'darwin'
   end
 end
 dotfile 'init.vim' do
+  destination "#{ENV['HOME']}/.config/nvim"
+end
+dotfile 'dein.toml' do
+  source ".vim/dein.toml"
+  destination "#{ENV['HOME']}/.config/nvim"
+end
+dotfile 'dein_lazy.toml' do
+  source ".vim/dein_lazy.toml"
   destination "#{ENV['HOME']}/.config/nvim"
 end
 
@@ -29,12 +36,12 @@ EOF
   not_if 'grep vi ~/.zsh/lib/aliases.zsh'
 end
 
-execute 'curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh && sh /tmp/installer.sh ~/.vim/bundles' do
-  not_if 'test -d ~/.vim/bundles/repos/github.com/Shougo/dein.vim'
+execute 'curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh && sh /tmp/installer.sh ~/.cache/dein' do
+  not_if 'test -d ~/.cache/dein/repos/github.com/Shougo/dein.vim'
 end
 
 execute "vim -c 'call dein#install() | q!'" do
-  not_if 'test -d ~/.vim/bundles/repos/github.com/Shougo/dein.vim'
+  not_if 'test -d ~/.cache/dein/repos/github.com/Shougo/dein.vim'
 end
 
 py310_path = "PATH='/usr/local/opt/python@3.10/bin:$PATH'"

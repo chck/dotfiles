@@ -1,4 +1,4 @@
-let s:dein_dir = expand('~/.vim/bundles')
+let s:dein_dir = expand('~/.cache/dein')
 
 if &compatible
  set nocompatible
@@ -17,8 +17,8 @@ if dein#load_state(s:dein_dir)
  endif
  let g:deoplete#enable_at_startup = 1
 
- call dein#load_toml('~/.vim/dein.toml', {'lazy': 0})
- call dein#load_toml('~/.vim/dein_lazy.toml', {'lazy': 1})
+ call dein#load_toml('~/.config/nvim/dein.toml', {'lazy': 0})
+ call dein#load_toml('~/.config/nvim/dein_lazy.toml', {'lazy': 1})
 
  call dein#end()
  call dein#save_state()
