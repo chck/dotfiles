@@ -6,3 +6,5 @@ when 'darwin'
 else
   raise NotImplementedError
 end
+
+dotfile '.stCommitMsg'
