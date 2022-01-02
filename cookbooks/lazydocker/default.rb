@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew install jesseduffield/lazydocker/lazydocker' do
+  execute 'brew install lazydocker' do
     not_if 'which lazydocker'
   end
 else
