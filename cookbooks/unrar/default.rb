@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew install unrar' do
+  execute 'brew install carlocab/personal/unrar' do
     not_if 'which unrar'
   end
 else
