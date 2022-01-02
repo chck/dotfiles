@@ -2,8 +2,14 @@
 
 set -ex
 
-# Homebrew does not allow sudo.
+if [ ! -f config/.config/nvim/dein/repos/github.com/Shougo/dein.vim/.git ]; then
+  git submodule init && git submodule update --depth 1
+fi
+
+bin/setup
+
 case "$(uname)" in
-  "Darwin")  itamae local $@ lib/recipe.rb ;;
-  *) sudo -E itamae local $@ lib/recipe.rb ;;
+  # Homebrew does not allow sudo.
+  "Darwin")  bin/mitamae local $@ lib/recipe.rb ;;
+  *) sudo -E bin/mitamae local $@ lib/recipe.rb ;;
 esac
