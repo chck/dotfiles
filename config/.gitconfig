@@ -7,7 +7,7 @@
   	ui = true
 [core]
 	excludesfile = /Users/chck/.gitignore_global
-  	editor = vim
+  	editor = nvim
   	filemode = true
 [alias]
   	co = checkout
@@ -42,8 +42,6 @@
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
-[commit]
-	template = /Users/chck/.stCommitMsg
 [init]
 	defaultBranch = master
 [credential]
