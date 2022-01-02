@@ -21,7 +21,7 @@ else
 end
 
 unless ENV['PATH'].include?("#{ENV['HOME']}/.cargo/bin:")
-  Itamae.logger.info('Prepending ~/.cargo/bin to PATH during this execution')
+  MItamae.logger.info('Prepending ~/.cargo/bin to PATH during this execution')
   ENV['PATH'] = "#{ENV['HOME']}/.cargo/bin:#{ENV['PATH']}"
 end
 
