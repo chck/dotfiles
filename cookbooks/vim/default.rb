@@ -42,7 +42,3 @@ execute "vim -c 'call dein#install() | q!'" do
   not_if 'test -d ~/.cache/dein/repos/github.com/Shougo/dein.vim'
 end
 
-py310_path = "PATH='/usr/local/opt/python@3.10/bin:$PATH'"
-execute "#{py310_path} pip3 install pynvim" do
-  not_if "#{py310_path} pip3 list | grep pynvim"
-end
