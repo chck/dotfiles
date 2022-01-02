@@ -1,26 +1,25 @@
 # dotfiles
 > Accio, My Utensils!
 
-## Prerequisites
-
-| Software                 | Install                     |
-|--------------------------|-----------------------------|
-| ruby ~> 2.7.0            | `rbenv install 2.7.0`       |
-| itamae ~> 1.10.6         | `gem install itamae`        |
-
 ## Usage
-```sh
-# clone
+### Clone this repository
+```shell
 git clone --recursive https://github.com/chck/dotfiles.git
+```
 
-# dry-run
+### Dry-run
+```shell
 ./install.sh -n
+```
 
-# apply
+### Apply
+```shell
 ./install.sh
+```
 
-# add new cookbook
-itamae g cookbook <NEW_APP>  # generate template
-vi cookbooks/<NEW_APP>/default.rb  # add to install operation for <NEW_APP>
-vi roles/$(uname)/default.rb  # add the command `include_cookbook <NEW_APP>`
+### Add new cookbook
+```shell
+mkdir cookbooks/:app_name
+$EDITOR cookbooks/:app_name/default.rb
+$EDITOR roles/$(uname)/default.rb
 ```
