@@ -12,3 +12,6 @@ export CLOUDSDK_PYTHON=python3
 # Docker
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
+
+# LIMA
+export DOCKER_HOST=unix:///${HOME}/.lima/docker/sock/docker.sock
