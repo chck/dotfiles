@@ -19,5 +19,5 @@ plugins=(git history history-substring-search mysql ruby rails gem brew rake zsh
 export ENHANCD_HOOK_AFTER_CD=ls
 
 # direnv
-export EDITOR=vim
+export EDITOR=nvim
 eval "$(direnv hook zsh)"
