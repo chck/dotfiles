@@ -1,12 +1,13 @@
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-export PATH="/usr/local/sbin:$PATH"
-export PATH="/usr/local/opt/libarchive/bin:$PATH"
+export PATH="/usr/local/sbin:/usr/local/opt/libarchive/bin:$PATH"
 alias up="brew update && brew upgrade && brew cleanup && brew upgrade --cask && gcloud components update --quiet && anyenv update -v && tldr --update && rustup update nightly && cargo install-update -a"
 alias nproc="sysctl -n hw.logicalcpu"
 alias clion="open -na 'CLion.app'"
 
 # Ruby
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
-# you must edit the version if ruby's latest changes in brew
+# You must edit the version if ruby's latest changes in brew
 export PATH="/opt/homebrew/lib/ruby/gems/3.0.0/bin:$PATH"
 
+export OPENBLAS=$(/opt/homebrew/bin/brew --prefix openblas)
+export CFLAGS="-falign-functions=8 ${CFLAGS}"
