@@ -18,10 +18,10 @@ when 'darwin'
     execute 'brew install docker' do
       not_if 'which docker'
     end
-    docker_compose_version = '2.2.2'
-    docker_compose_path = '~/.local/bin/docker-compose'
+    docker_compose_version = '2.2.3'
+    docker_compose_path = '~/.docker/cli-plugins/docker-compose'
     execute "curl -L https://github.com/docker/compose/releases/download/v#{docker_compose_version}/docker-compose-darwin-aarch64 -o #{docker_compose_path} && sudo chmod +x #{docker_compose_path}" do
-      not_if 'which docker-compose'
+      not_if 'which docker compose'
     end
     dotfile 'docker.yaml'
     execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
