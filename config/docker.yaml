@@ -16,7 +16,7 @@ images:
 
 # CPUs: if you see performance issues, try limiting cpus to 1.
 # Default: 4
-cpus: 4
+cpus: 8
 # Memory size
 # Default: "4GiB"
 memory: "16GiB"
