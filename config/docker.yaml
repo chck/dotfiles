@@ -6,6 +6,9 @@
 # $ export DOCKER_HOST=$(limactl list docker --format 'unix://{{.Dir}}/sock/docker.sock')
 # $ docker ...
 
+# LIMA on Rosetta
+arch: "x86_64"
+
 # This example requires Lima v0.8.0 or later
 images:
 # Hint: run `limactl prune` to invalidate the "current" cache
