@@ -15,3 +15,4 @@ export COMPOSE_DOCKER_CLI_BUILD=1
 
 # LIMA
 export DOCKER_HOST=unix:///${HOME}/.lima/docker/sock/docker.sock
+export LIMA_INSTANCE=docker
