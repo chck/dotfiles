@@ -32,6 +32,12 @@ EOF
     ''' do
       not_if 'grep DOCKER_HOST ~/.zsh/lib/apps.zsh'
     end
+    execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
+export LIMA_INSTANCE=docker
+EOF
+    ''' do
+      not_if 'grep LIMA_INSTANCE ~/.zsh/lib/apps.zsh'
+    end
   end
 else
   raise NotImplementedError
