@@ -2,7 +2,7 @@
 set -e
 
 mitamae_version="1.12.8"
-mitamae_linux_sha256="5bec15e75ab1012fbf9c910ec0ab6e65dff93adda86ea1369d895cb47c35246e"
+mitamae_linux_sha256="96d0c446da9329a32752233ec22ddbeffefe02afedfb85d29cea39749a0b115d"
 mitamae_x86_64_darwin_sha256="9e22bad89053bdb5f5cae501ab556b88b017e0e74c05479cd3debf6a30d067bd"
 mitamae_aarch64_darwin_sha256="6b0a3ae660aba38c7e5ae59f0425ca2aa11e9404fdaa9ed04d2141d9dea90c08"
 
