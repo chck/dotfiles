@@ -20,5 +20,5 @@ when 'ubuntu'
 end
 
 execute 'poetry config virtualenvs.in-project true' do
-  not_if 'test true == $(poetry config virtualenvs.in-project)'
+  not_if 'poetry config virtualenvs.in-project | grep true'
 end
