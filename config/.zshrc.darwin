@@ -11,3 +11,7 @@ export PATH="/opt/homebrew/lib/ruby/gems/3.0.0/bin:$PATH"
 
 export OPENBLAS=$(/opt/homebrew/bin/brew --prefix openblas)
 export CFLAGS="-falign-functions=8 ${CFLAGS}"
+
+# LIMA
+export DOCKER_HOST=unix://${HOME}/.lima/docker/sock/docker.sock
+export LIMA_INSTANCE=docker
