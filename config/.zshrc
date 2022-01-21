@@ -14,3 +14,5 @@ if [ -f ~/.zshrc.local ]; then source ~/.zshrc.local; fi
 [ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH:$HOME/.local/bin"
+
+export PATH="$HOME/.poetry/bin:$PATH"

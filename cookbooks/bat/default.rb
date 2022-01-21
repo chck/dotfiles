@@ -3,6 +3,10 @@ when 'darwin'
   execute 'brew install bat' do
     not_if "which bat"
   end
+when 'ubuntu'
+  execute 'sudo apt install -y bat' do
+    not_if "which bat"
+  end
 else
   raise NotImplementedError
 end

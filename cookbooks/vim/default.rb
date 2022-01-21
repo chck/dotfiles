@@ -1,7 +1,11 @@
 case node[:platform]
 when 'darwin'
   execute 'brew install --HEAD tree-sitter luajit neovim' do
-    not_if "which nvim"
+    not_if 'which nvim'
+  end
+when 'ubuntu'
+  execute 'sudo apt install libffi-dev neovim -y' do
+    not_if 'which nvim'
   end
 else
   raise NotImplementedError
