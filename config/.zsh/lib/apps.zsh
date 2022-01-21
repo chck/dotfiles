@@ -14,4 +14,5 @@ export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
 # direnv
-eval "$(direnv hook bash)"
+export EDITOR=nvim
+eval "$(direnv hook zsh)"
