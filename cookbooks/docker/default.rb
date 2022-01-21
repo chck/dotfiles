@@ -24,21 +24,6 @@ when 'darwin'
       not_if "docker compose version | grep v#{docker_compose_version}"
     end
     dotfile 'docker.yaml'
-    execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
-
-# LIMA
-export DOCKER_HOST=unix://${HOME}/.lima/docker/sock/docker.sock
-EOF
-    ''' do
-      not_if 'grep DOCKER_HOST ~/.zsh/lib/apps.zsh'
-    end
-    execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
-export LIMA_INSTANCE=docker
-EOF
-    ''' do
-      not_if 'grep LIMA_INSTANCE ~/.zsh/lib/apps.zsh'
-    end
-  end
 when 'ubuntu'
   execute 'sudo apt install -y ca-certificates curl gnupg lsb-release' do
     not_if "dpkg -l | grep '^ii' | grep ca-certificates"
