@@ -7,6 +7,13 @@ when 'ubuntu'
   execute 'curl -sfL https://direnv.net/install.sh | bash' do
     not_if 'which direnv'
   end
+  execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
+# direnv
+eval "$(direnv hook bash)"
+EOF
+''' do
+    not_if 'grep direnv ~/.zsh/lib/apps.zsh'
+  end
 else
   raise NotImplementedError
 end
