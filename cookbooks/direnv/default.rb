@@ -4,7 +4,7 @@ when 'darwin'
     not_if 'which direnv'
   end
 when 'ubuntu'
-  execute 'curl -sfL https://direnv.net/install.sh | bash' do
+  execute 'sudo apt install -y direnv' do
     not_if 'which direnv'
   end
   execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
