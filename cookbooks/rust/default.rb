@@ -30,8 +30,19 @@ execute 'rustup toolchain install nightly' do
   not_if "rustup toolchain list | grep nightly"
 end
 cargo 'rustfmt'
-cargo 'racer'
-cargo 'cargo-edit'
+#cargo 'racer'
+case node[:platform]
+when 'darwin'
+  cargo 'cargo-edit'
+when 'ubuntu'
+  execute 'sudo apt install -y pkg-config libssl-dev' do
+    not_if "dpkg -l | grep '^ii' | grep pkg-config"
+    not_if "dpkg -l | grep '^ii' | grep libssl-dev"
+  end
+  cargo 'cargo-edit'
+  cargo 'bat'
+  cargo 'exa'
+end
 cargo 'cargo-script'
 cargo 'cargo-update'
 cargo 'cargo-deps'

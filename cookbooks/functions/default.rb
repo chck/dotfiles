@@ -16,6 +16,7 @@ define :dotfile, source: nil, destination: nil do
 end
 
 define :github_binary, raw_url: nil, version: nil, repository: nil, archive: nil, binary_path: nil do
+  sudo_prefix = 'sudo ' if node[:platform] == 'ubuntu' else ''
   cmd = params[:name]
   bin_path = "/usr/local/bin/#{cmd}"
   archive = params[:archive]
@@ -42,7 +43,7 @@ define :github_binary, raw_url: nil, version: nil, repository: nil, archive: nil
       not_if "test -f #{bin_path}"
     end
   end
-  execute "mv /tmp/#{params[:binary_path] || cmd} #{bin_path} && chmod +x #{bin_path}" do
+  execute "#{sudo_prefix}mv /tmp/#{params[:binary_path] || cmd} #{bin_path} && #{sudo_prefix}chmod +x #{bin_path}" do
     not_if "test -f #{bin_path}"
   end
 end

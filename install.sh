@@ -9,7 +9,6 @@ fi
 bin/setup
 
 case "$(uname)" in
-  # Homebrew does not allow sudo.
   "Darwin")  bin/mitamae local $@ lib/recipe.rb ;;
-  *) sudo -E bin/mitamae local $@ lib/recipe.rb ;;
+  *) bin/mitamae local $@ lib/recipe.rb ;;
 esac

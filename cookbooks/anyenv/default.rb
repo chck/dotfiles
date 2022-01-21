@@ -3,6 +3,12 @@ git "install anyenv" do
   repository "https://github.com/anyenv/anyenv.git"
   destination "#{ENV['HOME']}/.anyenv"
 end
+case node[:platform]
+when 'ubuntu'
+  execute 'sudo chown -R $(whoami) ~/.anyenv' do
+    not_if "ls -l ~/.anyenv | awk '{print $3}' | grep $(whoami)"
+  end
+end
 
 git "install anyenv-update" do
   dest = "#{ENV['HOME']}/.anyenv/plugins/anyenv-update"
@@ -25,8 +31,15 @@ end
 execute "anyenv install pyenv" do
   not_if "which pyenv"
 end
+if node[:platform] == 'ubuntu'
+  execute "sudo apt install -y libbz2-dev libreadline-dev libsqlite3-dev" do
+    not_if "dpkg -l | grep '^ii' | grep libbz2-dev"
+    not_if "dpkg -l | grep '^ii' | grep libreadline-dev"
+    not_if "dpkg -l | grep '^ii' | grep libsqlite3-dev"
+  end
+end
 
 python_version = "3.8.12"
 execute "pyenv install #{python_version} && pyenv global #{python_version}" do
-  not_if "test #{python_version} == $(python -V | sed -e 's/Python //g')"
+  not_if "pyenv versions | grep #{python_version}"
 end
