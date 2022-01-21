@@ -1,6 +1,7 @@
 source ~/.zplug/init.zsh
 
-zplug "themes/wedisagree", from:oh-my-zsh
+zplug "themes/wedisagree", from:oh-my-zsh, as:theme, if:"[[ $OSTYPE == *darwin* ]]"
+zplug "themes/zhann", from:oh-my-zsh, as:theme, if:"[[ $OSTYPE == *linux* ]]"
 zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
 zplug "b4b4r07/enhancd", use:init.sh
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
@@ -17,7 +18,3 @@ plugins=(git history history-substring-search mysql ruby rails gem brew rake zsh
 
 # enhancd
 export ENHANCD_HOOK_AFTER_CD=ls
-
-# direnv
-export EDITOR=nvim
-eval "$(direnv hook zsh)"

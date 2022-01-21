@@ -9,7 +9,8 @@ when 'ubuntu'
   end
   execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
 # direnv
-eval "$(direnv hook bash)"
+export EDITOR=nvim
+eval "$(direnv hook zsh)"
 EOF
 ''' do
     not_if 'grep direnv ~/.zsh/lib/apps.zsh'
