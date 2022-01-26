@@ -4,7 +4,7 @@ when 'darwin'
     not_if 'which nkf'
   end
 when 'ubuntu'
-  execute 'apt-get install nkf'
+  execute 'sudo apt install -y nkf'
 when 'redhat'
   execute 'yum install nkf'
 else
