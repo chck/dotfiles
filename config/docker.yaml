@@ -30,8 +30,13 @@ disk: "1024GiB"
 # Expose host directories to the guest, the mount point might be accessible from all UIDs in the guest
 mounts:
 - location: "~"
+  writable: false
 - location: "/tmp/lima"
   writable: true
+- location: "~/Works"
+  writable: true
+- location: "~/.config/gcloud/credentials"
+  writable: false
 # containerd is managed by Docker, not by Lima, so the values are set to false here.
 containerd:
   system: false
