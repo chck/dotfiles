@@ -10,7 +10,7 @@ else
     rustc_path = "#{ENV['HOME']}/.cargo/bin/rustc"
 
     block do
-      system("sudo -E -u #{node[:user]} bash -c 'curl https://sh.rustup.rs -sSf | sh'")
+      system("curl https://sh.rustup.rs -sSf | sh")
 
       until File.exist?(rustc_path)
         sleep 1
@@ -30,7 +30,7 @@ execute 'rustup toolchain install nightly' do
   not_if "rustup toolchain list | grep nightly"
 end
 cargo 'rustfmt'
-#cargo 'racer'
+cargo 'racer'
 case node[:platform]
 when 'darwin'
   cargo 'cargo-edit'
