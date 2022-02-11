@@ -51,6 +51,7 @@ cargo 'cargo-expand'
 cargo 'cargo-make'
 cargo 'cargo-generate'
 cargo 'hexyl'
+cargo 'jless'
 cargo 'hyperfine'
 cargo 'wasm-pack'
 
