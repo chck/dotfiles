@@ -42,6 +42,6 @@ if node[:platform] == 'ubuntu'
 end
 
 python_version = "3.8.12"
-execute "pyenv install #{python_version} && pyenv global #{python_version}" do
+execute "pyenv install #{python_version} && pyenv global #{python_version} && pip install -U pip && pip install cython pynvim" do
   not_if "pyenv versions | grep #{python_version}"
 end
