@@ -32,10 +32,12 @@ execute "anyenv install pyenv" do
   not_if "which pyenv"
 end
 if node[:platform] == 'ubuntu'
-  execute "sudo apt install -y libbz2-dev libreadline-dev libsqlite3-dev" do
+  execute "sudo apt install -y libbz2-dev libreadline-dev libsqlite3-dev lzma liblzma-dev" do
     not_if "dpkg -l | grep '^ii' | grep libbz2-dev"
     not_if "dpkg -l | grep '^ii' | grep libreadline-dev"
     not_if "dpkg -l | grep '^ii' | grep libsqlite3-dev"
+    not_if "dpkg -l | grep '^ii' | grep lzma"
+    not_if "dpkg -l | grep '^ii' | grep liblzma-dev"
   end
 end
 
