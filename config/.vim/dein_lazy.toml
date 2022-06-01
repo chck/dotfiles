@@ -12,6 +12,10 @@ hook_source = '''
 '''
 
 [[plugins]]
+repo = 'ekalinin/Dockerfile.vim'
+on_ft = 'dockerfile'
+
+[[plugins]]
 repo = 'fatih/vim-go'
 on_ft = 'go'
 
