@@ -16,3 +16,6 @@ export COMPOSE_DOCKER_CLI_BUILD=1
 # direnv
 export EDITOR=nvim
 eval "$(direnv hook zsh)"
+
+# hdf5
+export HDF5_DIR="$(brew --prefix hdf5)"
