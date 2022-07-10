@@ -28,7 +28,7 @@ execute "anyenv install --init --force" do
   not_if "test -d #{ENV['HOME']}/.config/anyenv/anyenv-install"
 end
 
-execute "anyenv install pyenv" do
+execute "anyenv install -f pyenv" do
   not_if "which pyenv"
 end
 if node[:platform] == 'ubuntu'
@@ -45,7 +45,7 @@ execute "pyenv install #{python_version} && pyenv global #{python_version} && pi
   not_if "pyenv versions | grep #{python_version}"
 end
 
-execute "anyenv install rbenv" do
+execute "anyenv install -f rbenv" do
   not_if "which rbenv"
 end
 ruby_version = "2.7.6"
