@@ -49,6 +49,20 @@ execute "anyenv install -f rbenv" do
   not_if "which rbenv"
 end
 ruby_version = "2.7.6"
-execute "rbenv install #{ruby_version} && rbenv global #{ruby_version}" do
+execute "RUBY_CONFIGURE_OPTS=--with-openssl-dir=$(brew --prefix openssl@1.1) "\
+        "LDFLAGS=-L$(brew --prefix openssl@1.1)/lib "\
+        "CPPFLAGS=-I$(brew --prefix openssl@1.1)/include "\
+        "rbenv install #{ruby_version} && rbenv global #{ruby_version}" do
   not_if "rbenv versions | grep #{ruby_version}"
+end
+
+execute "anyenv install -f nodenv" do
+  not_if "which nodenv"
+end
+node_version = "18.6.0"
+execute "nodenv install #{node_version} && nodenv global #{node_version}" do
+  not_if "nodenv versions | grep #{node_version}"
+end
+execute 'curl -fsSL https://get.pnpm.io/install.sh | sh -' do
+  not_if 'which pnpm'
 end
