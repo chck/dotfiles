@@ -45,15 +45,18 @@ execute "pyenv install #{python_version} && pyenv global #{python_version} && pi
   not_if "pyenv versions | grep #{python_version}"
 end
 
-execute "anyenv install -f rbenv" do
-  not_if "which rbenv"
-end
-ruby_version = "2.7.6"
-execute "RUBY_CONFIGURE_OPTS=--with-openssl-dir=$(brew --prefix openssl@1.1) "\
-        "LDFLAGS=-L$(brew --prefix openssl@1.1)/lib "\
-        "CPPFLAGS=-I$(brew --prefix openssl@1.1)/include "\
-        "rbenv install #{ruby_version} && rbenv global #{ruby_version}" do
-  not_if "rbenv versions | grep #{ruby_version}"
+case node[:platform]
+  when 'ubuntu'
+  execute "anyenv install -f rbenv" do
+    not_if "which rbenv"
+  end
+  ruby_version = "2.7.6"
+  execute "RUBY_CONFIGURE_OPTS=--with-openssl-dir=$(brew --prefix openssl@1.1) "\
+          "LDFLAGS=-L$(brew --prefix openssl@1.1)/lib "\
+          "CPPFLAGS=-I$(brew --prefix openssl@1.1)/include "\
+          "rbenv install #{ruby_version} && rbenv global #{ruby_version}" do
+    not_if "rbenv versions | grep #{ruby_version}"
+  end
 end
 
 execute "anyenv install -f nodenv" do
