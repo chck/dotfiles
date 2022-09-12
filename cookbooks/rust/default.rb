@@ -42,6 +42,8 @@ when 'ubuntu'
   cargo 'cargo-edit'
   cargo 'bat'
   cargo 'exa'
+  cargo 'du-dust'
+  cargo 'bottom'
 end
 cargo 'cargo-script'
 cargo 'cargo-update'
