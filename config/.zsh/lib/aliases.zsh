@@ -29,3 +29,7 @@ alias d=docker
 # vim replaces neovim
 alias vi="nvim"
 alias vim="nvim"
+# dust replaces du
+alias du="dust"
+# bottom replaces top
+alias top="btm"
