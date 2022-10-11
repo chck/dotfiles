@@ -69,3 +69,13 @@ end
 execute 'curl -fsSL https://get.pnpm.io/install.sh | sh -' do
   not_if 'which pnpm'
 end
+
+if node[:platform] == 'darwin'
+  execute "anyenv install rbenv" do
+    not_if "which rbenv"
+  end
+  ruby_version = "2.7.6"
+  execute "rbenv install #{ruby_version} && rbenv global #{ruby_version}" do
+    not_if "rbenv versions | grep #{ruby_version}"
+  end
+end
