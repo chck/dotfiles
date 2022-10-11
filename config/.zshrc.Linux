@@ -1,2 +1,2 @@
-alias up='sudo apt-get update && sudo apt-get dist-upgrade && sudo apt update -y && sudo apt upgrade -y && gcloud components update --quiet && anyenv update -v && tldr --update && rustup update nightly && cargo install-update -a'
+alias up='sudo apt-get update -y && sudo apt-get dist-upgrade -y && sudo apt update -y && sudo apt upgrade -y && gcloud components update --quiet && anyenv update -v && tldr --update && rustup update nightly && cargo install-update -a'
 alias gist='gist-paste'
