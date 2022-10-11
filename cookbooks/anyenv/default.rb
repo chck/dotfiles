@@ -28,6 +28,7 @@ execute "anyenv install --init --force" do
   not_if "test -d #{ENV['HOME']}/.config/anyenv/anyenv-install"
 end
 
+# Python
 execute "anyenv install -f pyenv" do
   not_if "which pyenv"
 end
@@ -45,12 +46,17 @@ execute "pyenv install #{python_version} && pyenv global #{python_version} && pi
   not_if "pyenv versions | grep #{python_version}"
 end
 
+# Ruby
+execute "anyenv install -f rbenv" do
+  not_if "which rbenv"
+end
+ruby_version = "3.1.2"
 case node[:platform]
-  when 'ubuntu'
-  execute "anyenv install -f rbenv" do
-    not_if "which rbenv"
+when 'ubuntu'
+  execute "rbenv install #{ruby_version} && rbenv global #{ruby_version}" do
+    not_if "rbenv versions | grep #{ruby_version}"
   end
-  ruby_version = "2.7.6"
+when 'darwin'
   execute "RUBY_CONFIGURE_OPTS=--with-openssl-dir=$(brew --prefix openssl@1.1) "\
           "LDFLAGS=-L$(brew --prefix openssl@1.1)/lib "\
           "CPPFLAGS=-I$(brew --prefix openssl@1.1)/include "\
@@ -59,6 +65,7 @@ case node[:platform]
   end
 end
 
+# Node.js
 execute "anyenv install -f nodenv" do
   not_if "which nodenv"
 end
@@ -70,12 +77,11 @@ execute 'curl -fsSL https://get.pnpm.io/install.sh | sh -' do
   not_if 'which pnpm'
 end
 
-if node[:platform] == 'darwin'
-  execute "anyenv install rbenv" do
-    not_if "which rbenv"
-  end
-  ruby_version = "2.7.6"
-  execute "rbenv install #{ruby_version} && rbenv global #{ruby_version}" do
-    not_if "rbenv versions | grep #{ruby_version}"
-  end
+# Go
+execute "anyenv install -f goenv" do
+  not_if "which goenv"
+end
+go_version = "1.19.2"
+execute "goenv install #{go_version} && goenv global #{go_version}" do
+  not_if "goenv versions | grep #{go_version}"
 end
