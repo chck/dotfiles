@@ -77,11 +77,3 @@ execute 'curl -fsSL https://get.pnpm.io/install.sh | sh -' do
   not_if 'which pnpm'
 end
 
-# Go
-execute "anyenv install -f goenv" do
-  not_if "which goenv"
-end
-go_version = "1.19.2"
-execute "goenv install #{go_version} && goenv global #{go_version}" do
-  not_if "goenv versions | grep #{go_version}"
-end
