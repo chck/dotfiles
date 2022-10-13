@@ -18,4 +18,6 @@ export EDITOR=nvim
 eval "$(direnv hook zsh)"
 
 # hdf5
-export HDF5_DIR="$(brew --prefix hdf5)"
+if uname | grep "Darwin"; then
+  export HDF5_DIR="$(brew --prefix hdf5)"
+fi
