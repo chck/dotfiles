@@ -10,3 +10,7 @@ when 'ubuntu'
 else
   raise NotImplementedError
 end
+
+execute 'pipx install pyscaffold' do
+  not_if 'which putup'
+end
