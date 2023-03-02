@@ -17,6 +17,12 @@ export PIPENV_SKIP_LOCK=true
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init --path)"
 fi
+export PATH="$HOME/.poetry/bin:$PATH"
 
 # Deno
 export PATH=$HOME/.deno/bin:$PATH
+
+# JavaScript
+export PNPM_HOME="$HOME/.local/share/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH:$HOME/.local/bin"
