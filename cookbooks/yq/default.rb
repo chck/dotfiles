@@ -1,7 +1,7 @@
 case node[:platform]
 when 'darwin'
-  execute 'pip3 install yq' do
-    not_if 'which yq'
+  execute 'brew install python-yq' do
+    not_if 'yq --help | grep -v "command not found"'
   end
 else
   raise NotImplementedError
