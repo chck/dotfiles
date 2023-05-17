@@ -12,6 +12,9 @@ hook_source = '''
 '''
 
 [[plugins]]
+repo = 'github/copilot.vim'
+
+[[plugins]]
 repo = 'ekalinin/Dockerfile.vim'
 on_ft = 'dockerfile'
 
