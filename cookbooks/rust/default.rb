@@ -33,6 +33,9 @@ cargo 'rustfmt'
 cargo 'racer'
 case node[:platform]
 when 'darwin'
+  execute 'brew install openssl' do
+    not_if 'test -d /opt/homebrew/opt/openssl@3/'
+  end
   cargo 'cargo-edit'
 when 'ubuntu'
   execute 'sudo apt install -y pkg-config libssl-dev' do

@@ -23,6 +23,5 @@ export PATH="$HOME/.poetry/bin:$PATH"
 export PATH=$HOME/.deno/bin:$PATH
 
 # JavaScript
-export PNPM_HOME="$HOME/.local/share/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH:$HOME/.local/bin"
+export PATH="$HOME/.local/share/pnpm:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/.local/bin:$PATH"
