@@ -38,7 +38,7 @@ EOF
   not_if 'grep vi ~/.zsh/lib/aliases.zsh'
 end
 
-execute 'curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > /tmp/installer.sh && sh /tmp/installer.sh ~/.cache/dein' do
+execute 'curl https://raw.githubusercontent.com/Shougo/dein-installer.vim/main/installer.sh > /tmp/installer.sh && sh /tmp/installer.sh' do
   not_if 'test -d ~/.cache/dein/repos/github.com/Shougo/dein.vim'
 end
 
