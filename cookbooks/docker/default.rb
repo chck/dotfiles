@@ -1,3 +1,5 @@
+docker_compose_version = '2.16.0'
+docker_compose_path = '~/.docker/cli-plugins/docker-compose'
 case node[:platform]
 when 'darwin'
   execute 'brew install docker-slim' do
@@ -18,9 +20,7 @@ when 'darwin'
     execute 'brew install docker' do
       not_if 'which docker'
     end
-    docker_compose_version = '2.2.3'
-    docker_compose_path = '~/.docker/cli-plugins/docker-compose'
-    execute "curl -L https://github.com/docker/compose/releases/download/v#{docker_compose_version}/docker-compose-darwin-aarch64 -o #{docker_compose_path} && sudo chmod +x #{docker_compose_path}" do
+    execute "mkdir -p ~/.docker/cli-plugins && curl -L https://github.com/docker/compose/releases/download/v#{docker_compose_version}/docker-compose-darwin-aarch64 -o #{docker_compose_path} && sudo chmod +x #{docker_compose_path}" do
       not_if "docker compose version | grep v#{docker_compose_version}"
     end
     dotfile 'docker.yaml'
@@ -36,9 +36,7 @@ when 'ubuntu'
     not_if 'which docker'
   end
   # Docker Compose
-  docker_compose_version = '2.2.3'
-  docker_compose_path = "~/.docker/cli-plugins/docker-compose"
-  execute "curl -L https://github.com/docker/compose/releases/download/v#{docker_compose_version}/docker-compose-#{`uname`.downcase.strip}-#{`uname -m`.strip} -o #{docker_compose_path} && sudo chmod +x #{docker_compose_path}" do
+  execute "mkdir -p ~/.docker/cli-plugins && curl -L https://github.com/docker/compose/releases/download/v#{docker_compose_version}/docker-compose-#{`uname`.downcase.strip}-#{`uname -m`.strip} -o #{docker_compose_path} && sudo chmod +x #{docker_compose_path}" do
     not_if "docker compose version | grep v#{docker_compose_version}"
   end
   # Kubernetes
