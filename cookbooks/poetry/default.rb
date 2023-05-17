@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -' do
+  execute 'curl -sSL https://install.python-poetry.org | python3 -' do
     not_if 'which poetry'
   end
 when 'ubuntu'
