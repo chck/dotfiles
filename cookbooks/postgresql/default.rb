@@ -1,6 +1,7 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew install postgresql' do
+  version = 15
+  execute "brew install postgresql@#{version}" do
     not_if 'which postgres'
   end
 else
