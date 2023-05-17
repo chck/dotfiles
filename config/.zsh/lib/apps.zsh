@@ -11,14 +11,5 @@ export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
-# direnv
-export EDITOR=nvim
-eval "$(direnv hook zsh)"
-
-# hdf5
-if uname | grep "Darwin"; then
-  export HDF5_DIR="$(brew --prefix hdf5)"
-fi
-
 # Travis CI
 [ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
