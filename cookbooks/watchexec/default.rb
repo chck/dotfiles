@@ -1,3 +1,3 @@
-execute "cargo install watchexec-cli" do
+execute "cargo install --locked watchexec-cli" do
   not_if "which watchexec"
 end
