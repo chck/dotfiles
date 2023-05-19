@@ -20,6 +20,7 @@
   	gp = grep -n
   	lg = log --graph --pretty=oneline --decorate --date=short --abbrev-commit --branches
   	c = commit -v
+	pullall = !git pull --rebase && git submodule update --init --recursive
 [push]
   	default = simple
 [branch]
