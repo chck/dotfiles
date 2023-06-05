@@ -6,6 +6,9 @@ when 'darwin'
   execute 'brew install saml2aws' do
     not_if 'which saml2aws'
   end
+  execute 'brew install --cask session-manager-plugin' do
+    not_if 'brew list --cask | grep session-manager-plugin'
+  end
 when 'ubuntu'
   execute 'sudo apt install -y awscli' do
     not_if 'which aws'
