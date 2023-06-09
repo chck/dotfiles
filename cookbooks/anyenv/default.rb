@@ -50,9 +50,12 @@ end
 execute "anyenv install -f nodenv" do
   not_if "which nodenv"
 end
-node_version = "18.6.0"
+node_version = "20.2.0"
 execute "nodenv install #{node_version} && nodenv global #{node_version}" do
   not_if "nodenv versions | grep #{node_version}"
+end
+execute 'npm i -g @antfu/ni' do
+  not_if 'which ni'
 end
 execute 'curl -fsSL https://get.pnpm.io/install.sh | sh -' do
   not_if 'which pnpm'
