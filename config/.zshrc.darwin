@@ -16,7 +16,8 @@ export OPENBLAS=$(/opt/homebrew/bin/brew --prefix openblas)
 export CFLAGS="-falign-functions=8 ${CFLAGS}"
 
 # LIMA
-export DOCKER_HOST=unix://${HOME}/.lima/docker/sock/docker.sock
+#export DOCKER_HOST=unix://${HOME}/.lima/docker/sock/docker.sock
+export DOCKER_HOST=unix:///var/run/docker.sock
 export LIMA_INSTANCE=docker
 
 # GNU sed
