@@ -76,3 +76,7 @@ hook_post_source = '''
 [[plugins]]
 repo = 'cespare/vim-toml'
 on_ft = 'toml'
+
+[[plugins]]
+repo = 'wakatime/vim-wakatime'
+on_event = ['BufRead']
