@@ -10,7 +10,7 @@ alias clion="open -na 'CLion.app'"
 # Ruby
 export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
 # You must edit the version if ruby's latest changes in brew
-export PATH="/opt/homebrew/lib/ruby/gems/3.0.0/bin:$PATH"
+export PATH="/opt/homebrew/lib/ruby/gems/3.2.0/bin:$PATH"
 
 export OPENBLAS=$(/opt/homebrew/bin/brew --prefix openblas)
 export CFLAGS="-falign-functions=8 ${CFLAGS}"
