@@ -33,3 +33,5 @@ alias vim="nvim"
 alias du="dust"
 # bottom replaces top
 alias top="btm"
+# rust-script
+alias rust="rust-script"

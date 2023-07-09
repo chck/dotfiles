@@ -48,7 +48,7 @@ when 'ubuntu'
   cargo 'du-dust'
   cargo 'bottom'
 end
-cargo 'cargo-script'
+cargo 'rust-script'
 cargo 'cargo-update'
 cargo 'cargo-deps'
 cargo 'cargo-benchcmp'
