@@ -18,6 +18,9 @@ else
     end
     not_if "test -f #{rustc_path}"
   end
+  execute 'rustup component add rust-src' do
+    not_if 'rustup component list --installed | grep rust-analyzer'
+  end
 end
 
 unless ENV['PATH'].include?("#{ENV['HOME']}/.cargo/bin:")
@@ -30,13 +33,15 @@ execute 'rustup toolchain install nightly' do
   not_if "rustup toolchain list | grep nightly"
 end
 cargo 'rustfmt'
-cargo 'racer'
 case node[:platform]
 when 'darwin'
   execute 'brew install openssl' do
     not_if 'test -d /opt/homebrew/opt/openssl@3/'
   end
   cargo 'cargo-edit'
+  execute 'ln -s $HOME/.cargo/bin/ /opt/homebrew/opt/rust' do
+    not_if 'test -d /opt/homebrew/opt/rust/'
+  end
 when 'ubuntu'
   execute 'sudo apt install -y pkg-config libssl-dev' do
     not_if "dpkg -l | grep '^ii' | grep pkg-config"
