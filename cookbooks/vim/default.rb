@@ -28,6 +28,10 @@ dotfile 'dein_lazy.toml' do
   source ".vim/dein_lazy.toml"
   destination "#{ENV['HOME']}/.config/nvim"
 end
+dotfile 'coc-settings.json' do
+  source ".vim/coc-settings.json"
+  destination "#{ENV['HOME']}/.config/nvim"
+end
 
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
 # vim replaces neovim
