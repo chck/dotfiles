@@ -3,3 +3,10 @@ repo = 'Shougo/denite.nvim'
 
 [[plugins]]
 repo = 'scrooloose/nerdtree'
+
+[[plugins]]
+repo = 'neoclide/coc.nvim'
+rev = 'release'
+hook_add = '''
+let g:coc_global_extensions = ['coc-rust-analyzer']
+'''
