@@ -15,8 +15,9 @@ export PATH="/opt/homebrew/lib/ruby/gems/3.2.0/bin:$PATH"
 export OPENBLAS=$(/opt/homebrew/bin/brew --prefix openblas)
 export CFLAGS="-falign-functions=8 ${CFLAGS}"
 
-# CLion
+# JetBrains
 export PATH="/Applications/CLion.app/Contents/MacOS:$PATH"
+export PATH="/Applications/WebStorm.app/Contents/MacOS:$PATH"
 
 # LIMA
 #export DOCKER_HOST=unix://${HOME}/.lima/docker/sock/docker.sock
