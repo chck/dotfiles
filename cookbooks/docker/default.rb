@@ -3,7 +3,7 @@ docker_compose_path = '~/.docker/cli-plugins/docker-compose'
 case node[:platform]
 when 'darwin'
   execute 'brew install docker-slim' do
-    not_if 'which docker-slim'
+    not_if 'which slim'
   end
   case `uname -m`.chomp
   when 'x86_64'  # Intel Mac
