@@ -1,4 +1,4 @@
-docker_compose_version = '2.16.0'
+docker_compose_version = '2.20.3'
 docker_compose_path = '~/.docker/cli-plugins/docker-compose'
 case node[:platform]
 when 'darwin'
