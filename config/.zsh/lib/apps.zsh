@@ -6,13 +6,13 @@ if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-clou
 export CLOUDSDK_PYTHON=python3
 # Kubectl
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-
 # Docker
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
-
 # Travis CI
 [ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
 # direnv
 export EDITOR=nvim
 eval "$(direnv hook zsh)"
+# pre-commit
+export PRE_COMMIT_COLOR=always
