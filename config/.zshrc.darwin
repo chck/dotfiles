@@ -18,6 +18,7 @@ export CFLAGS="-falign-functions=8 ${CFLAGS}"
 # JetBrains
 export PATH="/Applications/CLion.app/Contents/MacOS:$PATH"
 export PATH="/Applications/WebStorm.app/Contents/MacOS:$PATH"
+export PATH="/Applications/PyCharm.app/Contents/MacOS:$PATH"
 
 # LIMA
 #export DOCKER_HOST=unix://${HOME}/.lima/docker/sock/docker.sock
