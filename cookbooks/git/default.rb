@@ -25,7 +25,5 @@ when 'darwin'
   execute 'brew install gh' do
     not_if 'which gh'
   end
-else
-  raise NotImplementedError
 end
 
