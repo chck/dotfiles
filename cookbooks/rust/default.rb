@@ -19,7 +19,7 @@ else
     not_if "test -f #{rustc_path}"
   end
   execute 'rustup component add rust-src' do
-    not_if 'rustup component list --installed | grep rust-analyzer'
+    not_if 'rustup component list --installed | grep rust-src'
   end
 end
 
