@@ -1,2 +1,4 @@
 alias up='sudo apt-get update -y && sudo apt-get dist-upgrade -y && sudo apt update -y && sudo apt upgrade -y && gcloud components update --quiet && anyenv update -v && tldr --update && rustup update nightly && cargo install-update -a'
 alias gist='gist-paste'
+# pyenv
+export LD_LIBRARY_PATH=~/.anyenv/envs/pyenv/versions/3.9.18/lib

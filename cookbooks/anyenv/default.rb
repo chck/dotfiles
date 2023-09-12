@@ -46,6 +46,13 @@ python_version = "3.9.18"
 execute "pyenv install #{python_version} && pyenv global #{python_version} && pip install -U pip && pip install cython pynvim" do
   not_if "pyenv versions | grep #{python_version}"
 end
+execute """cat <<EOF >> ~/.zshrc.Linux
+# pyenv
+export LD_LIBRARY_PATH=~/.anyenv/envs/pyenv/versions/#{python_version}/lib
+EOF
+""" do
+  not_if 'grep LD_LIBRARY_PATH ~/.zshrc.Linux'
+end
 
 # Node.js
 execute "anyenv install -f nodenv" do
