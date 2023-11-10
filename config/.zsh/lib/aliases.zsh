@@ -35,3 +35,5 @@ alias du="dust"
 alias top="btm"
 # rust-script
 alias rust="rust-script"
+# gh copilot
+alias ghc="gh copilot"
