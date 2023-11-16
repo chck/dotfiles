@@ -6,7 +6,7 @@
 [color]
   	ui = true
 [core]
-	excludesfile = /Users/chck/.gitignore_global
+	excludesfile = ~/.gitignore_global
   	editor = nvim
   	filemode = true
 [alias]
@@ -31,13 +31,14 @@
   	root = ~/Works
 [url "git@github.com:"]
  	pushInsteadOf = https://github.com/
-  	pushInsteadOf = git://github.com/
 [url "git@gist.github.com:"]
   	pushInsteadOf = https://gist.github.com/
-  	pushInsteadOf = git://gist.github.com/
 [submodule]
   	recurse = true
 [init]
 	defaultBranch = main
 [credential]
-	helper = osxkeychain
+	helper = 
+	helper = /usr/local/share/gcm-core/git-credential-manager
+[credential "https://dev.azure.com"]
+	useHttpPath = true
