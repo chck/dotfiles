@@ -1,4 +1,4 @@
-docker_compose_version = '2.20.3'
+docker_compose_version = '2.23.0'
 docker_compose_path = '~/.docker/cli-plugins/docker-compose'
 case node[:platform]
 when 'darwin'
@@ -20,7 +20,7 @@ when 'darwin'
     execute 'brew install docker' do
       not_if 'which docker'
     end
-    execute "mkdir -p ~/.docker/cli-plugins && curl -L https://github.com/docker/compose/releases/download/v#{docker_compose_version}/docker-compose-darwin-aarch64 -o #{docker_compose_path} && sudo chmod +x #{docker_compose_path}" do
+    execute "rm -rf #{docker_compose_path} && mkdir -p ~/.docker/cli-plugins && sudo curl -L https://github.com/docker/compose/releases/download/v#{docker_compose_version}/docker-compose-darwin-aarch64 -o #{docker_compose_path} && sudo chmod +x #{docker_compose_path}" do
       not_if "docker compose version | grep v#{docker_compose_version}"
     end
     dotfile 'docker.yaml'
