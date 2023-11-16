@@ -2,6 +2,7 @@ include_role 'base'
 
 include_cookbook 'zsh'
 include_cookbook 'git'
+include_cookbook 'wget'
 include_cookbook 'iterm2'
 include_cookbook 'rust'
 include_cookbook 'ripgrep'
