@@ -8,6 +8,10 @@
 	<false/>
 	<key>Default Bookmark Guid</key>
 	<string>DF77A88F-940D-47B2-9314-D86D513590FB</string>
+	<key>DeleteProfile_SilenceUntil</key>
+	<real>707239496.97009802</real>
+	<key>DeleteProfile_selection</key>
+	<integer>0</integer>
 	<key>DimInactiveSplitPanes</key>
 	<true/>
 	<key>DisableFullscreenTransparency</key>
