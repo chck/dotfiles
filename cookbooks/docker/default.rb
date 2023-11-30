@@ -5,12 +5,15 @@ when 'darwin'
   execute 'brew install docker-slim' do
     not_if 'which slim'
   end
+  execute 'brew install --cask podman-desktop' do
+    not_if 'which /Applications/Podman\ Desktop.app'
+  end
   case `uname -m`.chomp
   when 'x86_64'  # Intel Mac
     execute 'brew install --cask docker' do
       not_if 'which docker'
     end
-  when 'arm64'  # M1 Mac
+  when 'arm64'   # M1 Mac
     execute 'brew install lima' do
       not_if 'which lima'
     end
@@ -24,6 +27,7 @@ when 'darwin'
       not_if "docker compose version | grep v#{docker_compose_version}"
     end
     dotfile 'docker.yaml'
+    dotfile 'docker-vz.yaml'
   end
 when 'ubuntu'
   execute 'sudo apt install -y ca-certificates curl gnupg lsb-release' do

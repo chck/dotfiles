@@ -20,10 +20,6 @@ export PATH="/Applications/CLion.app/Contents/MacOS:$PATH"
 export PATH="/Applications/WebStorm.app/Contents/MacOS:$PATH"
 export PATH="/Applications/PyCharm.app/Contents/MacOS:$PATH"
 
-# LIMA
-export DOCKER_HOST=unix://${HOME}/.lima/docker/sock/docker.sock
-export LIMA_INSTANCE=docker
-
 # GNU sed
 alias sed=gsed
 
