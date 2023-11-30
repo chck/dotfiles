@@ -12,8 +12,8 @@ when 'darwin'
   execute 'brew install git-lfs' do
     not_if 'git lfs'
   end
-  execute 'brew tap microsoft/git && brew install --cask git-credential-manager-core' do
-    not_if 'git credential-manager-core'
+  execute 'brew tap microsoft/git && brew install --cask git-credential-manager' do
+    not_if 'git credential-manager'
   end
   execute 'brew install gh' do
     not_if 'which gh'
