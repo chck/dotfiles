@@ -69,3 +69,7 @@ execute 'curl -fsSL https://get.pnpm.io/install.sh | sh -' do
   not_if 'which pnpm'
 end
 
+# Terraform
+execute "anyenv install -f tfenv" do
+  not_if "which terraform"
+end
