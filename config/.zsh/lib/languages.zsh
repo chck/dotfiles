@@ -26,3 +26,9 @@ export PATH=$HOME/.deno/bin:$PATH
 # JavaScript
 export PATH="$HOME/.local/share/pnpm:$PATH"
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/.local/bin:$PATH"
+
+# Terraform
+export PATH="$HOME/.anyenv/envs/tfenv/bin:$PATH"
+
+# Ruby
+export PATH="$HOME/.anyenv/envs/rbenv/bin:$PATH"
