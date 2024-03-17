@@ -58,7 +58,7 @@ end
 execute "anyenv install -f nodenv" do
   not_if "which nodenv"
 end
-node_version = "20.2.0"
+node_version = "21.6.2"
 execute "nodenv install #{node_version} && nodenv global #{node_version}" do
   not_if "nodenv versions | grep #{node_version}"
 end

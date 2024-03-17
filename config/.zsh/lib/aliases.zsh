@@ -37,3 +37,5 @@ alias top="btm"
 alias rust="rust-script"
 # gh copilot
 alias ghc="gh copilot"
+# pnpm
+alias pn="pnpm"

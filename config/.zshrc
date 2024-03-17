@@ -12,3 +12,4 @@ if [ -f ~/.zshrc.local ]; then source ~/.zshrc.local; fi
 
 fpath+=~/.zfunc
 autoload -Uz compinit && compinit
+
