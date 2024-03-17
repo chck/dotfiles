@@ -24,8 +24,12 @@ export PATH="$HOME/.poetry/bin:$PATH"
 export PATH=$HOME/.deno/bin:$PATH
 
 # JavaScript
-export PATH="$HOME/.local/share/pnpm:$PATH"
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/.local/bin:$PATH"
+export PNPM_HOME="$HOME/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
 
 # Terraform
 export PATH="$HOME/.anyenv/envs/tfenv/bin:$PATH"
