@@ -1,6 +1,6 @@
 # Ref. https://raw.githubusercontent.com/lima-vm/lima/master/examples/docker.yaml
 # Example to use Docker instead of containerd & nerdctl
-# $ limactl start ./docker.yaml
+# $ limactl start ./docker-qemu.yaml
 # $ limactl shell docker docker run -it -v $HOME:$HOME --rm alpine
 
 # To run `docker` on the host (assumes docker-cli is installed):
@@ -8,6 +8,7 @@
 # $ docker ...
 
 # LIMA on Rosetta
+# vmType: qemu # default
 arch: "x86_64"
 
 # This template requires Lima v0.8.0 or later
