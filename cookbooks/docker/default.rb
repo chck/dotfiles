@@ -6,7 +6,7 @@ when 'darwin'
     not_if 'which slim'
   end
   execute 'brew install --cask podman-desktop' do
-    not_if 'which /Applications/Podman\ Desktop.app'
+    not_if 'test -d /Applications/Podman\ Desktop.app'
   end
   case `uname -m`.chomp
   when 'x86_64'  # Intel Mac
