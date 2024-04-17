@@ -2,6 +2,9 @@
 export PATH=$HOME/.anyenv/bin:$PATH
 eval "$(anyenv init -)"
 
+# mise (asdf)
+eval "$(~/.local/bin/mise activate zsh)"
+
 # Rust
 export PATH=$HOME/.cargo/bin:$PATH
 
