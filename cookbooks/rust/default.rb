@@ -55,6 +55,7 @@ when 'ubuntu'
 end
 cargo 'rust-script'
 cargo 'cargo-update'
+cargo 'cargo-binstall'
 cargo 'cargo-deps'
 cargo 'cargo-benchcmp'
 cargo 'cargo-expand'
