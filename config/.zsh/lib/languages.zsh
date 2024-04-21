@@ -15,3 +15,6 @@ export PATH=$HOME/.deno/bin:$PATH
 # JavaScript
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/.local/bin:$PATH"
 
+export PIPENV_VENV_IN_PROJECT=true
+# https://github.com/pypa/pipenv/issues/1914
+export PIPENV_SKIP_LOCK=true
