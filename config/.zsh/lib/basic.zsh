@@ -12,11 +12,17 @@ export HISTFILE=${HOME}/.zsh_history
 export HISTSIZE=10000000
 export SAVEHIST=60000000
 
+# ignore duplicate history
+setopt hist_ignore_all_dups
+
 # don't logout by EOF
 setopt ignore_eof
 
 # supress warning for glob no match
 setopt nonomatch
+
+# Remove path separator from WORDCHARS.
+WORDCHARS=${WORDCHARS//[\/]}
 
 # colorized ls
 export LSCOLORS=gxfxcxdxbxegedabagacad
