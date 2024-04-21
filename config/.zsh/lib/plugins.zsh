@@ -18,3 +18,4 @@ plugins=(git history history-substring-search mysql ruby rails gem brew rake zsh
 
 # enhancd
 export ENHANCD_HOOK_AFTER_CD=ls
+eval "$(starship init zsh)"
