@@ -9,8 +9,8 @@ alias s="git status -sb"
 alias rust="cargo-script"
 # bat replaces cat
 alias cat="bat"
-# exa replaces ls
-alias ls="exa -a"
+# eza replaces ls
+alias ls="eza -a"
 # procs replaces ps
 alias ps="procs"
 # lazydocker
