@@ -14,6 +14,5 @@ when 'ubuntu'
   end
 end
 
-dotfile '.zplug'
 dotfile '.zsh'
 dotfile '.zshrc'

@@ -1,0 +1,72 @@
+# `sheldon` configuration file
+# ----------------------------
+#
+# You can modify this file directly or you can use one of the following
+# `sheldon` commands which are provided to assist in editing the config file:
+#
+# - `sheldon add` to add a new plugin to the config file
+# - `sheldon edit` to open up the config file in the default editor
+# - `sheldon remove` to remove a plugin from the config file
+#
+# See the documentation for more https://github.com/rossmacarthur/sheldon#readme
+
+shell = "zsh"
+
+[templates]
+# declare lazy load
+defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}"
+fzf-install = "{{ dir }}/install --bin > /dev/null \n[[ ! $PATH =~ {{ dir }} ]] && export PATH=\"$PATH:{{ dir }}/bin\"\n"
+fzf-source = "{% for file in files %}source \"{{ file }}\"\n{% endfor %}"
+
+[plugins]
+
+# lazy load of plugins in zsh
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+# enable completions
+[plugins.compinit]
+inline = 'autoload -Uz compinit && zsh-defer compinit'
+
+# enable colors
+[plugins.colors]
+inline = 'autoload -Uz colors && zsh-defer colors'
+
+# completions
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions" 
+
+# auto suggestion
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+use = ["{{ name }}.zsh"]
+apply = ["defer"]
+
+# syntax highlight
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+
+# manage delimiters
+[plugins.autopair]
+github = "hlissner/zsh-autopair"
+
+# store secrets in a git repo
+[plugins.blackbox]
+github = "StackExchange/blackbox"
+
+# fuzzy search in cd command
+[plugins.enhancd]
+github = "b4b4r07/enhancd"
+apply = ["defer"]
+
+# history search
+[plugins.zsh-history-substring-search]
+github = "zsh-users/zsh-history-substring-search"
+
+# fuzzy search
+[plugins.fzf]
+github = "junegunn/fzf"
+use = ["shell/completion.zsh", "shell/key-bindings.zsh"]
+apply = ["defer", "fzf-install", "fzf-source"]
+
