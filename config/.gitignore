@@ -3,3 +3,4 @@
 !.vim/bundles/repos/github.com/Shougo/dein.vim
 .netrwhist
 view/
+*.zwc
