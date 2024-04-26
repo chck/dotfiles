@@ -23,6 +23,7 @@ fzf-source = "{% for file in files %}source \"{{ file }}\"\n{% endfor %}"
 # lazy load of plugins in zsh
 [plugins.zsh-defer]
 github = "romkatv/zsh-defer"
+apply = ["source"]
 
 # enable completions
 [plugins.compinit]
