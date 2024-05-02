@@ -10,8 +10,11 @@ end
 execute "mise use --global poetry@latest" do
   not_if "which poetry"
 end
-execute 'poetry config virtualenvs.in-project true' do
-  not_if 'poetry config virtualenvs.in-project | grep true'
+execute "poetry config virtualenvs.in-project true" do
+  not_if "poetry config virtualenvs.in-project | grep true"
+end
+execute "mise use --global uv@latest" do
+  not_if "which uv"
 end
 
 # node
