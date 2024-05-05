@@ -16,7 +16,7 @@ $character
 format = "[\\$](green bold) "
 
 [directory]
-truncation_length = 1
+truncation_length = 2
 format = "[\\[$path\\]]($style) "
 style = "purple"
 
