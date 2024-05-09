@@ -22,16 +22,21 @@ when 'ubuntu'
   execute ' sudo apt install -y git-lfs' do
     not_if 'git lfs'
   end
-else
-  raise NotImplementedError
-end
-
-case node[:platform]
-when 'darwin'
-  execute 'brew install gh' do
-    not_if 'which gh'
+  execute 'sudo apt install -y gpg' do
+    not_if 'which gpg'
   end
-when 'ubuntu'
+  execute 'sudo apt install -y pass' do
+    not_if 'which pass'
+  end
+  cmd = <<EOS
+wget https://github.com/git-ecosystem/git-credential-manager/releases/download/v2.5.0/gcm-linux_amd64.2.5.0.deb
+sudo dpkg -i gcm-linux_amd64.2.5.0.deb
+git-credential-manager configure
+rm gcm-linux_amd64.2.5.0.deb
+EOS
+  execute cmd do
+    not_if 'which git-credential-manager'
+  end
   # ref: https://github.com/cli/cli/blob/trunk/docs/install_linux.md#debian-ubuntu-linux-raspberry-pi-os-apt
   cmd = <<EOS
 type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)

@@ -4,7 +4,7 @@ when 'darwin'
     not_if 'which eza'
   end
 when 'ubuntu'
-  execute 'sudo apt install eza' do
+  execute 'cargo install eza' do
     not_if "which eza"
   end
 else

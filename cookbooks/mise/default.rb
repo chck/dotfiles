@@ -13,7 +13,7 @@ end
 execute "poetry config virtualenvs.in-project true" do
   not_if "poetry config virtualenvs.in-project | grep true"
 end
-execute "mise use --global uv@latest" do
+execute "mise plugins install -y uv && mise use --global uv@latest" do
   not_if "which uv"
 end
 
@@ -31,4 +31,3 @@ terraform_version = "1.8.1"
 execute "mise use --global terraform@#{terraform_version}" do
   not_if "mise ls terraform | grep #{terraform_version}"
 end
-
