@@ -5,6 +5,7 @@ when 'darwin'
   execute 'brew install docker-slim' do
     not_if 'which slim'
   end
+  # Podman
   execute 'brew install --cask podman-desktop' do
     not_if 'test -d /Applications/Podman\ Desktop.app'
   end
@@ -36,6 +37,17 @@ when 'ubuntu'
     not_if "dpkg -l | grep '^ii' | grep gnupg"
     not_if "dpkg -l | grep '^ii' | grep lsb-release"
   end
+  # Rancher
+  cmd = <<EOS
+curl -s https://download.opensuse.org/repositories/isv:/Rancher:/stable/deb/Release.key | gpg --dearmor | sudo dd status=none of=/usr/share/keyrings/isv-rancher-stable-archive-keyring.gpg
+echo 'deb [signed-by=/usr/share/keyrings/isv-rancher-stable-archive-keyring.gpg] https://download.opensuse.org/repositories/isv:/Rancher:/stable/deb/ ./' | sudo dd status=none of=/etc/apt/sources.list.d/isv-rancher-stable.list
+sudo apt update
+sudo apt install rancher-desktop
+EOS
+  execute cmd do
+    not_if 'which rancher-desktop'
+  end
+  # Docker
   execute 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && sudo apt update -y && sudo apt install -y docker-ce docker-ce-cli containerd.io' do
     not_if 'which docker'
   end
