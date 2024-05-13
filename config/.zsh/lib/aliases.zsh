@@ -25,7 +25,6 @@ alias tf="terraform"
 # gcloud
 alias gcurl='curl --header "Authorization: Bearer $(gcloud auth print-identity-token)"'
 # Docker
-alias docker=podman
 alias d=docker
 # vim replaces neovim
 alias vi="nvim"

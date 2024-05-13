@@ -29,3 +29,5 @@ export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 # hdf5
 export HDF5_DIR=$(/opt/homebrew/bin/brew --prefix hdf5)
 
+# Podman
+alias docker=podman
