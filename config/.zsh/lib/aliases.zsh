@@ -39,3 +39,5 @@ alias rust="rust-script"
 alias ghc="gh copilot"
 # pnpm
 alias pn="pnpm"
+# tailspin replaces tail
+alias tail="tspin"
