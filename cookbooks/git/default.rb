@@ -12,6 +12,12 @@ when 'darwin'
   execute 'brew install git-lfs' do
     not_if 'git lfs'
   end
+  execute 'brew install gpg' do
+    not_if 'which gpg'
+  end
+  execute 'brew install pass' do
+    not_if 'which pass'
+  end
   execute 'brew tap microsoft/git && brew install --cask git-credential-manager' do
     not_if 'which git-credential-manager'
   end
