@@ -1,5 +1,3 @@
-docker_compose_version = '2.23.0'
-docker_compose_path = '~/.docker/cli-plugins/docker-compose'
 case node[:platform]
 when 'darwin'
   execute 'brew install docker-slim' do
@@ -9,21 +7,14 @@ when 'darwin'
   execute 'brew install --cask rancher' do
     not_if 'test -d /Applications/Rancher\ Desktop.app'
   end
-  case `uname -m`.chomp
-  when 'x86_64'  # Intel Mac
-    execute 'brew install --cask docker' do
-      not_if 'which docker'
-    end
-  when 'arm64'   # M1 Mac
-    execute 'brew install lima' do
-      not_if 'which lima'
-    end
-    package 'qemu' do
-      not_if 'which qemu-system-aarch64'
-    end
-    dotfile 'docker.yaml'
-    dotfile 'docker-vz.yaml'
+  execute 'brew install lima' do
+    not_if 'which lima'
   end
+  package 'qemu' do
+    not_if 'which qemu-system-aarch64'
+  end
+  dotfile 'docker.yaml'
+  dotfile 'docker-vz.yaml'
 when 'ubuntu'
   execute 'sudo apt install -y ca-certificates curl gnupg lsb-release' do
     not_if "dpkg -l | grep '^ii' | grep ca-certificates"
@@ -40,18 +31,6 @@ sudo apt install rancher-desktop
 EOS
   execute cmd do
     not_if 'which rancher-desktop'
-  end
-  # Docker
-  execute 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null && sudo apt update -y && sudo apt install -y docker-ce docker-ce-cli containerd.io' do
-    not_if 'which docker'
-  end
-  # Docker Compose
-  execute "mkdir -p ~/.docker/cli-plugins && curl -L https://github.com/docker/compose/releases/download/v#{docker_compose_version}/docker-compose-#{`uname`.downcase.strip}-#{`uname -m`.strip} -o #{docker_compose_path} && sudo chmod +x #{docker_compose_path}" do
-    not_if "docker compose version | grep v#{docker_compose_version}"
-  end
-  # Kubernetes
-  execute 'wget "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -P /tmp && sudo install -o root -g root -m 0755 /tmp/kubectl /usr/local/bin/kubectl' do
-    not_if 'which kubectl'
   end
 else
   raise NotImplementedError
