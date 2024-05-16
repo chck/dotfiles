@@ -5,9 +5,9 @@ when 'darwin'
   execute 'brew install docker-slim' do
     not_if 'which slim'
   end
-  # Podman
-  execute 'brew install --cask podman-desktop' do
-    not_if 'test -d /Applications/Podman\ Desktop.app'
+  # Rancher
+  execute 'brew install --cask rancher' do
+    not_if 'test -d /Applications/Rancher\ Desktop.app'
   end
   case `uname -m`.chomp
   when 'x86_64'  # Intel Mac
@@ -20,12 +20,6 @@ when 'darwin'
     end
     package 'qemu' do
       not_if 'which qemu-system-aarch64'
-    end
-    execute 'brew install docker' do
-      not_if 'which docker'
-    end
-    execute "rm -rf #{docker_compose_path} && mkdir -p ~/.docker/cli-plugins && sudo curl -L https://github.com/docker/compose/releases/download/v#{docker_compose_version}/docker-compose-darwin-aarch64 -o #{docker_compose_path} && sudo chmod +x #{docker_compose_path}" do
-      not_if "docker compose version | grep v#{docker_compose_version}"
     end
     dotfile 'docker.yaml'
     dotfile 'docker-vz.yaml'
