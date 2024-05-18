@@ -3,6 +3,14 @@ alias gist='gist-paste'
 # pyenv
 export LD_LIBRARY_PATH=~/.anyenv/envs/pyenv/versions/3.9.18/lib
 
+# readline for compiler
+export CFLAGS="-I/usr/local/opt/readline/include $CFLAGS"
+export LDFLAGS="-L/usr/local/opt/readline/lib $LDFLAGS"
+
+# openssl for compiler
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include $CFLAGS"
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib $LDFLAGS"
+
 ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
 export PATH="$HOME/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
