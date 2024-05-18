@@ -36,7 +36,7 @@ cargo 'rustfmt'
 case node[:platform]
 when 'darwin'
   execute 'brew install openssl' do
-    not_if 'test -d /opt/homebrew/opt/openssl@3/'
+    not_if 'test -d /opt/homebrew/opt/openssl/'
   end
   cargo 'cargo-edit'
   execute 'ln -s $HOME/.cargo/bin/ /opt/homebrew/opt/rust' do
