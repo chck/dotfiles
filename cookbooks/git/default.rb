@@ -15,6 +15,19 @@ when 'darwin'
   execute 'brew install gpg' do
     not_if 'which gpg'
   end
+  execute '''cat <<EOF >> ~/.zshrc.darwin
+# GPG
+export GPG_TTY=$(tty)
+EOF
+  ''' do
+    not_if 'grep GPG_TTY ~/.zshrc.darwin'
+  end
+  execute 'brew install pinentry-mac' do
+    not_if 'which pinentry-mac'
+  end
+  execute 'echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf' do
+    not_if 'grep pinentry-program ~/.gnupg/gpg-agent.conf'
+  end
   execute 'brew install pass' do
     not_if 'which pass'
   end
@@ -23,6 +36,12 @@ when 'darwin'
   end
   execute 'brew install gh' do
     not_if 'which gh'
+  end
+  execute 'git config --global gpg.program $(which gpg)' do
+    not_if 'git config --global -l | grep gpg.program'
+  end
+  execute 'git config --global commit.gpgsign true' do
+    not_if 'git config --global -l | grep commit.gpgsign'
   end
 when 'ubuntu'
   execute ' sudo apt install -y git-lfs' do
