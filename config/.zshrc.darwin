@@ -32,3 +32,5 @@ export HDF5_DIR=$(/opt/homebrew/bin/brew --prefix hdf5)
 # Rancher
 export PATH="$HOME/.rd/bin:$PATH"
 
+# GPG
+export GPG_TTY=$(tty)

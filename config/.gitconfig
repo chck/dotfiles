@@ -1,6 +1,7 @@
 [user]
 	name = chck
 	email = shimekiri.today@gmail.com
+	signingkey = BBF1BDE45E358FC4
 [include]
   	path = .gitconfig.local
 [color]
@@ -60,3 +61,7 @@
 	helper = /usr/local/bin/git-credential-manager
 [credential "https://dev.azure.com"]
 	useHttpPath = true
+[gpg]
+	program = /opt/homebrew/bin/gpg
+[commit]
+	gpgsign = true
