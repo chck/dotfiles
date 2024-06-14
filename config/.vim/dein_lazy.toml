@@ -15,6 +15,10 @@ hook_source = '''
 repo = 'github/copilot.vim'
 
 [[plugins]]
+repo = 'vim-scripts/dbext.vim'
+on_ft = 'sql'
+
+[[plugins]]
 repo = 'ekalinin/Dockerfile.vim'
 on_ft = 'dockerfile'
 
