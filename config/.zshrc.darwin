@@ -34,3 +34,6 @@ export PATH="$HOME/.rd/bin:$PATH"
 
 # GPG
 export GPG_TTY=$(tty)
+
+# Postgres
+export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"
