@@ -8,5 +8,6 @@ repo = 'scrooloose/nerdtree'
 repo = 'neoclide/coc.nvim'
 rev = 'release'
 hook_add = '''
-let g:coc_global_extensions = ['coc-rust-analyzer']
+    let g:coc_global_extensions = ['coc-rust-analyzer']
 '''
+
