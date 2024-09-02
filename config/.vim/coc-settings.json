@@ -1,6 +1,8 @@
 {
   "suggest.noselect": true,
   "suggest.preferCompleteThanJumpPlaceholder": true,
+  "python.formatting.provider": "ruff",
+  "python.linting.ruffEnabled": true,
   "languageserver": {
     "dockerfile": {
       "command": "docker-langserver",
