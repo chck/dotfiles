@@ -13,6 +13,13 @@ hook_source = '''
 
 [[plugins]]
 repo = 'github/copilot.vim'
+hook_source = '''
+    let g:copilot_filetypes = {
+    \ 'markdown': v:true,
+    \ 'yaml': v:true,
+    \ 'text': v:true,
+    \ }
+'''
 
 [[plugins]]
 repo = 'vim-scripts/dbext.vim'
