@@ -3,8 +3,8 @@ when 'darwin'
   execute 'brew install --cask zed' do
     not_if 'test -d /Applications/Zed.app'
   end
-  dotfile "zed/settings.json" do
-    destination "#{ENV['HOME']}/.config"
+  dotfile "settings.json" do
+    destination "#{ENV['HOME']}/.config/zed"
   end
 when 'ubuntu'
   execute 'curl -f https://zed.dev/install.sh | sh' do
