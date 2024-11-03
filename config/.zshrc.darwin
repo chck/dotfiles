@@ -15,10 +15,9 @@ export OPENBLAS=$(/opt/homebrew/bin/brew --prefix openblas)
 export CFLAGS="-falign-functions=8 ${CFLAGS}"
 
 # JetBrains
-export PATH="/Applications/CLion.app/Contents/MacOS:$PATH"
 export PATH="/Applications/WebStorm.app/Contents/MacOS:$PATH"
 export PATH="/Applications/PyCharm.app/Contents/MacOS:$PATH"
-alias clion="open -na 'CLion.app'"
+export PATH="/Applications/RustRover.app/Contents/MacOS:$PATH"
 
 # GNU sed
 alias sed=gsed
