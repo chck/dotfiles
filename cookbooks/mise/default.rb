@@ -3,7 +3,7 @@ execute 'curl https://mise.run | sh' do
 end
 
 # python
-python_version = "3.11.9"
+python_version = "3.12.7"
 execute "mise use --global python@#{python_version}" do
   not_if "mise ls python | grep #{python_version}"
 end
@@ -18,7 +18,7 @@ execute "mise plugins install -y uv && mise use --global uv@latest" do
 end
 
 # node
-node_version = "21.7.3"
+node_version = "23.2.0"
 execute "mise use --global node@#{node_version}" do
   not_if "mise ls node | grep #{node_version}"
 end
@@ -27,7 +27,7 @@ execute "mise use --global pnpm@latest -y" do
 end
 
 # terraform
-terraform_version = "1.8.1"
+terraform_version = "1.9.8"
 execute "mise use --global terraform@#{terraform_version}" do
   not_if "mise ls terraform | grep #{terraform_version}"
 end
