@@ -7,3 +7,8 @@ when 'ubuntu'
     not_if 'which mecab'
   end
 end
+
+dotfile 'mecabrc' do
+  destination "/etc"
+end
+
