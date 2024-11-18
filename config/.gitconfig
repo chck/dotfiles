@@ -34,6 +34,7 @@
 	difftool = true
 [push]
   	default = simple
+	followTags = true
 [branch]
   	autosetuprebase = always
 [pull]
@@ -54,14 +55,12 @@
 	process = git-lfs filter-process
 	required = true
 [credential]
-	helper = /usr/local/share/gcm-core/git-credential-manager
-	helper = 
 	credentialStore = gpg
 	helper = 
-	helper = /usr/local/bin/git-credential-manager
-[credential "https://dev.azure.com"]
-	useHttpPath = true
+	helper = /usr/local/share/gcm-core/git-credential-manager
 [gpg]
 	program = /opt/homebrew/bin/gpg
 [commit]
 	gpgsign = true
+[credential "https://dev.azure.com"]
+	useHttpPath = true
