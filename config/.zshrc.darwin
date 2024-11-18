@@ -3,7 +3,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
 export PATH="/usr/local/sbin:/usr/local/opt/libarchive/bin:$PATH"
-alias up="brew update && brew upgrade && brew cleanup && brew upgrade --cask && sheldon lock --update && gcloud components update --quiet && mise plugins update && tldr --update && rustup update && rustup update nightly && cargo install-update -a"
+alias up="brew update && brew upgrade && brew cleanup && brew upgrade --cask && sheldon lock --update && gcloud components update --quiet && mise up --bump && tldr --update && rustup update && rustup update nightly && cargo install-update -a"
 alias nproc="sysctl -n hw.logicalcpu"
 
 # Ruby
@@ -13,6 +13,7 @@ export PATH="/opt/homebrew/lib/ruby/gems/3.2.0/bin:$PATH"
 
 export OPENBLAS=$(/opt/homebrew/bin/brew --prefix openblas)
 export CFLAGS="-falign-functions=8 ${CFLAGS}"
+export LLVM_CONFIG=$(/opt/homebrew/bin/brew --prefix llvm@14)/bin/llvm-config
 
 # JetBrains
 export PATH="/Applications/WebStorm.app/Contents/MacOS:$PATH"
