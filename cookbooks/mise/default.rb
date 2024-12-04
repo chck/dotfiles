@@ -3,11 +3,10 @@ execute 'curl https://mise.run | sh' do
 end
 
 # python
-python_version = "3.12.7"
-execute "mise use --global python@#{python_version}" do
-  not_if "mise ls python | grep #{python_version}"
+execute "mise use --g python@latest" do
+  not_if "mise ls python"
 end
-execute "mise use --global poetry@latest" do
+execute "mise use -g poetry@latest" do
   not_if "which poetry"
 end
 execute "poetry config virtualenvs.in-project true" do
@@ -18,16 +17,14 @@ execute "mise plugins install -y uv && mise use --global uv@latest" do
 end
 
 # node
-node_version = "23.2.0"
-execute "mise use --global node@#{node_version}" do
-  not_if "mise ls node | grep #{node_version}"
+execute "mise use --global node@latest" do
+  not_if "mise ls node"
 end
 execute "mise use --global pnpm@latest -y" do
   not_if "which pnpm"
 end
 
 # terraform
-terraform_version = "1.9.8"
-execute "mise use --global terraform@#{terraform_version}" do
-  not_if "mise ls terraform | grep #{terraform_version}"
+execute "mise use --global terraform@latest" do
+  not_if "mise ls terraform"
 end
