@@ -64,3 +64,5 @@
 	gpgsign = true
 [credential "https://dev.azure.com"]
 	useHttpPath = true
+[rerere]
+	enabled = true
