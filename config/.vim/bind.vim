@@ -1,3 +1,5 @@
 " Swap ; for :, for US KeyBoard
-nnoremap ; :
-nnoremap : ;
+noremap ; :
+noremap : ;
+noremap ' "
+noremap " '
