@@ -1,25 +1,2 @@
-" Swap ; for :, for US KeyBoard
-"   normal node
-nnoremap ; :
-nnoremap : ;
-nnoremap ' "
-nnoremap " '
-nnoremap - _
-nnoremap _ -
-"   visual mode
-vnoremap ; :
-vnoremap : ;
-vnoremap ' "
-vnoremap " '
-vnoremap - _
-vnoremap _ -
-"   insert mode
-inoremap ; :
-inoremap : ;
-inoremap ' "
-inoremap " '
-inoremap - _
-inoremap _ -
-
 set visualbell                   " Turn off the bell sound
 set noerrorbells                 " Same as above
