@@ -62,7 +62,7 @@
 	program = /opt/homebrew/bin/gpg
 [commit]
 	gpgsign = true
-[credential "https://dev.azure.com"]
-	useHttpPath = true
 [rerere]
 	enabled = true
+[credential "https://dev.azure.com"]
+	useHttpPath = true
