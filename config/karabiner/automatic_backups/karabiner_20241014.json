@@ -1,0 +1,116 @@
+{
+    "global": { "show_in_menu_bar": false },
+    "profiles": [
+        {
+            "devices": [
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 835,
+                        "vendor_id": 1452
+                    },
+                    "simple_modifications": [
+                        {
+                            "from": { "key_code": "caps_lock" },
+                            "to": [{ "key_code": "left_control" }]
+                        }
+                    ]
+                },
+                {
+                    "fn_function_keys": [
+                        {
+                            "from": { "key_code": "f1" },
+                            "to": [{ "key_code": "vk_none" }]
+                        },
+                        {
+                            "from": { "key_code": "f2" },
+                            "to": [{ "key_code": "vk_none" }]
+                        },
+                        {
+                            "from": { "key_code": "f3" },
+                            "to": [{ "key_code": "vk_none" }]
+                        }
+                    ],
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": true,
+                        "product_id": 591,
+                        "vendor_id": 1452
+                    },
+                    "ignore": false,
+                    "simple_modifications": [
+                        {
+                            "from": { "key_code": "end" },
+                            "to": [{ "key_code": "vk_none" }]
+                        },
+                        {
+                            "from": { "key_code": "home" },
+                            "to": [{ "key_code": "delete_or_backspace" }]
+                        },
+                        {
+                            "from": { "key_code": "insert" },
+                            "to": [{ "key_code": "delete_forward" }]
+                        },
+                        {
+                            "from": { "key_code": "page_down" },
+                            "to": [{ "key_code": "return_or_enter" }]
+                        },
+                        {
+                            "from": { "key_code": "page_up" },
+                            "to": [{ "key_code": "return_or_enter" }]
+                        },
+                        {
+                            "from": { "key_code": "print_screen" },
+                            "to": [{ "key_code": "delete_forward" }]
+                        }
+                    ]
+                },
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 591,
+                        "vendor_id": 1452
+                    },
+                    "simple_modifications": [
+                        {
+                            "from": { "key_code": "caps_lock" },
+                            "to": [{ "key_code": "left_control" }]
+                        },
+                        {
+                            "from": { "key_code": "home" },
+                            "to": [{ "key_code": "delete_or_backspace" }]
+                        },
+                        {
+                            "from": { "key_code": "insert" },
+                            "to": [{ "key_code": "f14" }]
+                        },
+                        {
+                            "from": { "key_code": "page_down" },
+                            "to": [{ "key_code": "up_arrow" }]
+                        },
+                        {
+                            "from": { "key_code": "page_up" },
+                            "to": [{ "key_code": "return_or_enter" }]
+                        },
+                        {
+                            "from": { "key_code": "print_screen" },
+                            "to": [{ "key_code": "f13" }]
+                        }
+                    ]
+                }
+            ],
+            "name": "Default",
+            "selected": true,
+            "simple_modifications": [
+                {
+                    "from": { "key_code": "caps_lock" },
+                    "to": [{ "key_code": "left_control" }]
+                },
+                {
+                    "from": { "key_code": "print_screen" },
+                    "to": [{ "key_code": "vk_none" }]
+                }
+            ]
+        }
+    ]
+}
