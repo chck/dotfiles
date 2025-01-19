@@ -6,6 +6,9 @@ when 'darwin'
   execute 'brew install yqrashawn/goku/goku' do
     not_if 'which goku'
   end
+  dotfile "karabiner" do
+    destination "#{ENV['HOME']}/.config"
+  end
 else
   raise NotImplementedError
 end
