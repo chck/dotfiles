@@ -22,7 +22,6 @@
   "buffer_font_features": {
     "calt": false
   },
-  "relative_line_numbers": true,
   "scrollbar": {
     "show": "never"
   },
