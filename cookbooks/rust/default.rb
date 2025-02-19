@@ -1,8 +1,5 @@
 case node[:platform]
 when 'arch'
-  package 'rust'
-  package 'cargo'
-
   include_cookbook 'yaourt'
   yaourt 'rust-src'
 else
@@ -39,9 +36,6 @@ when 'darwin'
     not_if 'test -d /opt/homebrew/opt/openssl/'
   end
   cargo 'cargo-edit'
-  execute 'ln -s $HOME/.cargo/bin/ /opt/homebrew/opt/rust' do
-    not_if 'test -d /opt/homebrew/opt/rust/'
-  end
 when 'ubuntu'
   execute 'sudo apt install -y pkg-config libssl-dev' do
     not_if "dpkg -l | grep '^ii' | grep pkg-config"

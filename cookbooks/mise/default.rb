@@ -18,10 +18,15 @@ end
 
 # node
 execute "mise use --global node@latest" do
-  not_if "mise ls node"
+  not_if "mise which node"
 end
 execute "mise use --global pnpm@latest -y" do
   not_if "which pnpm"
+end
+
+# rust
+execute "mise use --global rust@latest" do
+  not_if "mise which rust"
 end
 
 # terraform
