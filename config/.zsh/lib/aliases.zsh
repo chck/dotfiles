@@ -5,8 +5,6 @@ alias ....="cd ../../.."
 alias g="git"
 alias s="git status -sb"
 
-# cargo-script
-alias rust="cargo-script"
 # bat replaces cat
 alias cat="bat"
 # eza replaces ls
@@ -41,3 +39,5 @@ alias ghc="gh copilot"
 alias pn="pnpm"
 # tailspin replaces tail
 alias tail="tspin"
+# rust-stakeholder
+alias sl="rust-stakeholder --dev-type data-science --jargon high"

@@ -64,9 +64,13 @@ define :user_service, action: [] do
   end
 end
 
-define :cargo, action: [] do
+define :cargo, git_url: nil, action: [] do
   name = params[:name]
-  execute "cargo install --force --verbose #{name}" do
+  git_url = params[:git_url]
+  command = ["cargo", "install", "--force", "--verbose"]
+  command << "--git #{git_url}" if git_url
+  command << name
+  execute command.join(" ") do
     not_if %Q[cargo install --list | grep "^#{name}"]
   end
 end
