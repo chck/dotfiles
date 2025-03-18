@@ -47,6 +47,13 @@ when 'ubuntu'
   cargo 'bottom'
 end
 cargo 'rust-script'
+execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
+# rust-script
+alias rust="rust-script"
+EOF
+''' do
+  not_if 'grep rust-script ~/.zsh/lib/aliases.zsh'
+end
 cargo 'cargo-update'
 cargo 'cargo-binstall'
 cargo 'cargo-deps'
@@ -62,12 +69,14 @@ cargo 'jless'
 cargo 'hyperfine'
 cargo 'wasm-pack'
 cargo 'git-delta'
-
+cargo 'rust-stakeholder' do
+  git_url "https://github.com/giacomo-b/rust-stakeholder.git"
+end
 execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
-# cargo-script
-alias rust="cargo-script"
+# rust-stakeholder
+alias sl="rust-stakeholder --dev-type data-science --jargon high"
 EOF
 ''' do
-  not_if 'grep cargo-script ~/.zsh/lib/aliases.zsh'
+  not_if 'grep rust-stakeholder ~/.zsh/lib/aliases.zsh'
 end
 
