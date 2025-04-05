@@ -32,7 +32,7 @@
     "custom": 1.5
   },
   "theme": {
-    "mode": "system",
+    "mode": "dark",
     "light": "Andromeda",
     "dark": "One Dark"
   },
