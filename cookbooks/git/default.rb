@@ -25,7 +25,7 @@ EOF
   execute 'brew install pinentry-mac' do
     not_if 'which pinentry-mac'
   end
-  execute 'echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf' do
+  execute 'mkdir -p ~/.gnupg && echo "pinentry-program $(which pinentry-mac)" >> ~/.gnupg/gpg-agent.conf' do
     not_if 'grep pinentry-program ~/.gnupg/gpg-agent.conf'
   end
   execute 'brew install pass' do
