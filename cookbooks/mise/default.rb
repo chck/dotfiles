@@ -22,7 +22,7 @@ end
 execute "mise use --g python@latest" do
   not_if "mise ls python"
 end
-execute "mise use -g poetry@latest" do
+execute "mise plugin add poetry && mise use -g poetry@latest" do
   not_if "which poetry"
 end
 execute "poetry config virtualenvs.in-project true" do
