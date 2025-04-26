@@ -1,3 +1,8 @@
-github_binary 'gibo' do
-  raw_url 'https://raw.github.com/simonwhitaker/gibo/master/gibo'
+case node[:platform]
+when 'darwin'
+  execute 'brew install gibo' do
+    not_if 'which gibo'
+  end
+else
+  raise NotImplementedError
 end
