@@ -9,7 +9,7 @@ when 'ubuntu'
   end
   execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
 # direnv
-export EDITOR=nvim
+export EDITOR=vim
 eval "$(direnv hook zsh)"
 EOF
 ''' do

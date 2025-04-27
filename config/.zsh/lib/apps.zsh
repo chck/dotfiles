@@ -11,7 +11,7 @@ export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 export COMPOSE_BAKE=true
 # direnv
-export EDITOR=nvim
+export EDITOR=vim
 eval "$(direnv hook zsh)"
 # pre-commit
 export PRE_COMMIT_COLOR=always
