@@ -15,6 +15,8 @@ if dein#load_state(s:dein_dir)
    call dein#add('roxma/nvim-yarp')
    call dein#add('roxma/vim-hug-neovim-rpc')
  endif
+ " https://github.com/Shougo/deoplete.nvim/issues/932#issuecomment-462201419
+ let g:python3_host_prog = expand('~/.local/share/mise/installs/python/latest/bin/python')
  let g:deoplete#enable_at_startup = 1
 
  call dein#load_toml('~/.config/nvim/dein.toml', {'lazy': 0})
