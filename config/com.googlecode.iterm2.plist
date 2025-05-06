@@ -6,6 +6,8 @@
 	<true/>
 	<key>AlwaysAcceptFirstMouse</key>
 	<false/>
+	<key>ClickToSelectCommand</key>
+	<false/>
 	<key>Default Bookmark Guid</key>
 	<string>DF77A88F-940D-47B2-9314-D86D513590FB</string>
 	<key>DeleteProfile_SilenceUntil</key>
@@ -596,6 +598,8 @@
 					<string>[1;5F</string>
 				</dict>
 			</dict>
+			<key>Load Shell Integration Automatically</key>
+			<true/>
 			<key>Mouse Reporting</key>
 			<true/>
 			<key>Name</key>
