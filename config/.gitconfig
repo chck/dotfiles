@@ -66,3 +66,6 @@
 	enabled = true
 [credential "https://dev.azure.com"]
 	useHttpPath = true
+[url "https://github.com:"]
+	insteadOf = git@github.com
+	pushInsteadOf = git@github.com
