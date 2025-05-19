@@ -1,5 +1,5 @@
 # Mise
-eval "$(~/.local/bin/mise activate zsh)"
+eval "$(mise activate zsh)"
 
 # Rust
 export PATH=$HOME/.cargo/bin:$PATH
