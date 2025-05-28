@@ -71,3 +71,7 @@ github = "junegunn/fzf"
 use = ["shell/completion.zsh", "shell/key-bindings.zsh"]
 apply = ["defer", "fzf-install", "fzf-source"]
 
+# time tracking for commands
+[plugins.wakatime]
+github = "wbingli/zsh-wakatime"
+
