@@ -6,7 +6,8 @@ define :dotfile, source: nil, destination: nil do
   dest = params[:destination] ||= ENV['HOME']
   source = params[:source] || params[:name]
   filepath = File.join(dest, params[:name])
-  Dir.mkdir(dest) unless File.exist?(dest)
+  filedir = File.dirname(filepath)
+  Dir.mkdir(filedir) unless Dir.exist?(filedir)
   File.delete(filepath) if File.exist?(filepath) && params[:name] == ".zshrc"
   link filepath do
     to File.expand_path("../../../config/#{source}", __FILE__)
