@@ -1,3 +1,5 @@
+# XDG configuration path
+export XDG_CONFIG_HOME="$HOME/.config"
 # Google Cloud SDK
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
