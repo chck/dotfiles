@@ -42,3 +42,26 @@
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
 
+# Font Settings
+font-feature = "-calt"
+font-feature = "-dlig"
+font-feature = "-liga"
+font-size = 18
+
+# Window Settings
+# macos-titlebar-style = "transparent"
+macos-titlebar-style = hidden
+macos-non-native-fullscreen = true
+window-padding-balance = true
+window-padding-x = 0
+window-padding-y = 0
+window-theme = "ghostty"
+background-opacity = 0.90
+
+# TERM
+term = "xterm-256color"
+
+# Quick Terminal
+quick-terminal-position = "top"
+quick-terminal-screen = "main"
+quick-terminal-animation-duration = 0
