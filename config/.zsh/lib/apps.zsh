@@ -17,3 +17,5 @@ export EDITOR=vim
 eval "$(direnv hook zsh)"
 # pre-commit
 export PRE_COMMIT_COLOR=always
+# ghq
+export GHQ_ROOT=~/Works
