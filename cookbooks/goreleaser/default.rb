@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew install goreleaser/tap/goreleaser' do
+  execute 'brew install --cask goreleaser' do
     not_if 'which goreleaser'
   end
 else
