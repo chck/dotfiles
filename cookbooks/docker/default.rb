@@ -13,8 +13,6 @@ when 'darwin'
   package 'qemu' do
     not_if 'which qemu-system-aarch64'
   end
-  dotfile 'docker.yaml'
-  dotfile 'docker-vz.yaml'
 when 'ubuntu'
   execute 'sudo apt install -y ca-certificates curl gnupg lsb-release' do
     not_if "dpkg -l | grep '^ii' | grep ca-certificates"
