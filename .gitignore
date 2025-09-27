@@ -1,1 +1,4 @@
 bin/mitamae*
+
+# Karabiner Elements
+config/karabiner/automatic_backups/
