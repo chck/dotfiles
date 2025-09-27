@@ -14,7 +14,7 @@ export PATH=$HOME/.deno/bin:$PATH
 
 # JavaScript
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/.local/bin:$PATH"
-export PNPM_HOME="~/.local/share/mise/installs/pnpm/latest/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
