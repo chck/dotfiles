@@ -21,7 +21,7 @@
 	dft = difftool
   	gp = grep -n
   	lg = log --graph --pretty=oneline --decorate --date=short --abbrev-commit --branches
-  	c = commit -v
+  	c = cz --disable-emoji
 	pullall = !git pull --rebase && git submodule update --init --recursive
 	dlog = "!f() { GIT_EXTERNAL_DIFF=difft git log -p --ext-diff $@; }; f"
 [diff]
