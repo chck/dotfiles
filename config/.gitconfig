@@ -1,7 +1,7 @@
 [user]
 	name = chck
 	email = shimekiri.today@gmail.com
-	signingkey = BBF1BDE45E358FC4
+	signingKey = E9BF122D
 [include]
   	path = .gitconfig.local
 [color]
@@ -70,3 +70,5 @@
 [url "https://github.com:"]
 	insteadOf = git@github.com
 	pushInsteadOf = git@github.com
+[credential "https://git.overleaf.com"]
+	provider = generic
