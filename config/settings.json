@@ -14,8 +14,7 @@
     "default_model": {
       "provider": "copilot_chat",
       "model": "gpt-4o"
-    },
-    "version": "2"
+    }
   },
   "base_keymap": "JetBrains",
   "vim_mode": true,
@@ -34,7 +33,7 @@
   },
   "theme": {
     "mode": "dark",
-    "light": "Andromeda",
+    "light": "One Light",
     "dark": "One Dark"
   },
   "inlay_hints": {
@@ -50,9 +49,6 @@
     "blinking": "terminal_controlled",
     "copy_on_select": true,
     "font_family": "JetBrainsMono Nerd Font",
-    "toolbar": {
-      "title": true
-    },
     "line_height": {
       "custom": 1.5
     },
@@ -64,10 +60,10 @@
       "format_on_save": "on",
       "formatter": [
         {
-          "code_actions": {
-            "source.organizeImports.ruff": true,
-            "source.fixAll.ruff": true
-          }
+          "code_action": "source.organizeImports.ruff"
+        },
+        {
+          "code_action": "source.fixAll.ruff"
         },
         {
           "language_server": {
@@ -79,10 +75,10 @@
   },
   "lsp": {
     "rust-analyzer": {
-      "check": {
-        "extraArgs": ["--target-dir", "target/ra"]
-      },
       "initialization_options": {
+        "rust": {
+          "analyzerTargetDir": true
+        },
         "check": {
           "command": "check"
         }
