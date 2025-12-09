@@ -5,25 +5,27 @@
 	<key>AIFeatureFunctionCalling</key>
 	<true/>
 	<key>AIFeatureHostedCodeInterpeter</key>
-	<true/>
+	<false/>
 	<key>AIFeatureHostedFileSearch</key>
-	<true/>
+	<false/>
 	<key>AIFeatureHostedWebSearch</key>
-	<true/>
+	<false/>
 	<key>AIFeatureStreamingResponses</key>
 	<true/>
 	<key>AITermAPI</key>
-	<integer>2</integer>
+	<integer>3</integer>
 	<key>AIVectorStore</key>
+	<integer>0</integer>
+	<key>AIVendor</key>
 	<integer>1</integer>
 	<key>AiMaxTokens</key>
-	<integer>1000000</integer>
+	<integer>1048576</integer>
 	<key>AiModel</key>
-	<string>gpt-4.1</string>
+	<string>gemini-2.5-flash</string>
 	<key>AiResponseMaxTokens</key>
-	<integer>32768</integer>
+	<integer>65536</integer>
 	<key>AitermURL</key>
-	<string>https://api.openai.com/v1/responses</string>
+	<string>https://generativelanguage.googleapis.com/v1beta/models/{{MODEL}}</string>
 	<key>AlternateMouseScroll</key>
 	<true/>
 	<key>AlwaysAcceptFirstMouse</key>
