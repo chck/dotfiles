@@ -26,9 +26,9 @@ end
 execute "mise plugin add poetry && mise use -g poetry@latest" do
   not_if "which poetry"
 end
-execute "poetry config virtualenvs.in-project true" do
-  not_if "poetry config virtualenvs.in-project | grep true"
-end
+#execute "poetry config virtualenvs.in-project true" do
+#  not_if "poetry config virtualenvs.in-project | grep true"
+#end
 execute "mise plugins install -y uv && mise use --global uv@latest" do
   not_if "which uv"
 end
