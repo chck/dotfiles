@@ -147,3 +147,5 @@ include_cookbook 'freeze'
 include_cookbook 'amazon-photos'
 include_cookbook 'orb'
 include_cookbook 'claude'
+include_cookbook 'ollama'
+
