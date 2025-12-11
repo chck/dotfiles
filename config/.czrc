@@ -1,4 +1,5 @@
 {
   "path": "cz-git",
+  "useAI": true,
   "$schema": "https://raw.githubusercontent.com/Zhengqbbb/cz-git/refs/tags/v1.12.0/docs/public/schema/cz-git.json"
 }
