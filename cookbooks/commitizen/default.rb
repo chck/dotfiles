@@ -11,4 +11,6 @@ end
 execute 'pnpm i -g czg' do
   not_if "pnpm ls -g --depth=0 | grep czg"
 end
-dotfile ".czrc"
+dotfile ".czrc" do
+  destination "#{ENV['HOME']}/.config"
+end
