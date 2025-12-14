@@ -8,7 +8,7 @@ dotfile ".git-cz.json"
 execute "pnpm i -g cz-git" do
   not_if "pnpm ls -g --depth=0 | grep cz-git"
 end
-execute 'brew install czg' do
-  not_if 'which czg'
+execute 'pnpm i -g czg' do
+  not_if "pnpm ls -g --depth=0 | grep czg"
 end
 dotfile ".czrc"
