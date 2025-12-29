@@ -739,7 +739,7 @@
 			<key>Load Shell Integration Automatically</key>
 			<true/>
 			<key>Mouse Reporting</key>
-			<true/>
+			<false/>
 			<key>Name</key>
 			<string>Default</string>
 			<key>Non Ascii Font</key>
