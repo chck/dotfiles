@@ -28,3 +28,8 @@ function png2svg() {
   potrace -s /tmp/output.ppm -o ${png_image%.png}.svg
   rm /tmp/output.ppm
 }
+
+function gcg() {
+  git commit -m "$(claude -p "Look at the staged git changes and create a summarizing git commit title. Follow the style conventional commits. Only respond with the title and no affirmation.")"
+}
+
