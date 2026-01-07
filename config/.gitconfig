@@ -72,3 +72,5 @@
 	pushInsteadOf = git@github.com
 [credential "https://git.overleaf.com"]
 	provider = generic
+[rebase]
+	autoStash = true
