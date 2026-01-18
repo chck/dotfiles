@@ -63,3 +63,7 @@ EOF
 ''' do
   not_if 'grep "# Docker" ~/.zsh/lib/aliases.zsh'
 end
+
+execute '''sudo ln -sf ~/.rd/bin/docker /usr/local/bin/docker''' do
+  not_if 'test -f /usr/local/bin/docker'
+end
