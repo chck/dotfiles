@@ -11,3 +11,13 @@ hook_add = '''
     let g:coc_global_extensions = ['coc-rust-analyzer']
 '''
 
+[[plugins]]
+repo = 'vim-airline/vim-airline'
+
+# themes: https://github.com/vim-airline/vim-airline/wiki/Screenshots
+[[plugins]]
+repo = 'vim-airline/vim-airline-themes'
+hook_add = '''
+    let g:airline_theme = 'lucius'
+'''
+
