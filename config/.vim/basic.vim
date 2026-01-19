@@ -6,3 +6,6 @@ set belloff=all                    " Turn off the bell sound
 set backspace=indent,eol,start     " Enable to delete by backspace key
 set clipboard^=unnamed,unnamedplus " Enable to copyable to clipboard
 set shiftwidth=2                   " Specify tab width while auto indentation
+set expandtab                      " Convert tabs to spaces
+set autoindent                     " Auto-indent new lines
+set smartindent                    " Smart indentation for code blocks
