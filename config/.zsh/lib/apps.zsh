@@ -20,4 +20,4 @@ export PRE_COMMIT_COLOR=always
 # ghq
 export GHQ_ROOT=~/Works
 # Antigravity
-export PATH="/Users/chck/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
