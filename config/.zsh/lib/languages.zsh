@@ -1,9 +1,6 @@
 # Mise
 eval "$(mise activate zsh)"
 
-# Rust
-export PATH=$HOME/.cargo/bin:$PATH
-
 # Go
 export GOPATH=$HOME/go
 export GOBIN=$GOPATH/1.20.5/bin

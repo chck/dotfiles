@@ -26,9 +26,6 @@ unless ENV['PATH'].include?("#{ENV['HOME']}/.cargo/bin:")
 end
 
 package 'cmake'
-execute 'rustup toolchain install nightly' do
-  not_if "rustup toolchain list | grep nightly"
-end
 cargo 'rustfmt'
 case node[:platform]
 when 'darwin'
