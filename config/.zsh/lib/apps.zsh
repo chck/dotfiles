@@ -10,6 +10,7 @@ export CLOUDSDK_PYTHON=python3
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 # Docker
 export DOCKER_BUILDKIT=1
+export DOCKER_HOST=unix://$HOME/.rd/docker.sock
 export COMPOSE_DOCKER_CLI_BUILD=1
 export COMPOSE_BAKE=true
 # direnv
