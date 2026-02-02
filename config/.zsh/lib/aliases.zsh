@@ -8,7 +8,7 @@ alias s="git status -sb"
 # bat replaces cat
 alias cat="bat"
 # eza replaces ls
-alias ls="eza -a"
+alias ls="eza -a -I='.DS_Store'"
 # procs replaces ps
 alias ps="procs"
 # lazydocker
