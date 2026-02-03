@@ -33,3 +33,6 @@ function gcg() {
   git commit -m "$(claude -p "Look at the staged git changes and create a summarizing git commit title. Follow the style conventional commits. Only respond with the title and no affirmation.")"
 }
 
+function wt() {
+  cd $(git-wt | fzf | awk '{print $1}')
+}
