@@ -131,8 +131,10 @@
 	</dict>
 	<key>HapticFeedbackForEsc</key>
 	<false/>
-	<key>HideMenuBarInFullscreen</key>
+	<key>HideFromDockAndAppSwitcher</key>
 	<true/>
+	<key>HideMenuBarInFullscreen</key>
+	<false/>
 	<key>HotkeyMigratedFromSingleToMulti</key>
 	<true/>
 	<key>New Bookmarks</key>
@@ -1266,7 +1268,7 @@
 					<key>auto-rainbow style</key>
 					<integer>0</integer>
 					<key>font</key>
-					<string>.SFNS-Regular 12</string>
+					<string>.AppleSystemUIFont 12</string>
 					<key>remove empty components</key>
 					<false/>
 				</dict>
