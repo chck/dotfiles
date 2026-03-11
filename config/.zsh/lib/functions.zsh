@@ -30,7 +30,7 @@ function png2svg() {
 }
 
 function gcg() {
-  git commit -m "$(claude -p "Look at the staged git changes and create a summarizing git commit title. Follow the style conventional commits. Only respond with the title and no affirmation.")"
+  git commit -m "$(claude -p "Look at the staged git changes and create a summarizing git commit title. Follow the style of conventional commits. Only respond with the title. Do not use any markdown formatting or backticks. Output the raw text only.")"
 }
 
 function wt() {
