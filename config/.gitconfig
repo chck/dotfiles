@@ -72,7 +72,7 @@
 	provider = generic
 [rebase]
 	autoStash = true
-[credential "https://dev.azure.com"]
-	useHttpPath = true
 [wt]
 	basedir = ~/Works
+[credential "https://dev.azure.com"]
+	useHttpPath = true
