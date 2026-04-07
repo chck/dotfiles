@@ -1,230 +1,410 @@
 {
-    "global": {
-        "enable_notification_window": false,
-        "show_in_menu_bar": false
-    },
-    "profiles": [
+  "global": {
+    "enable_notification_window": false,
+    "show_in_menu_bar": false
+  },
+  "profiles": [
+    {
+      "complex_modifications": {
+        "rules": [
+          {
+            "description": "New Rule (change sinble quote to double quote, semicolon to colon, hyphen to underscore",
+            "manipulators": [
+              {
+                "from": {
+                  "key_code": "quote"
+                },
+                "to": {
+                  "key_code": "quote",
+                  "modifiers": [
+                    "left_shift"
+                  ]
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "quote",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "quote"
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "quote",
+                  "modifiers": {
+                    "mandatory": [
+                      "right_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "quote"
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "semicolon"
+                },
+                "to": {
+                  "key_code": "semicolon",
+                  "modifiers": [
+                    "left_shift"
+                  ]
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "semicolon"
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": [
+                      "right_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "semicolon"
+                },
+                "type": "basic"
+              }
+            ]
+          }
+        ]
+      },
+      "devices": [
         {
-            "complex_modifications": {
-                "rules": [
-                    {
-                        "description": "New Rule (change sinble quote to double quote, semicolon to colon, hyphen to underscore",
-                        "manipulators": [
-                            {
-                                "from": { "key_code": "quote" },
-                                "to": {
-                                    "key_code": "quote",
-                                    "modifiers": ["left_shift"]
-                                },
-                                "type": "basic"
-                            },
-                            {
-                                "from": {
-                                    "key_code": "quote",
-                                    "modifiers": {
-                                        "mandatory": ["left_shift"],
-                                        "optional": ["any"]
-                                    }
-                                },
-                                "to": { "key_code": "quote" },
-                                "type": "basic"
-                            },
-                            {
-                                "from": {
-                                    "key_code": "quote",
-                                    "modifiers": {
-                                        "mandatory": ["right_shift"],
-                                        "optional": ["any"]
-                                    }
-                                },
-                                "to": { "key_code": "quote" },
-                                "type": "basic"
-                            },
-                            {
-                                "from": { "key_code": "semicolon" },
-                                "to": {
-                                    "key_code": "semicolon",
-                                    "modifiers": ["left_shift"]
-                                },
-                                "type": "basic"
-                            },
-                            {
-                                "from": {
-                                    "key_code": "semicolon",
-                                    "modifiers": {
-                                        "mandatory": ["left_shift"],
-                                        "optional": ["any"]
-                                    }
-                                },
-                                "to": { "key_code": "semicolon" },
-                                "type": "basic"
-                            },
-                            {
-                                "from": {
-                                    "key_code": "semicolon",
-                                    "modifiers": {
-                                        "mandatory": ["right_shift"],
-                                        "optional": ["any"]
-                                    }
-                                },
-                                "to": { "key_code": "semicolon" },
-                                "type": "basic"
-                            }
-                        ]
-                    }
-                ]
+          "identifiers": {
+            "is_keyboard": true,
+            "product_id": 835,
+            "vendor_id": 1452
+          },
+          "simple_modifications": [
+            {
+              "from": {
+                "key_code": "caps_lock"
+              },
+              "to": [
+                {
+                  "key_code": "left_control"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "fn_function_keys": [
+            {
+              "from": {
+                "key_code": "f1"
+              },
+              "to": [
+                {
+                  "key_code": "vk_none"
+                }
+              ]
             },
-            "devices": [
+            {
+              "from": {
+                "key_code": "f2"
+              },
+              "to": [
                 {
-                    "identifiers": {
-                        "is_keyboard": true,
-                        "product_id": 835,
-                        "vendor_id": 1452
-                    },
-                    "simple_modifications": [
-                        {
-                            "from": { "key_code": "caps_lock" },
-                            "to": [{ "key_code": "left_control" }]
-                        }
-                    ]
-                },
-                {
-                    "fn_function_keys": [
-                        {
-                            "from": { "key_code": "f1" },
-                            "to": [{ "key_code": "vk_none" }]
-                        },
-                        {
-                            "from": { "key_code": "f2" },
-                            "to": [{ "key_code": "vk_none" }]
-                        },
-                        {
-                            "from": { "key_code": "f3" },
-                            "to": [{ "key_code": "vk_none" }]
-                        }
-                    ],
-                    "identifiers": {
-                        "is_keyboard": true,
-                        "is_pointing_device": true,
-                        "product_id": 591,
-                        "vendor_id": 1452
-                    },
-                    "ignore": false,
-                    "simple_modifications": [
-                        {
-                            "from": { "key_code": "end" },
-                            "to": [{ "key_code": "vk_none" }]
-                        },
-                        {
-                            "from": { "key_code": "home" },
-                            "to": [{ "key_code": "delete_or_backspace" }]
-                        },
-                        {
-                            "from": { "key_code": "insert" },
-                            "to": [{ "key_code": "delete_forward" }]
-                        },
-                        {
-                            "from": { "key_code": "page_down" },
-                            "to": [{ "key_code": "vk_none" }]
-                        },
-                        {
-                            "from": { "key_code": "page_up" },
-                            "to": [{ "key_code": "return_or_enter" }]
-                        },
-                        {
-                            "from": { "key_code": "print_screen" },
-                            "to": [{ "key_code": "vk_none" }]
-                        }
-                    ],
-                    "treat_as_built_in_keyboard": true
-                },
-                {
-                    "identifiers": {
-                        "is_keyboard": true,
-                        "product_id": 591,
-                        "vendor_id": 1452
-                    },
-                    "simple_modifications": [
-                        {
-                            "from": { "key_code": "caps_lock" },
-                            "to": [{ "key_code": "left_control" }]
-                        },
-                        {
-                            "from": { "key_code": "home" },
-                            "to": [{ "key_code": "delete_or_backspace" }]
-                        },
-                        {
-                            "from": { "key_code": "insert" },
-                            "to": [{ "key_code": "f14" }]
-                        },
-                        {
-                            "from": { "key_code": "page_down" },
-                            "to": [{ "key_code": "up_arrow" }]
-                        },
-                        {
-                            "from": { "key_code": "page_up" },
-                            "to": [{ "key_code": "return_or_enter" }]
-                        },
-                        {
-                            "from": { "key_code": "print_screen" },
-                            "to": [{ "key_code": "f13" }]
-                        }
-                    ]
-                },
-                {
-                    "identifiers": {
-                        "is_keyboard": true,
-                        "product_id": 598,
-                        "vendor_id": 1452
-                    },
-                    "simple_modifications": [
-                        {
-                            "from": { "key_code": "end" },
-                            "to": [{ "key_code": "backslash" }]
-                        }
-                    ]
-                },
-                {
-                    "identifiers": {
-                        "device_address": "c6-06-52-a0-26-4d",
-                        "is_keyboard": true,
-                        "is_pointing_device": true
-                    },
-                    "ignore": false
-                },
-                {
-                    "identifiers": {
-                        "is_keyboard": true,
-                        "is_pointing_device": true,
-                        "product_id": 1,
-                        "vendor_id": 14477
-                    },
-                    "ignore": false,
-                    "simple_modifications": [
-                        {
-                            "from": { "consumer_key_code": "volume_decrement" },
-                            "to": [{ "key_code": "vk_none" }]
-                        },
-                        {
-                            "from": { "consumer_key_code": "volume_increment" },
-                            "to": [{ "key_code": "vk_none" }]
-                        }
-                    ]
+                  "key_code": "vk_none"
                 }
-            ],
-            "name": "Default",
-            "selected": true,
-            "simple_modifications": [
+              ]
+            },
+            {
+              "from": {
+                "key_code": "f3"
+              },
+              "to": [
                 {
-                    "from": { "key_code": "caps_lock" },
-                    "to": [{ "key_code": "left_control" }]
-                },
-                {
-                    "from": { "key_code": "print_screen" },
-                    "to": [{ "key_code": "vk_none" }]
+                  "key_code": "vk_none"
                 }
-            ],
-            "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }
+              ]
+            }
+          ],
+          "identifiers": {
+            "is_keyboard": true,
+            "is_pointing_device": true,
+            "product_id": 591,
+            "vendor_id": 1452
+          },
+          "ignore": false,
+          "simple_modifications": [
+            {
+              "from": {
+                "key_code": "end"
+              },
+              "to": [
+                {
+                  "key_code": "vk_none"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "home"
+              },
+              "to": [
+                {
+                  "key_code": "delete_or_backspace"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "insert"
+              },
+              "to": [
+                {
+                  "key_code": "delete_forward"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "page_down"
+              },
+              "to": [
+                {
+                  "key_code": "vk_none"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "page_up"
+              },
+              "to": [
+                {
+                  "key_code": "return_or_enter"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "print_screen"
+              },
+              "to": [
+                {
+                  "key_code": "vk_none"
+                }
+              ]
+            }
+          ],
+          "treat_as_built_in_keyboard": true
+        },
+        {
+          "identifiers": {
+            "is_keyboard": true,
+            "product_id": 591,
+            "vendor_id": 1452
+          },
+          "simple_modifications": [
+            {
+              "from": {
+                "key_code": "caps_lock"
+              },
+              "to": [
+                {
+                  "key_code": "left_control"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "home"
+              },
+              "to": [
+                {
+                  "key_code": "delete_or_backspace"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "insert"
+              },
+              "to": [
+                {
+                  "key_code": "f14"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "page_down"
+              },
+              "to": [
+                {
+                  "key_code": "up_arrow"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "page_up"
+              },
+              "to": [
+                {
+                  "key_code": "return_or_enter"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "print_screen"
+              },
+              "to": [
+                {
+                  "key_code": "f13"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "identifiers": {
+            "is_keyboard": true,
+            "product_id": 598,
+            "vendor_id": 1452
+          },
+          "simple_modifications": [
+            {
+              "from": {
+                "key_code": "end"
+              },
+              "to": [
+                {
+                  "key_code": "backslash"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "identifiers": {
+            "device_address": "c6-06-52-a0-26-4d",
+            "is_keyboard": true,
+            "is_pointing_device": true
+          },
+          "ignore": false
+        },
+        {
+          "identifiers": {
+            "is_keyboard": true,
+            "is_pointing_device": true,
+            "product_id": 1,
+            "vendor_id": 14477
+          },
+          "ignore": false,
+          "simple_modifications": [
+            {
+              "from": {
+                "consumer_key_code": "volume_decrement"
+              },
+              "to": [
+                {
+                  "key_code": "vk_none"
+                }
+              ]
+            },
+            {
+              "from": {
+                "consumer_key_code": "volume_increment"
+              },
+              "to": [
+                {
+                  "key_code": "vk_none"
+                }
+              ]
+            }
+          ]
         }
-    ]
+      ],
+      "name": "Default",
+      "selected": true,
+      "simple_modifications": [
+        {
+          "from": {
+            "key_code": "caps_lock"
+          },
+          "to": [
+            {
+              "key_code": "left_control"
+            }
+          ]
+        },
+        {
+          "from": {
+            "key_code": "end"
+          },
+          "to": [
+            {
+              "key_code": "vk_none"
+            }
+          ]
+        },
+        {
+          "from": {
+            "key_code": "home"
+          },
+          "to": [
+            {
+              "key_code": "f20"
+            }
+          ]
+        },
+        {
+          "from": {
+            "key_code": "print_screen"
+          },
+          "to": [
+            {
+              "key_code": "vk_none"
+            }
+          ]
+        }
+      ],
+      "virtual_hid_keyboard": {
+        "keyboard_type_v2": "ansi"
+      }
+    }
+  ]
 }
