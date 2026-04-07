@@ -19,6 +19,11 @@ src/app_name
 └ __main__.py    ... Execution entry point (Application bootstrap and configuration)
 ```
 
+## Workflow
+- For any non-trivial implementation, use the `git-wt` skill to work in a worktree
+  - **When to apply:** before starting code changes, after planning is complete
+  - **Exceptions:** single-file minor edits (typos, comment additions), documentation-only changes
+
 ## Commands
 - Use cargo-make as command launcher, alias is `makers`
 - Show all commands: `makers help`
