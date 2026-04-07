@@ -34,5 +34,6 @@ function gcg() {
 }
 
 function wt() {
-  cd $(git-wt | fzf --header-lines=1 | awk '{if ($1 == "*") print $2; else print $1}')
+  local dir=$(git-wt | fzf --header-lines=1 | awk '{print ($1=="*") ? $2 : $1}')
+  [[ -n "$dir" ]] && cd "$dir"
 }
