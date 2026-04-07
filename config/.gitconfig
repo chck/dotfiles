@@ -57,7 +57,7 @@
 	required = true
 [credential]
 	credentialStore = gpg
-	helper = 
+	helper =
 	helper = /usr/local/share/gcm-core/git-credential-manager
 [gpg]
 	program = /opt/homebrew/bin/gpg
@@ -73,6 +73,7 @@
 [rebase]
 	autoStash = true
 [wt]
-	basedir = ~/Works
+	basedir = .worktrees
+	copy = .env
 [credential "https://dev.azure.com"]
 	useHttpPath = true
