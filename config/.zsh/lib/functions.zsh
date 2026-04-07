@@ -34,5 +34,5 @@ function gcg() {
 }
 
 function wt() {
-  cd $(git-wt | fzf | awk '{print $1}')
+  cd $(git-wt | fzf --header-lines=1 | awk '{if ($1 == "*") print $2; else print $1}')
 }
