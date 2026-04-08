@@ -41,3 +41,5 @@ alias pn="pnpm"
 alias tail="tspin"
 # rust-stakeholder
 alias sl="rust-stakeholder --dev-type data-science --jargon high"
+# claude
+alias c="claude"
