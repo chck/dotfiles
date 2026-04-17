@@ -24,6 +24,7 @@ roles/base/default.rb             ← cross-platform role (rare)
    - Any post-install config: aliases, env vars, dotfiles to symlink?
 
 2. **Create `cookbooks/<app-name>/default.rb`** following the patterns below.
+   - Only create `files/` and `templates/` subdirectories if the cookbook actually uses them. Do not create them with `.keep` files just for structure.
 
 3. **Add to role** — append `include_cookbook '<app-name>'` to the appropriate role file:
    - `roles/darwin/default.rb` — macOS-only or GUI apps
