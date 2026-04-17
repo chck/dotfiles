@@ -1,86 +1,81 @@
 ---
 name: git-wt
 description: >
-  git-wt コマンドで Git worktree を作成し、作業ディレクトリを分離して実装を行う。
-  作業完了後はユーザー確認を経て worktree を削除する。
-  ユーザーが「worktree」「ワークツリー」「ブランチを分けて」「wt で」など明示的に指定した場合にのみ起動する。
+  Use the git-wt command to create an isolated Git worktree for a task, keeping the main branch clean.
+  After finishing, clean up the worktree based on whether changes exist.
+  Only trigger when the user explicitly requests worktree isolation — e.g., "use a worktree", "use wt", "work on a separate branch", "isolate this in a worktree".
 ---
 
-# Git Worktree
+# Git Worktree Workflow
 
-`git-wt` で worktree を作成し、メインブランチを汚さず作業する。
-失敗しても `git wt -d` で綺麗に元に戻せる。
+Use `git-wt` to create a worktree and do all work there, keeping the main branch untouched.
+If anything goes wrong, `git wt -d` cleanly removes the worktree and branch.
 
-## 実行手順
+## Step 1: Create the worktree
 
-### Step 1: worktree を作成する
-
-タスク内容からブランチ名を決め、worktree を作成する。
+Choose a branch name from the task, then run:
 
 ```bash
 git wt <branch-name> --nocd
 ```
 
-`.worktrees/<branch-name>/` 配下に worktree が作成され、パスが出力される。
-出力されたパスを `WORKTREE_PATH` として記録する。
+The worktree is created at `.worktrees/<branch-name>/`. Record the printed path as `WORKTREE_PATH`.
 
-### Step 2: worktree 内で作業する
+## Step 2: Do all work inside the worktree
 
-以降の操作はすべて `WORKTREE_PATH` 配下で行う。
+Every operation must target `WORKTREE_PATH`:
 
-- Read/Edit/Write ツール: `$WORKTREE_PATH/src/...` のように絶対パスで指定
-- Bash: `cd $WORKTREE_PATH && <command>`
+- Read/Edit/Write tools: use absolute paths like `$WORKTREE_PATH/src/...`
+- Bash commands: `cd $WORKTREE_PATH && <command>`
 
-### Step 3: 完了報告
+## Step 3: Report completion
 
-作業完了後、ユーザーに以下を伝える:
-- 変更ファイル一覧と概要
-- worktree パス
-- マージ方法（例: `cd $WORKTREE_PATH && git push -u origin <branch-name>` → PR作成）
+When done, tell the user:
+- What files changed and a brief summary
+- The worktree path
+- How to merge (e.g., `cd $WORKTREE_PATH && git push -u origin <branch-name>` → open a PR)
 
-### Step 4: クリーンアップ
+## Step 4: Clean up
 
-`claude -w` の公式挙動に合わせ、変更の有無でクリーンアップを分岐する。
+### No changes (nothing committed or modified)
 
-#### 変更なし（未コミット・未変更）の場合
-
-worktree とブランチを自動削除する。ユーザー確認は不要。
+Delete automatically — no need to ask the user.
 
 ```bash
 git wt -d <branch-name>
 ```
 
-#### 変更またはコミットがある場合
+### Changes or commits exist
 
-ユーザーに「保持」か「削除」かを確認する。
+Ask the user: **keep** or **delete**?
 
-- **保持**: worktree とブランチをそのまま残す。後で `cd $WORKTREE_PATH` で戻れることを伝える。
-- **削除**: 未コミットの変更とコミットがすべて破棄されることを警告した上で削除する。
+- **Keep**: leave the worktree and branch as-is. Let the user know they can return with `cd $WORKTREE_PATH`.
+- **Delete**: warn that uncommitted changes and commits will be lost, then delete only if the user confirms.
 
 ```bash
-# 通常削除（マージ済みブランチ）
+# Normal delete (branch already merged)
 git wt -d <branch-name>
 
-# 強制削除（未マージの変更がある場合、ユーザーが明示的に指示した場合のみ）
+# Force delete (unmerged changes — only if user explicitly requests)
 git wt -D <branch-name>
 ```
 
-## ブランチ命名規則
+## Branch naming
 
-| 種別 | プレフィックス | 例 |
-|-----|-------------|-----|
-| 機能追加・変更 | `feat/` | `feat/add-dark-mode` |
-| バグ修正 | `fix/` | `fix/image-upload-error` |
+| Type | Prefix | Example |
+|------|--------|---------|
+| Feature / change | `feat/` | `feat/add-dark-mode` |
+| Bug fix | `fix/` | `fix/image-upload-error` |
 
-feat/, fix/ いずれかを判断し、issue番号とリンクする場合は
-feat/16-add-dark-mode, fix/20-image-upload-error のようにissue番号を含めること
+When linked to an issue, include the issue number: `feat/16-add-dark-mode`, `fix/20-image-upload-error`.
 
-## 複数エージェントの並行作業
+## Parallel multi-agent work
 
-Agent ツールで複数サブエージェントを起動する場合、それぞれ別ブランチ名で worktree を作成する。
-各エージェントに worktree パスを明示的に伝える。
+When spawning multiple subagents with the Agent tool, give each its own branch and worktree:
 
 ```bash
 git wt feat/feature-a --nocd  # → .worktrees/feat/feature-a
 git wt feat/feature-b --nocd  # → .worktrees/feat/feature-b
 ```
+
+Pass each agent its explicit worktree path so they don't step on each other.
