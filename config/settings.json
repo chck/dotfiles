@@ -7,6 +7,18 @@
 // custom settings, run `zed: open default settings` from the
 // command palette
 {
+  "project_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "git_panel": {
+    "dock": "left"
+  },
   "agent_servers": {
     "github-copilot-cli": {
       "type": "registry"
@@ -25,6 +37,7 @@
     "provider": "ollama"
   },
   "agent": {
+    "dock": "right",
     "tool_permissions": {
       "default": "allow"
     },
