@@ -3,6 +3,7 @@ when 'darwin'
   execute 'brew install --cask claude' do
     not_if 'test -d /Applications/Claude.app/'
   end
+  dotfile ".claude/settings.json"
   dotfile ".claude/CLAUDE.md"
   dotfile ".claude/skills"
 else
