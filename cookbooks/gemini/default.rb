@@ -1,7 +1,7 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew install gemini-cli' do
-    not_if 'which gemini'
+  execute 'brew install --cask antigravity' do
+    not_if 'test -d /Applications/Antigravity.app/'
   end
   execute 'brew install --cask google-gemini' do
     not_if 'test -d /Applications/Gemini.app/'
