@@ -3,3 +3,5 @@
 .claude/settings.local.json
 .claude/worktrees/
 .superpowers/
+
+**/.claude/settings.local.json
