@@ -38,6 +38,8 @@
     "provider": "ollama"
   },
   "agent": {
+    "show_turn_stats": false,
+    "sidebar_side": "right",
     "dock": "right",
     "tool_permissions": {
       "default": "allow"
