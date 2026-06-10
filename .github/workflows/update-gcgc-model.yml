@@ -1,0 +1,48 @@
+name: Update gcgc Claude model
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'
+  workflow_dispatch:
+
+jobs:
+  update-model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Extract model names
+        id: model
+        run: |
+          CLAUDE_BIN=$(which claude)
+          LATEST=$(strings "$CLAUDE_BIN" | python3 -c "
+          import sys
+          lines = sys.stdin.read().split('\n')
+          for i, line in enumerate(lines):
+              if line.startswith('Co-Authored-By:') and i > 0:
+                  prev = lines[i-1].strip()
+                  if prev.startswith('Claude'):
+                      print(prev)
+                      break
+          ")
+          CURRENT=$(grep 'Co-Authored-By:' config/.zsh/lib/functions.zsh \
+            | sed 's/.*Co-Authored-By: \(.*\) <noreply.*/\1/' | head -1)
+          echo "latest=${LATEST}" >> "$GITHUB_OUTPUT"
+          echo "current=${CURRENT}" >> "$GITHUB_OUTPUT"
+          echo "Latest: ${LATEST}, Current: ${CURRENT}"
+
+      - name: Update and commit if changed
+        if: steps.model.outputs.latest != '' && steps.model.outputs.latest != steps.model.outputs.current
+        run: |
+          LATEST="${{ steps.model.outputs.latest }}"
+          CURRENT="${{ steps.model.outputs.current }}"
+          sed -i "s|Co-Authored-By: ${CURRENT} <noreply@anthropic.com>|Co-Authored-By: ${LATEST} <noreply@anthropic.com>|" \
+            config/.zsh/lib/functions.zsh
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add config/.zsh/lib/functions.zsh
+          git commit -m "chore(zsh): update gcgc co-author model to ${LATEST}"
+          git push
