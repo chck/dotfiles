@@ -1,0 +1,19 @@
+{
+  "name": "chck",
+  "owner": {
+    "name": "chck"
+  },
+  "metadata": {
+    "description": "Personal Claude Code skills"
+  },
+  "plugins": [
+    {
+      "name": "personal-skills",
+      "source": "./plugins/personal-skills",
+      "description": "Personal workflow skills",
+      "author": {
+        "name": "chck"
+      }
+    }
+  ]
+}
