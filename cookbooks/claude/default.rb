@@ -6,7 +6,10 @@ when 'darwin'
   dotfile ".claude/settings.json"
   dotfile ".claude/CLAUDE.md"
   dotfile ".claude/skills"
-  dotfile ".claude/mcp.json"
+  # Claude Code CLI MCP servers (written to ~/.config/claude/.claude.json, not symlinkable)
+  execute "claude mcp add --scope user headroom uvx -- --from 'headroom-ai[all]' headroom mcp serve" do
+    not_if 'claude mcp list 2>/dev/null | grep -q headroom'
+  end
 else
   raise NotImplementedError
 end
