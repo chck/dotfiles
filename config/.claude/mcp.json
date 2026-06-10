@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "headroom": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "headroom-ai[mcp]",
+        "mcp",
+        "serve"
+      ]
+    }
+  }
+}
