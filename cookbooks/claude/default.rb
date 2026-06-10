@@ -21,3 +21,11 @@ EOF
 ''' do
   not_if 'grep claude ~/.zsh/lib/aliases.zsh'
 end
+
+execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
+# headroom
+export HEADROOM_TELEMETRY=off
+EOF
+''' do
+  not_if 'grep HEADROOM_TELEMETRY ~/.zsh/lib/apps.zsh'
+end

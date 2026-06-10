@@ -26,3 +26,5 @@ export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 eval "$(git wt --init zsh)"
 # claude
 export CLAUDE_CONFIG_DIR=$XDG_CONFIG_HOME/claude
+# headroom
+export HEADROOM_TELEMETRY=off
