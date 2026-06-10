@@ -43,5 +43,10 @@ src/app_name
 - No emojis unless asked
 - Reference code as `file_path:line_number`
 
+## Git
+- Commit messages describe **what changed**, not why or who asked
+  - Bad: `fix review comments`, `address feedback`, `PR response`
+  - Good: `fix: add null check to prevent undefined access`
+
 ## Security
 - Never read or commit files matching: `*.env`, `*.key`, `*.pem`, `*secret*`, `*password*`, `*credential*`
