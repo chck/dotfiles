@@ -6,7 +6,8 @@
       "Bash(npx *)",
       "Bash(node *)",
       "Bash(git *)",
-      "Bash(gh *)"
+      "Bash(gh *)",
+      "Bash(streber *)"
     ],
     "deny": [
       "Read(*.cfg)",
@@ -29,6 +30,7 @@
     ],
     "defaultMode": "auto"
   },
+  "tui": "fullscreen",
   "enabledPlugins": {
     "claude-code-wakatime@wakatime": true,
     "review-plugin@ailab": true,
