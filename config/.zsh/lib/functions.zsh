@@ -33,6 +33,14 @@ function gcg() {
   git commit -m "$(claude -p "Look at the staged git changes and create a summarizing git commit title. Follow the style of conventional commits. Only respond with the title. Do not use any markdown formatting or backticks. Output the raw text only.")"
 }
 
+function gcgc() {
+  local title
+  title="$(claude -p "Look at the staged git changes and create a summarizing git commit title. Follow the style of conventional commits. Only respond with the title. Do not use any markdown formatting or backticks. Output the raw text only.")"
+  git commit -m "${title}
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+}
+
 function wt() {
   local dir=$(git-wt | fzf --header-lines=1 | awk '{print ($1=="*") ? $2 : $1}')
   [[ -n "$dir" ]] && cd "$dir"
