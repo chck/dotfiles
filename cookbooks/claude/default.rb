@@ -5,7 +5,24 @@ when 'darwin'
   end
   dotfile ".claude/settings.json"
   dotfile ".claude/CLAUDE.md"
-  dotfile ".claude/skills"
+
+  # Personal skills are packaged as the "chck" marketplace plugin.
+  # Claude Code does not load skills from a symlinked directory, so ~/.claude/skills
+  # is not used. Instead, skills live in dotfiles as a marketplace source and are
+  # registered via the plugin CLI. Two steps are required on a new machine:
+  #   1. Register the marketplace (writes known_marketplaces.json)
+  #   2. Install the plugin (writes installed_plugins.json + populates the cache)
+  # settings.json already enables "personal-skills@chck": true.
+  chck_marketplace = File.expand_path('../../config/.claude/plugins/chck', __dir__)
+
+  execute "claude plugins marketplace add #{chck_marketplace}" do
+    not_if 'claude plugins marketplace list 2>/dev/null | grep -q chck'
+  end
+
+  execute 'claude plugins install personal-skills@chck --scope user' do
+    not_if 'claude plugins list 2>/dev/null | grep -q personal-skills@chck'
+  end
+
   # Claude Code CLI MCP servers (written to ~/.config/claude/.claude.json, not symlinkable)
   execute "claude mcp add --scope user headroom uvx -- --from 'headroom-ai[all]' headroom mcp serve" do
     not_if 'claude mcp list 2>/dev/null | grep -q headroom'
