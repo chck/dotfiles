@@ -43,3 +43,6 @@ Be direct but not dismissive — explain *why* the change isn't necessary.
 - Use `git rev-parse HEAD` after push to get the full commit SHA for the link.
 - If multiple comments are addressed in one commit, reply to each with the same link.
 - Reply format for fixes: `Fixed in ([{short_hash}]({url})). {explanation}.`
+- Commit messages must describe the actual changes — never use vague summaries like
+  "address review feedback" or "fix review comments". Each commit should say exactly
+  what changed, e.g. `fix(ci): add pull-requests:read to plan workflow`.
