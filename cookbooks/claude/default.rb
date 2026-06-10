@@ -6,6 +6,7 @@ when 'darwin'
   dotfile ".claude/settings.json"
   dotfile ".claude/CLAUDE.md"
   dotfile ".claude/skills"
+  dotfile ".claude/mcp.json"
 else
   raise NotImplementedError
 end
