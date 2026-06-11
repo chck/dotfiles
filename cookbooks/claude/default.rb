@@ -13,7 +13,7 @@ when 'darwin'
   #   1. Register the marketplace (writes known_marketplaces.json)
   #   2. Install the plugin (writes installed_plugins.json + populates the cache)
   # settings.json already enables "personal-skills@chck": true.
-  chck_marketplace = File.expand_path('../../config/.claude/plugins/chck', __dir__)
+  chck_marketplace = File.join(dotfiles_root, 'config/.claude/plugins/chck')
 
   execute "claude plugins marketplace add #{chck_marketplace}" do
     not_if 'claude plugins marketplace list 2>/dev/null | grep -q chck'
