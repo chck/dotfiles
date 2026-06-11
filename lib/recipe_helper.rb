@@ -1,4 +1,8 @@
 MItamae::RecipeContext.class_eval do
+  def dotfiles_root
+    File.expand_path('../..', __FILE__)
+  end
+
   def include_cookbook(name)
     root_dir = File.expand_path('../..', __FILE__)
     include_recipe File.join(root_dir, 'cookbooks', name, 'default')
