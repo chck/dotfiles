@@ -23,6 +23,13 @@ when 'darwin'
     not_if 'claude plugins list 2>/dev/null | grep -q personal-skills@chck'
   end
 
+  # ibelick/ui-skills: design-engineer skills installed to ~/.claude/skills/
+  # Uses its own install.sh (not the Claude plugins system). Must run from the
+  # cloned repo so the script can find local SKILL.md files as a fallback.
+  execute 'git clone --depth 1 https://github.com/ibelick/ui-skills /tmp/ibelick-ui-skills && sh /tmp/ibelick-ui-skills/install.sh --all; rm -rf /tmp/ibelick-ui-skills' do
+    not_if 'test -f ~/.claude/skills/baseline-ui/SKILL.md'
+  end
+
   # Claude Code CLI MCP servers (written to ~/.config/claude/.claude.json, not symlinkable)
   execute "claude mcp add --scope user headroom uvx -- --from 'headroom-ai[all]' headroom mcp serve" do
     not_if 'claude mcp list 2>/dev/null | grep -q headroom'
