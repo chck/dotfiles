@@ -9,7 +9,16 @@ Copy the standard infra template from dotfiles to the current project's `infra/A
 
 ## Steps
 
-1. **Read the template** from `~/Works/github.com/chck/dotfiles/config/agents/infra.md`
+1. **Locate the dotfiles root** by running:
+   ```bash
+   claude plugins marketplace list 2>/dev/null | grep chck
+   ```
+   Extract the directory path from the output (it points to the dotfiles repo root).
+   Fallback if unavailable:
+   ```bash
+   find ~ -maxdepth 6 -path "*/config/agents/infra.md" 2>/dev/null | head -1
+   ```
+   Then **read the template** at `<dotfiles_root>/config/agents/infra.md`.
 
 2. **Check project context** — ask only if not clear from conversation:
    - Does the project use a different CI/CD tool than OpenTaco? (e.g. Atlantis, GitHub Actions directly)
@@ -26,4 +35,4 @@ Copy the standard infra template from dotfiles to the current project's `infra/A
 
 - If `infra/` directory does not exist, create it (just the directory, no other files)
 - Never overwrite an existing `infra/AGENTS.md` without user confirmation
-- The template lives at: `~/Works/github.com/chck/dotfiles/config/agents/infra.md`
+- The template is at `<dotfiles_root>/config/agents/infra.md` — locate `<dotfiles_root>` dynamically (see step 1)
