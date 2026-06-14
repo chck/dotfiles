@@ -23,6 +23,15 @@ when 'darwin'
     not_if 'claude plugins list 2>/dev/null | grep -q personal-skills@chck'
   end
 
+  # Sync skills to cache on every provision run — `claude plugins install` is a
+  # no-op when already installed, so newly added skills would otherwise be missing.
+  execute 'sync personal-skills skills to plugin cache' do
+    skills_src = File.join(dotfiles_root, 'config/.claude/plugins/chck/plugins/personal-skills/skills') + '/'
+    cache_skills = '$(find ~/.claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | head -1)'
+    command "rsync -a #{skills_src} #{cache_skills}/"
+    only_if 'find ~/.claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | grep -q .'
+  end
+
   # ibelick/ui-skills: design-engineer skills installed to ~/.claude/skills/
   # Uses its own install.sh (not the Claude plugins system). Must run from the
   # cloned repo so the script can find local SKILL.md files as a fallback.
