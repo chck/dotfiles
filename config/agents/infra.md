@@ -1,38 +1,36 @@
 # Infra / Terraform Instructions
 
-Terraformファイルはすべて `infra/` 配下に置く。リポジトリルートや他のディレクトリには置かない。
+All Terraform files live under `infra/`. Do not place them in the repository root or other directories.
 
 ## Stack
 - IaC: Terraform
-- CI/CD: OpenTaco (ex. digger) — PRごとにplan/applyが走る
+- CI/CD: OpenTaco (ex. digger) — plan/apply triggered per PR
 - State backend: GCS (versioning enabled)
 - Cloud: GCP
 
 ## File naming
-ファイル名は数値プレフィックスで依存順序を表す（Layered Architectureに倣う）。
-数字が小さいほど他に依存しない独立したリソース。高番号ファイルが低番号ファイルを参照するのが基本。
+Numeric prefixes represent dependency order, inspired by Layered Architecture: lower-numbered files are more independent; higher-numbered files depend on them.
 
 ```
 01_setting.tf    ... Terraform/provider version pins, shared variable "common", provider blocks
-02_storage.tf    ... GCS, Artifact Registry など
-03_parameter.tf  ... Secret Manager など
-04_database.tf   ... Cloud SQL など
-05_*.tf          ... Compute (Cloud Run, GCE など)
+02_storage.tf    ... GCS, Artifact Registry
+03_parameter.tf  ... Secret Manager
+04_database.tf   ... Cloud SQL
+05_*.tf          ... Compute (Cloud Run, GCE, etc.)
 06_*.tf          ... Jobs / Scheduler
 07_ci.tf         ... Workload Identity Federation (GitHub Actions)
 08_domain.tf     ... DNS, Domain Mapping
 ```
 
-**`01_setting.tf` は特別**: Terraform/provider version pins、共有 `variable "common"`、provider blocks のみ置く。
-インスタンス名・バケット名などサービス固有パラメータは各サービスファイルに書く。
+**`01_setting.tf` is special**: holds only Terraform/provider version pins, the shared `variable "common"`, and provider blocks. Service-specific parameters (instance names, bucket names, etc.) belong in each service file.
 
 ## Variables
-- 変数はそれを使うサービスファイルにスコープを閉じて定義する（`variables.tf` に集約しない）
-- 環境ごとに値が異なる場合は workspace 名をキーにしたマップ変数 + `locals` で解決する
-- `terraform.tfvars` は不要（全変数に `default` を定義する）
+- Define variables in the service file that uses them — do not centralize in `variables.tf`
+- For values that differ per environment, use a map variable keyed by workspace name and resolve in `locals`
+- No `terraform.tfvars` needed — define `default` on all variables
 
 ```hcl
-# 05_cloudrun.tf — このファイル専用の変数
+# 05_cloudrun.tf — variables scoped to this file
 variable "cloudrun" {
   default = {
     stg  = { service_name = "myapp-stg", min_instances = 1 }
@@ -47,21 +45,21 @@ locals {
 }
 ```
 
-リソース内では `local.<service>.*` や `terraform.workspace` を使い、環境名を文字列ハードコードしない。
+Use `local.<service>.*` or `terraform.workspace` in resource blocks. Never hardcode environment names as strings.
 
 ## Labels
-`labels` をサポートする全リソースに付ける:
+Add `labels` to every resource that supports them:
 
 ```hcl
-labels = { owner = var.common.owner }                               # 全リソース共通
-labels = { owner = var.common.owner, env = terraform.workspace }    # ワークスペース固有リソース
+labels = { owner = var.common.owner }                               # all resources
+labels = { owner = var.common.owner, env = terraform.workspace }    # workspace-specific resources
 ```
 
-`google_service_account`、`google_cloud_scheduler_job` など labels 非対応リソースは対象外。
+`google_service_account`, `google_cloud_scheduler_job`, and other resources that do not support `labels` are exempt.
 
 ## Environments & Workspaces
-複数環境が必要な場合は `stg` / `prod` を Terraform workspaces で管理する。
-環境分離が不要な場合は `default` workspace をそのまま使う。
+Use `stg` / `prod` Terraform workspaces when multiple environments are needed.
+Use the `default` workspace when environment separation is not required.
 
 ```bash
 terraform workspace list
@@ -69,13 +67,13 @@ terraform workspace select stg   # or prod
 ```
 
 ## Coding rules
-- `count` より `for_each` を優先（インデックスずれを防ぐ）
-- sensitive な値は `variable` に `sensitive = true` を付ける
-- ステートフルリソース（DB, GCS等）には `lifecycle { prevent_destroy = true }` を付ける
-- プロバイダーバージョンは `~>` で minor までpin
+- Prefer `for_each` over `count` to avoid index shift issues
+- Mark sensitive values with `sensitive = true` on the variable
+- Add `lifecycle { prevent_destroy = true }` to stateful resources (DB, GCS, etc.)
+- Pin provider versions to minor with `~>` (e.g. `~> 5.0`)
 
 ## Authentication (local)
-SA impersonation で操作する。`GOOGLE_IMPERSONATE_SERVICE_ACCOUNT` を export すると Google provider が自動で使う:
+Operate via SA impersonation. The Google provider picks up `GOOGLE_IMPERSONATE_SERVICE_ACCOUNT` automatically:
 
 ```bash
 export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=<project>-terraform@<project-id>.iam.gserviceaccount.com
@@ -93,19 +91,19 @@ terraform plan
 terraform apply
 ```
 
-- planなしに apply しない
-- stateを直接編集しない（`terraform state mv` を使う）
+- Never run `terraform apply` without reviewing `plan` output first
+- Never edit state directly — use `terraform state mv`
 
 ## CI/CD (OpenTaco)
-| タイミング | トリガー | 動作 |
-|-----------|---------|------|
-| PR上 | `/terraform plan` コメント | stg・prod の plan 結果をPRコメントに投稿 |
-| PR上 | `/terraform apply` コメント | stg に apply |
-| main マージ | `infra/**` の変更を検知 | prod に自動 apply |
+| Trigger | Action |
+|---------|--------|
+| PR comment `/terraform plan` | Posts stg & prod plan results as PR comment |
+| PR comment `/terraform apply` | Applies to stg |
+| Merge to main (`infra/**` changed) | Auto-applies to prod |
 
-`infra/**` に変更があるPRでは plan `-detailed-exitcode` が自動実行され、差分が残っていると CI が失敗する。
+PRs with changes under `infra/**` run `plan -detailed-exitcode` automatically — CI fails if a diff remains after apply.
 
 ## Security
-- シークレット値を tfstate やコードに平文で書かない（Secret Manager に格納、値は手動投入）
-- `*.tfvars` はコミットしない
-- IAMポリシーは最小権限原則に従う
+- Never store secret values in plaintext in tfstate or code (store in Secret Manager, populate values manually)
+- Do not commit `*.tfvars`
+- Follow least-privilege principle for IAM policies
