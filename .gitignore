@@ -1,4 +1,5 @@
 bin/mitamae*
+.claude/commands/
 
 # Karabiner Elements
 config/karabiner/automatic_backups/
