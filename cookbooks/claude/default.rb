@@ -25,9 +25,9 @@ when 'darwin'
 
   # Sync skills to cache on every provision run — `claude plugins install` is a
   # no-op when already installed, so newly added skills would otherwise be missing.
+  skills_src = File.join(dotfiles_root, 'config/.claude/plugins/chck/plugins/personal-skills/skills') + '/'
+  cache_skills = '$(find ~/.claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | head -1)'
   execute 'sync personal-skills skills to plugin cache' do
-    skills_src = File.join(dotfiles_root, 'config/.claude/plugins/chck/plugins/personal-skills/skills') + '/'
-    cache_skills = '$(find ~/.claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | head -1)'
     command "rsync -a #{skills_src} #{cache_skills}/"
     only_if 'find ~/.claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | grep -q .'
   end
