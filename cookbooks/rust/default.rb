@@ -18,6 +18,10 @@ else
   execute 'rustup component add rust-src' do
     not_if 'rustup component list --installed | grep rust-src'
   end
+  # Remove standalone rustfmt/cargo-fmt that shadow toolchain-managed ones
+  execute 'rm -f ~/.cargo/bin/rustfmt ~/.cargo/bin/cargo-fmt' do
+    only_if 'test -f ~/.cargo/bin/rustfmt'
+  end
 end
 
 unless ENV['PATH'].include?("#{ENV['HOME']}/.cargo/bin:")
