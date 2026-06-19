@@ -1,7 +1,7 @@
 case node[:platform]
 when 'darwin'
   execute 'brew install --cask claude' do
-    not_if 'test -d /Applications/Claude.app/'
+    not_if { File.directory?('/Applications/Claude.app') }
   end
   dotfile ".claude/settings.json"
   dotfile ".claude/CLAUDE.md"
@@ -16,11 +16,17 @@ when 'darwin'
   chck_marketplace = File.join(dotfiles_root, 'config/.claude/plugins/chck')
 
   execute "claude plugins marketplace add #{chck_marketplace}" do
-    not_if 'claude plugins marketplace list 2>/dev/null | grep -q chck'
+    not_if {
+      f = File.expand_path('~/.claude/plugins/known_marketplaces.json')
+      File.exist?(f) && File.read(f).include?('"chck"')
+    }
   end
 
   execute 'claude plugins install personal-skills@chck --scope user' do
-    not_if 'claude plugins list 2>/dev/null | grep -q personal-skills@chck'
+    not_if {
+      f = File.expand_path('~/.claude/plugins/installed_plugins.json')
+      File.exist?(f) && File.read(f).include?('personal-skills@chck')
+    }
   end
 
   # Sync skills to cache on every provision run — `claude plugins install` is a
@@ -29,19 +35,24 @@ when 'darwin'
   cache_skills = '$(find ~/.claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | head -1)'
   execute 'sync personal-skills skills to plugin cache' do
     command "rsync -a #{skills_src} #{cache_skills}/"
-    only_if 'find ~/.claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | grep -q .'
+    only_if {
+      Dir.glob(File.expand_path('~/.claude/plugins/cache/chck/personal-skills/**/skills')).any? { |f| File.directory?(f) }
+    }
   end
 
   # ibelick/ui-skills: design-engineer skills installed to ~/.claude/skills/
   # Uses its own install.sh (not the Claude plugins system). Must run from the
   # cloned repo so the script can find local SKILL.md files as a fallback.
-  execute 'git clone --depth 1 https://github.com/ibelick/ui-skills /tmp/ibelick-ui-skills && sh /tmp/ibelick-ui-skills/install.sh --all; rm -rf /tmp/ibelick-ui-skills' do
-    not_if 'test -f ~/.claude/skills/baseline-ui/SKILL.md'
+  execute 'git clone --depth 1 https://github.com/ibelick/ui-skills /tmp/ibelick-ui-skills && mkdir -p ~/.claude/skills && sh /tmp/ibelick-ui-skills/install.sh --all; rm -rf /tmp/ibelick-ui-skills' do
+    not_if { File.exist?(File.expand_path('~/.claude/skills/baseline-ui/SKILL.md')) }
   end
 
   # Claude Code CLI MCP servers (written to ~/.config/claude/.claude.json, not symlinkable)
   execute "claude mcp add --scope user headroom uvx -- --from 'headroom-ai[all]' headroom mcp serve" do
-    not_if 'claude mcp list 2>/dev/null | grep -q headroom'
+    not_if {
+      f = File.expand_path('~/.config/claude/.claude.json')
+      File.exist?(f) && File.read(f).include?('"headroom"')
+    }
   end
 else
   raise NotImplementedError
@@ -52,7 +63,7 @@ execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
 alias c="claude"
 EOF
 ''' do
-  not_if 'grep claude ~/.zsh/lib/aliases.zsh'
+  not_if { File.exist?(File.expand_path('~/.zsh/lib/aliases.zsh')) && File.read(File.expand_path('~/.zsh/lib/aliases.zsh')).include?('claude') }
 end
 
 execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
@@ -60,5 +71,5 @@ execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
 export HEADROOM_TELEMETRY=off
 EOF
 ''' do
-  not_if 'grep HEADROOM_TELEMETRY ~/.zsh/lib/apps.zsh'
+  not_if { File.exist?(File.expand_path('~/.zsh/lib/apps.zsh')) && File.read(File.expand_path('~/.zsh/lib/apps.zsh')).include?('HEADROOM_TELEMETRY') }
 end
