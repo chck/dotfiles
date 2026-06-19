@@ -51,7 +51,9 @@ EOF
 ''' do
   not_if 'grep rust-script ~/.zsh/lib/aliases.zsh'
 end
-cargo 'cargo-nextest'
+execute 'cargo install --locked --force cargo-nextest' do
+  not_if 'cargo install --list | grep "^cargo-nextest"'
+end
 cargo 'cargo-update'
 cargo 'cargo-binstall'
 cargo 'cargo-deps'
