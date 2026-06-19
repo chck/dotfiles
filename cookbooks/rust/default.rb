@@ -51,6 +51,7 @@ EOF
 ''' do
   not_if 'grep rust-script ~/.zsh/lib/aliases.zsh'
 end
+cargo 'cargo-nextest'
 cargo 'cargo-update'
 cargo 'cargo-binstall'
 cargo 'cargo-deps'
@@ -76,4 +77,3 @@ EOF
 ''' do
   not_if 'grep rust-stakeholder ~/.zsh/lib/aliases.zsh'
 end
-
