@@ -24,4 +24,4 @@ $EDITOR cookbooks/:app_name/default.rb
 $EDITOR roles/$(uname)/default.rb
 ```
 
-> If you're using an AI agent (e.g. Claude Code), you can use the [`/add-cookbook`](config/.claude/skills/add-cookbook/SKILL.md) skill instead.
+> If you're using an AI agent (e.g. Claude Code), you can use the [`/add-cookbook`](config/.claude/plugins/chck/plugins/personal-skills/skills/add-cookbook/SKILL.md) skill instead.
