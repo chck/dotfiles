@@ -8,98 +8,44 @@
       "complex_modifications": {
         "rules": [
           {
-            "description": "New Rule (change sinble quote to double quote, semicolon to colon, hyphen to underscore",
+            "description": "Disable Command+P",
             "manipulators": [
               {
                 "from": {
-                  "key_code": "quote"
-                },
-                "to": {
-                  "key_code": "quote",
-                  "modifiers": [
-                    "left_shift"
-                  ]
-                },
-                "type": "basic"
-              },
-              {
-                "from": {
-                  "key_code": "quote",
+                  "key_code": "p",
                   "modifiers": {
                     "mandatory": [
-                      "left_shift"
+                      "left_command"
                     ],
                     "optional": [
                       "any"
                     ]
                   }
                 },
-                "to": {
-                  "key_code": "quote"
-                },
+                "to": [
+                  {
+                    "key_code": "vk_none"
+                  }
+                ],
                 "type": "basic"
               },
               {
                 "from": {
-                  "key_code": "quote",
+                  "key_code": "p",
                   "modifiers": {
                     "mandatory": [
-                      "right_shift"
+                      "right_command"
                     ],
                     "optional": [
                       "any"
                     ]
                   }
                 },
-                "to": {
-                  "key_code": "quote"
-                },
-                "type": "basic"
-              },
-              {
-                "from": {
-                  "key_code": "semicolon"
-                },
-                "to": {
-                  "key_code": "semicolon",
-                  "modifiers": [
-                    "left_shift"
-                  ]
-                },
-                "type": "basic"
-              },
-              {
-                "from": {
-                  "key_code": "semicolon",
-                  "modifiers": {
-                    "mandatory": [
-                      "left_shift"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
+                "to": [
+                  {
+                    "key_code": "vk_none"
                   }
-                },
-                "to": {
-                  "key_code": "semicolon"
-                },
-                "type": "basic"
-              },
-              {
-                "from": {
-                  "key_code": "semicolon",
-                  "modifiers": {
-                    "mandatory": [
-                      "right_shift"
-                    ],
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "to": {
-                  "key_code": "semicolon"
-                },
+                ],
                 "type": "basic"
               }
             ]
