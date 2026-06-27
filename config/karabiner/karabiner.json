@@ -8,6 +8,160 @@
       "complex_modifications": {
         "rules": [
           {
+            "description": "Change single quote to double quote",
+            "manipulators": [
+              {
+                "from": {
+                  "key_code": "quote"
+                },
+                "to": {
+                  "key_code": "quote",
+                  "modifiers": [
+                    "left_shift"
+                  ]
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "quote",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "quote"
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "quote",
+                  "modifiers": {
+                    "mandatory": [
+                      "right_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "quote"
+                },
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Change semicolon to colon",
+            "manipulators": [
+              {
+                "from": {
+                  "key_code": "semicolon"
+                },
+                "to": {
+                  "key_code": "semicolon",
+                  "modifiers": [
+                    "left_shift"
+                  ]
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "semicolon"
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": [
+                      "right_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "semicolon"
+                },
+                "type": "basic"
+              }
+            ]
+          },
+          {
+            "description": "Change hyphen to underscore",
+            "enabled": false,
+            "manipulators": [
+              {
+                "from": {
+                  "key_code": "hyphen"
+                },
+                "to": {
+                  "key_code": "hyphen",
+                  "modifiers": [
+                    "left_shift"
+                  ]
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "hyphen",
+                  "modifiers": {
+                    "mandatory": [
+                      "left_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "hyphen"
+                },
+                "type": "basic"
+              },
+              {
+                "from": {
+                  "key_code": "hyphen",
+                  "modifiers": {
+                    "mandatory": [
+                      "right_shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": {
+                  "key_code": "hyphen"
+                },
+                "type": "basic"
+              }
+            ]
+          },
+          {
             "description": "Disable Command+P",
             "manipulators": [
               {
