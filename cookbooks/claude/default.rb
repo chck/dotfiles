@@ -40,6 +40,24 @@ when 'darwin'
     }
   end
 
+  # WakaTime for Claude Code (https://wakatime.com/claude-code): time tracking plugin.
+  # settings.json already enables "claude-code-wakatime@wakatime": true.
+  # The API key lives in ~/.wakatime.cfg (secret, not managed here) — the plugin
+  # prompts for it on first run, and wakatime-cli self-installs to ~/.wakatime/.
+  execute 'claude plugins marketplace add https://github.com/wakatime/claude-code-wakatime.git' do
+    not_if {
+      f = File.expand_path('~/.claude/plugins/known_marketplaces.json')
+      File.exist?(f) && File.read(f).include?('"wakatime"')
+    }
+  end
+
+  execute 'claude plugins install claude-code-wakatime@wakatime --scope user' do
+    not_if {
+      f = File.expand_path('~/.claude/plugins/installed_plugins.json')
+      File.exist?(f) && File.read(f).include?('claude-code-wakatime@wakatime')
+    }
+  end
+
   # ibelick/ui-skills: design-engineer skills installed to ~/.claude/skills/
   # Uses its own install.sh (not the Claude plugins system). Must run from the
   # cloned repo so the script can find local SKILL.md files as a fallback.
