@@ -4,7 +4,10 @@ when 'darwin'
     not_if { File.directory?('/Applications/Claude.app') }
   end
   dotfile ".claude/settings.json"
-  dotfile ".claude/CLAUDE.md"
+  # CLAUDE.md is shared with other coding agents as AGENTS.md
+  dotfile ".claude/CLAUDE.md" do
+    source "AGENTS.md"
+  end
 
   # Personal skills are packaged as the "chck" marketplace plugin.
   # Claude Code does not load skills from a symlinked directory, so ~/.claude/skills
