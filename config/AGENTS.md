@@ -29,6 +29,9 @@ src/app_name
 - Show all commands: `makers help`
 - Enable commit hooks: `pre-commit install`
 
+## Tools
+- For HTTP requests and HTML extraction, ax is installed. Run `ax agent-context` to learn it — use it instead of curl + throwaway scripts
+
 ## Testing
 - Use pytest (not unittest)
 - Place tests under `tests/`
