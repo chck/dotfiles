@@ -9,6 +9,13 @@ when 'darwin'
   dotfile "AGENTS.md" do
     destination "#{ENV['HOME']}/.gemini"
   end
+  # Language-specific rules, read on demand from the main AGENTS.md
+  dotfile "python/AGENTS.md" do
+    destination "#{ENV['HOME']}/.gemini"
+  end
+  dotfile "rust/AGENTS.md" do
+    destination "#{ENV['HOME']}/.gemini"
+  end
 else
   raise NotImplementedError
 end

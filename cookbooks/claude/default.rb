@@ -8,6 +8,13 @@ when 'darwin'
   dotfile ".claude/CLAUDE.md" do
     source "AGENTS.md"
   end
+  # Language-specific rules, read on demand from the main AGENTS.md
+  dotfile ".claude/python/AGENTS.md" do
+    source "python/AGENTS.md"
+  end
+  dotfile ".claude/rust/AGENTS.md" do
+    source "rust/AGENTS.md"
+  end
 
   # Personal skills are packaged as the "chck" marketplace plugin.
   # Claude Code does not load skills from a symlinked directory, so ~/.claude/skills

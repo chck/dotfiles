@@ -5,6 +5,12 @@
 - Frontend (in order): TypeScript with Vite+, HTMX
 - Infrastructure: Terraform with OpenTaco (ex. digger)
 
+## Language-specific rules
+- Rules that apply only to a given language live in a sibling file. Read the
+  relevant one **before** writing code in that language:
+  - Python → `python/AGENTS.md` (next to this file)
+  - Rust → `rust/AGENTS.md` (next to this file)
+
 ## Design Pattern
 - Layered Architecture with Domain-driven design (DDD)
 ```
@@ -32,13 +38,8 @@ src/app_name
 ## Tools
 - For HTTP requests and HTML extraction, ax is installed. Run `ax agent-context` to learn it — use it instead of curl + throwaway scripts
 
-## Testing
-- Use pytest (not unittest)
-- Place tests under `tests/`
-
 ## Code style
 - Add type annotations to new code
-- No docstrings unless explicitly requested
 - Prefer minimal, focused changes — don't refactor surrounding code
 
 ## Response style
