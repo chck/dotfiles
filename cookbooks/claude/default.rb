@@ -27,14 +27,14 @@ when 'darwin'
 
   execute "claude plugins marketplace add #{chck_marketplace}" do
     not_if {
-      f = File.expand_path('~/.claude/plugins/known_marketplaces.json')
+      f = File.expand_path('~/.config/claude/plugins/known_marketplaces.json')
       File.exist?(f) && File.read(f).include?('"chck"')
     }
   end
 
   execute 'claude plugins install personal-skills@chck --scope user' do
     not_if {
-      f = File.expand_path('~/.claude/plugins/installed_plugins.json')
+      f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
       File.exist?(f) && File.read(f).include?('personal-skills@chck')
     }
   end
@@ -42,11 +42,11 @@ when 'darwin'
   # Sync skills to cache on every provision run — `claude plugins install` is a
   # no-op when already installed, so newly added skills would otherwise be missing.
   skills_src = File.join(dotfiles_root, 'config/.claude/plugins/chck/plugins/personal-skills/skills') + '/'
-  cache_skills = '$(find ~/.claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | head -1)'
+  cache_skills = '$(find ~/.config/claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | head -1)'
   execute 'sync personal-skills skills to plugin cache' do
     command "rsync -a #{skills_src} #{cache_skills}/"
     only_if {
-      Dir.glob(File.expand_path('~/.claude/plugins/cache/chck/personal-skills/**/skills')).any? { |f| File.directory?(f) }
+      Dir.glob(File.expand_path('~/.config/claude/plugins/cache/chck/personal-skills/**/skills')).any? { |f| File.directory?(f) }
     }
   end
 
@@ -56,14 +56,14 @@ when 'darwin'
   # prompts for it on first run, and wakatime-cli self-installs to ~/.wakatime/.
   execute 'claude plugins marketplace add https://github.com/wakatime/claude-code-wakatime.git' do
     not_if {
-      f = File.expand_path('~/.claude/plugins/known_marketplaces.json')
+      f = File.expand_path('~/.config/claude/plugins/known_marketplaces.json')
       File.exist?(f) && File.read(f).include?('"wakatime"')
     }
   end
 
   execute 'claude plugins install claude-code-wakatime@wakatime --scope user' do
     not_if {
-      f = File.expand_path('~/.claude/plugins/installed_plugins.json')
+      f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
       File.exist?(f) && File.read(f).include?('claude-code-wakatime@wakatime')
     }
   end
