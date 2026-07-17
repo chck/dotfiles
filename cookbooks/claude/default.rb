@@ -75,6 +75,21 @@ when 'darwin'
     not_if { File.exist?(File.expand_path('~/.claude/skills/baseline-ui/SKILL.md')) }
   end
 
+  # thedotmack/claude-mem: persistent memory plugin for Claude Code.
+  execute 'claude plugins marketplace add https://github.com/thedotmack/claude-mem.git' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/known_marketplaces.json')
+      File.exist?(f) && File.read(f).include?('"thedotmack"')
+    }
+  end
+
+  execute 'claude plugins install claude-mem@thedotmack --scope user' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
+      File.exist?(f) && File.read(f).include?('claude-mem@thedotmack')
+    }
+  end
+
   # Claude Code CLI MCP servers (written to ~/.config/claude/.claude.json, not symlinkable)
   execute "claude mcp add --scope user headroom uvx -- --from 'headroom-ai[all]' headroom mcp serve" do
     not_if {
