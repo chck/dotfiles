@@ -1,39 +1,11 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(pnpm *)",
-      "Bash(npm *)",
-      "Bash(npx *)",
-      "Bash(node *)",
-      "Bash(git *)",
-      "Bash(gh *)",
-      "Bash(streber *)"
-    ],
-    "deny": [
-      "Read(*.cfg)",
-      "Read(*.env)",
-      "Read(*.env.*)",
-      "Read(*.envrc)",
-      "Read(*.cache)",
-      "Read(*.csr)",
-      "Read(*.crt)",
-      "Read(*.pfx)",
-      "Read(*.cert)",
-      "Read(*.pem)",
-      "Read(*.key)",
-      "Read(*.log)",
-      "Read(*.tmp)",
-      "Read(*.properties)",
-      "Read(*secret*)",
-      "Read(*password*)",
-      "Read(*credential*)"
-    ],
     "defaultMode": "auto"
   },
-  "tui": "fullscreen",
   "enabledPlugins": {
+    "personal-skills@chck": true,
     "claude-code-wakatime@wakatime": true,
-    "review-plugin@ailab": true,
+    "claude-mem@thedotmack": true,
     "code-review@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "playwright@claude-plugins-official": true,
@@ -48,7 +20,27 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "huggingface-skills@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
-    "personal-skills@chck": true
-  }
+    "superpowers@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "chck": {
+      "source": {
+        "source": "directory",
+        "path": "$HOME/Works/github.com/chck/dotfiles/config/.claude/plugins/chck"
+      }
+    },
+    "wakatime": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/wakatime/claude-code-wakatime.git"
+      }
+    },
+    "thedotmack": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/thedotmack/claude-mem.git"
+      }
+    }
+  },
+  "skipAutoPermissionPrompt": true
 }

@@ -3,7 +3,10 @@ when 'darwin'
   execute 'brew install --cask claude' do
     not_if { File.directory?('/Applications/Claude.app') }
   end
-  dotfile ".claude/settings.json"
+  # settings.json is read from ~/.config/claude/ (new path since Claude Code 1.x)
+  link File.expand_path('~/.config/claude/settings.json') do
+    to File.join(dotfiles_root, 'config/.claude/settings.json')
+  end
   # CLAUDE.md is shared with other coding agents as AGENTS.md
   dotfile ".claude/CLAUDE.md" do
     source "AGENTS.md"
