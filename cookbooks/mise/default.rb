@@ -40,6 +40,9 @@ end
 execute "mise use --global pnpm@latest -y" do
   not_if "which pnpm"
 end
+execute "mise use --global bun@latest" do
+  not_if "mise which bun"
+end
 
 # rust
 execute "mise use --global rust@latest" do
