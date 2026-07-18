@@ -4,8 +4,10 @@ when 'darwin'
     not_if { File.directory?('/Applications/Claude.app') }
   end
   # settings.json is read from ~/.config/claude/ (new path since Claude Code 1.x)
+  claude_settings = File.join(dotfiles_root, 'config/.claude/settings.json')
   link File.expand_path('~/.config/claude/settings.json') do
-    to File.join(dotfiles_root, 'config/.claude/settings.json')
+    to claude_settings
+    force true
   end
   # CLAUDE.md is shared with other coding agents as AGENTS.md
   dotfile ".claude/CLAUDE.md" do
