@@ -1,10 +1,15 @@
 # XDG configuration path
 export XDG_CONFIG_HOME="$HOME/.config"
 # Google Cloud SDK
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
-# The next line enables shell command completion for gcloud.
-if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi
+if [[ "$OSTYPE" == darwin* ]]; then
+  # Homebrew Cask installs to $HOMEBREW_PREFIX/share/google-cloud-sdk/
+  if [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc" ]; then . "$HOMEBREW_PREFIX/share/google-cloud-sdk/path.zsh.inc"; fi
+  if [ -f "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc"; fi
+else
+  # curl installer puts SDK in $HOME/google-cloud-sdk/
+  if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
+  if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi
+fi
 export CLOUDSDK_PYTHON=python3
 # Kubectl
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
