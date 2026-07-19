@@ -6,3 +6,6 @@ when 'darwin'
 else
   raise NotImplementedError
 end
+dotfile "otty/config.toml" do
+  destination ENV['XDG_CONFIG_HOME']
+end

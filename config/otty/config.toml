@@ -1,0 +1,29 @@
+# Theme
+theme = "April Dark"
+theme-dark = "Nord"
+
+# Colors
+foreground = "#ffffff"
+background = "#141b18"
+palette-0 = "#101513"
+palette-1 = "#e06c75"
+palette-2 = "#98c379"
+palette-3 = "#e5c07b"
+palette-4 = "#61afef"
+palette-5 = "#b876b8"
+palette-6 = "#5fb8a0"
+palette-7 = "#8a9992"
+palette-8 = "#5c6b64"
+palette-9 = "#eb8a91"
+palette-10 = "#c5e86c"
+palette-11 = "#f0d499"
+palette-12 = "#82c2f3"
+palette-13 = "#d098d0"
+palette-14 = "#85cdb6"
+
+# Mouse & Input
+omit-otty-prefix = true
+cli-allow-overwrite = true
+
+# Privileges
+privilege-notification-on-finish = true
