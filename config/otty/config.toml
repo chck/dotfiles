@@ -1,6 +1,6 @@
 # Theme
 theme = "April Dark"
-theme-dark = "Nord"
+theme-dark = "Paper"
 
 # Colors
 foreground = "#ffffff"
@@ -27,3 +27,9 @@ cli-allow-overwrite = true
 
 # Privileges
 privilege-notification-on-finish = true
+
+# confirm-close-tab = "always" (reset to default)
+
+font-size = 15
+
+# text-blink = true (reset to default)
