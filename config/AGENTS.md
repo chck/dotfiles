@@ -37,6 +37,7 @@ src/app_name
 
 ## Tools
 - For HTTP requests and HTML extraction, ax is installed. Run `ax agent-context` to learn it — use it instead of curl + throwaway scripts
+- For searching file contents, use ripgrep (`rg`) instead of `grep` — it is faster and respects `.gitignore`
 
 ## Code style
 - Add type annotations to new code
