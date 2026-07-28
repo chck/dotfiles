@@ -95,6 +95,22 @@ when 'darwin'
     }
   end
 
+  # mattpocock/skills: Matt Pocock's engineering skills (grill-me / grilling, etc.).
+  # settings.json already enables "mattpocock-skills@mattpocock": true.
+  execute 'claude plugins marketplace add https://github.com/mattpocock/skills.git' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/known_marketplaces.json')
+      File.exist?(f) && File.read(f).include?('"mattpocock"')
+    }
+  end
+
+  execute 'claude plugins install mattpocock-skills@mattpocock --scope user' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
+      File.exist?(f) && File.read(f).include?('mattpocock-skills@mattpocock')
+    }
+  end
+
   # Claude Code CLI MCP servers (written to ~/.config/claude/.claude.json, not symlinkable)
   execute "claude mcp add --scope user headroom uvx -- --from 'headroom-ai[all]' headroom mcp serve" do
     not_if {
