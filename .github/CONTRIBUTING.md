@@ -16,7 +16,7 @@ cd dotfiles
 ### pre-commit hooks
 
 ```shell
-brew install pre-commit
+mise use --global pre-commit@latest
 pre-commit install
 ```
 
@@ -88,9 +88,13 @@ The following checks run automatically on commit:
 |-------|------|
 | pre-commit | Trailing whitespace |
 | pre-commit | End-of-file newline |
+| pre-commit | Line endings normalized |
 | pre-commit | YAML / JSON / TOML syntax |
+| pre-commit | JSON auto-formatting |
 | pre-commit | Executable files have shebangs |
 | pre-commit | No merge conflict markers |
 | pre-commit | No private keys |
-| pre-commit | Large file guard (≤ 1 MB) |
+| pre-commit | Large file guard (≤ 100 MB) |
 | commit-msg | Conventional Commits format (commitizen) |
+
+> JSON syntax and formatting checks skip `config/settings.json` because it is JSONC (contains comments).
