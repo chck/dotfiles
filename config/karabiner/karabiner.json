@@ -465,6 +465,45 @@
             "vendor_id": 13364
           },
           "ignore": false
+        },
+        {
+          "identifiers": {
+            "is_keyboard": true,
+            "product_id": 36,
+            "vendor_id": 14477
+          },
+          "simple_modifications": [
+            {
+              "from": {
+                "key_code": "insert"
+              },
+              "to": [
+                {
+                  "key_code": "grave_accent_and_tilde"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "page_up"
+              },
+              "to": [
+                {
+                  "key_code": "f20"
+                }
+              ]
+            },
+            {
+              "from": {
+                "key_code": "page_down"
+              },
+              "to": [
+                {
+                  "key_code": "vk_none"
+                }
+              ]
+            }
+          ]
         }
       ],
       "name": "Default",
