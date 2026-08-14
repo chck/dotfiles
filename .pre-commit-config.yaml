@@ -13,6 +13,8 @@ repos:
       - id: check-yaml
       - id: detect-private-key
       - id: end-of-file-fixer
+        # Karabiner-Elements writes karabiner.json without a trailing newline
+        exclude: ^config/karabiner/karabiner\.json$
       - id: mixed-line-ending
         args: [--fix=auto]
       - id: pretty-format-json
