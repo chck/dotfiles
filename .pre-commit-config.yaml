@@ -17,7 +17,8 @@ repos:
         args: [--fix=auto]
       - id: pretty-format-json
         args: [--autofix, --no-sort-keys]
-        exclude: ^config/settings\.json$
+        # karabiner.json is rewritten by Karabiner-Elements in its own format
+        exclude: ^config/(settings|karabiner/karabiner)\.json$
       - id: trailing-whitespace
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.13.9
