@@ -1,0 +1,11 @@
+# Package manifest so apm can consume this directory as a local dependency;
+# see the `../.claude/plugins/chck/plugins/personal-skills` entry in
+# config/apm/apm.yml. Without this file apm resolves the path but installs
+# nothing, treating it as the project root.
+#
+# The .claude-plugin/ layout is kept so the directory also remains a valid
+# Claude Code marketplace plugin.
+name: personal-skills
+version: "1.0.0"
+description: chck's own agent skills
+author: chck

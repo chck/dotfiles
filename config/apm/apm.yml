@@ -14,9 +14,12 @@ targets:
   - claude
 dependencies:
   apm:
-    # First-party skills. The relative path resolves against this file's real
-    # location, not the ~/.apm/apm.yml symlink, so the repo can live anywhere.
-    - ../.claude/plugins/chck/plugins/personal-skills
+    # First-party skills, kept in this repo. The path must be absolute or
+    # tilde-expanded: a relative path is resolved against ~/.apm/ rather than
+    # this file, and apm then silently installs nothing (`apm install --dry-run`
+    # reports it as installable either way, so it will not catch the mistake).
+    # The ghq layout makes this path reproducible across machines.
+    - ~/Works/github.com/chck/dotfiles/config/.claude/plugins/chck/plugins/personal-skills
     # ibelick/ui-skills — design-engineer skills (MIT)
     - ibelick/ui-skills/skills/baseline-ui
     - ibelick/ui-skills/skills/create-design-md
