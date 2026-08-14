@@ -58,6 +58,48 @@ cookbooks/:app_name/
 
 Refer to existing cookbooks (e.g. `cookbooks/bat/`, `cookbooks/awscli/`) as examples.
 
+## Choosing an install method
+
+| Method | Use for |
+|--------|---------|
+| `brew install --cask` | GUI applications |
+| `brew install` | CLI tools not in the mise registry, and build dependencies (openssl, cmake, pkg-config) |
+| mise | Language runtimes, anything whose version you want to control, and any CLI in `mise registry` |
+| `cargo` | `cargo-*` subcommands and crates that should track the Rust toolchain |
+| `github_binary` | One-off binaries available in no registry |
+
+Decide in this order: GUI app → cask. Version needs controlling → mise. Otherwise
+check `mise registry <name>`, then fall back to `brew`, then `github_binary`.
+
+aqua is installed by `cookbooks/aqua` but manages no packages here on purpose.
+Its strength is per-repository pinning with checksum verification, which does not
+fit a repo whose job is building one global environment. Use it inside individual
+project repositories; keep dotfiles' global tools in mise.
+
+### Adding a mise-managed tool
+
+Add one line to `config/mise/config.toml`. Do **not** write `mise use --global`
+in a cookbook: that file is symlinked to `~/.config/mise/config.toml`, so the
+command would rewrite a tracked file and show up as a diff.
+
+For the same reason every entry stays on `"latest"` — the `up` alias runs
+`mise up --bump`, which rewrites pinned versions in place.
+
+## What belongs in this repository
+
+This repository is public. Committed files must contain no secrets and nothing
+specific to one machine.
+
+| Location | Tracked | Contents |
+|----------|---------|----------|
+| `config/mise/config.toml` | yes | Global tool list |
+| `~/.config/mise/conf.d/*.toml` | no | Machine-local tools, pinned versions, `[env]` secrets |
+
+mise reads `conf.d/*.toml` alongside `config.toml`, so local additions need no
+changes here and never risk being committed. The same split applies generally:
+if a config file is rewritten by the tool that owns it, or holds credentials,
+keep it out of `config/` and let the local override mechanism handle it.
+
 ## Commit conventions
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):

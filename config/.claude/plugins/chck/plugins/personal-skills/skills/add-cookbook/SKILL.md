@@ -19,7 +19,7 @@ roles/base/default.rb             ← cross-platform role (rare)
 
 1. **Gather info** — if not already clear from context, ask:
    - App name (determines directory name, use kebab-case)
-   - Install method: `brew` CLI tool, `brew --cask` GUI app, `apt`, `cargo`, `github_binary`, or custom script
+   - Install method — see "Choosing an install method" below
    - macOS only, Ubuntu only, or both?
    - Any post-install config: aliases, env vars, dotfiles to symlink?
 
@@ -30,7 +30,44 @@ roles/base/default.rb             ← cross-platform role (rare)
    - `roles/darwin/default.rb` — macOS-only or GUI apps
    - `roles/base/default.rb` — truly cross-platform CLI tools
 
+## Choosing an install method
+
+Decide in this order:
+
+1. GUI application → `brew install --cask`
+2. Version needs controlling (language runtime, or a tool that differs per project) → **mise**
+3. Run `mise registry <name>` — if listed, → **mise**
+4. Otherwise → `brew install` (plus `apt install` if Ubuntu is in scope)
+5. `cargo-*` subcommand or crate that should track the Rust toolchain → `cargo`
+6. In no registry at all → `github_binary`
+
+Build dependencies (openssl, cmake, pkg-config) always go through `brew`/`apt`,
+not mise.
+
+aqua is intentionally unused here — it manages no packages in this repo. Do not
+add aqua-based cookbooks.
+
 ## Patterns
+
+### mise-managed tool (no cookbook needed)
+
+Add one line to `config/mise/config.toml`:
+
+```toml
+<tool> = "latest"
+```
+
+`cookbooks/mise` symlinks that file to `~/.config/mise/config.toml` and runs
+`mise install`, so no cookbook is required. Two rules:
+
+- **Never write `mise use --global` in a cookbook.** It rewrites the symlinked
+  file, producing a diff in this repo.
+- **Keep `"latest"`.** The `up` alias runs `mise up --bump`, which rewrites
+  pinned versions in place. Pin in `~/.config/mise/conf.d/*.toml` instead, which
+  is machine-local and untracked.
+
+Only create a cookbook when the tool needs extra steps beyond installation
+(aliases, env vars, config symlinks) — see `cookbooks/pre-commit/` for that shape.
 
 ### brew CLI tool (darwin only)
 ```ruby
@@ -115,6 +152,20 @@ end
 dotfile '.<config-file>'
 ```
 The source is resolved from `config/` in the repo root. Make sure the file exists there first.
+
+## This repository is public
+
+Before adding a file to `config/`, check that it holds no secrets (API keys,
+tokens, licence codes) and nothing machine-specific. Two things to watch for:
+
+- **Secrets** — leave the file out of `config/` and let the tool's own local
+  override mechanism supply them (e.g. `~/.config/mise/conf.d/*.toml`,
+  `~/.zshrc.local`). Reference the mechanism in a comment instead of the value.
+- **Files the owning app rewrites** — symlinking one into `config/` means the app
+  edits a tracked file, producing repeated diffs. Either accept the app's own
+  format as the committed baseline and exclude the file from reformatting hooks
+  (see `config/karabiner/karabiner.json` in `.pre-commit-config.yaml`), or leave
+  it unmanaged and `.gitignore` it.
 
 ## Idempotency rules
 
