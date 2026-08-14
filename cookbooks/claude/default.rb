@@ -92,8 +92,10 @@ when 'darwin'
     force true
   end
 
-  # Runs on every provision so newly declared skills are picked up.
-  execute 'apm install -g'
+  # Runs on every provision so newly declared skills are picked up. Goes through
+  # `mise exec` because apm is a mise-managed shim and mitamae's /bin/sh does not
+  # have the shim directory on PATH.
+  execute 'mise exec -- apm install -g'
 
   # thedotmack/claude-mem: persistent memory plugin for Claude Code.
   execute 'claude plugins marketplace add https://github.com/thedotmack/claude-mem.git' do
