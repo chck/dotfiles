@@ -19,37 +19,24 @@ else
   raise NotImplementedError
 end
 
-# python
-execute "mise use --g python@latest" do
-  not_if "mise ls python"
-end
-execute "mise plugin add poetry && mise use -g poetry@latest" do
-  not_if "which poetry"
-end
-#execute "poetry config virtualenvs.in-project true" do
-#  not_if "poetry config virtualenvs.in-project | grep true"
-#end
-execute "mise plugins install -y uv && mise use --global uv@latest" do
-  not_if "which uv"
+# Tool versions are declared in config/mise/config.toml and symlinked here, so
+# a new machine reproduces the same set. Do NOT add `mise use --global` calls to
+# any cookbook: they rewrite the symlinked file and surface as a diff in this
+# repository. Add the tool to config/mise/config.toml instead.
+#
+# Machine-local tools go in ~/.config/mise/conf.d/*.toml, which mise reads
+# alongside config.toml and which dotfiles deliberately does not manage.
+execute 'mkdir -p ~/.config/mise' do
+  not_if 'test -d ~/.config/mise'
 end
 
-# node
-execute "mise use --global node@latest" do
-  not_if "mise which node"
-end
-execute "mise use --global pnpm@latest -y" do
-  not_if "which pnpm"
-end
-execute "mise use --global bun@latest" do
-  not_if "mise which bun"
+mise_config = File.join(dotfiles_root, 'config/mise/config.toml')
+link File.expand_path('~/.config/mise/config.toml') do
+  to mise_config
+  user node[:user]
+  force true
 end
 
-# rust
-execute "mise use --global rust@latest" do
-  not_if "mise which rust"
-end
-
-# terraform
-execute "mise use --global terraform@latest" do
-  not_if "mise ls terraform"
-end
+# Runs on every provision so newly declared tools are picked up; a no-op once
+# everything is installed.
+execute 'mise install'

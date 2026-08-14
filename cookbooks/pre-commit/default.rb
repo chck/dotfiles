@@ -1,12 +1,6 @@
-case node[:platform]
-when 'darwin'
-  execute 'mise use --global pre-commit@latest' do
-    not_if 'mise which pre-commit'
-  end
-else
-  raise NotImplementedError
-end
-
+# pre-commit itself is declared in config/mise/config.toml and installed by
+# cookbooks/mise. Do not add `mise use --global` here: it rewrites the symlinked
+# config and surfaces as a diff in this repository.
 execute 'mise exec -- pre-commit install' do
   not_if 'test -f .git/hooks/commit-msg'
 end

@@ -1,0 +1,25 @@
+# Global tool versions, symlinked to ~/.config/mise/config.toml by cookbooks/mise.
+#
+# This file is committed to a public repository. Anything machine-specific or
+# secret belongs in ~/.config/mise/conf.d/*.toml instead, which mise reads
+# alongside this file and which dotfiles does not manage.
+#
+# Keep every entry on "latest":
+#   - cookbooks must not run `mise use --global`, which rewrites this file
+#   - the `up` alias runs `mise up --bump`, which rewrites pinned versions
+# Either would show up as a diff in this repository. Pin in conf.d if needed.
+[tools]
+apm = "latest"          # microsoft/apm: agent package manager
+bun = "latest"
+java = "latest"
+node = "latest"
+pnpm = "latest"
+poetry = "latest"
+pre-commit = "latest"
+python = "latest"
+rust = "latest"         # symlinks to the rustup toolchain from cookbooks/rust
+terraform = "latest"
+uv = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = []
