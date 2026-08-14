@@ -73,12 +73,27 @@ when 'darwin'
     }
   end
 
-  # ibelick/ui-skills: design-engineer skills installed to ~/.claude/skills/
-  # Uses its own install.sh (not the Claude plugins system). Must run from the
-  # cloned repo so the script can find local SKILL.md files as a fallback.
-  execute 'git clone --depth 1 https://github.com/ibelick/ui-skills /tmp/ibelick-ui-skills && mkdir -p ~/.claude/skills && sh /tmp/ibelick-ui-skills/install.sh --all; rm -rf /tmp/ibelick-ui-skills' do
-    not_if { File.exist?(File.expand_path('~/.claude/skills/baseline-ui/SKILL.md')) }
+  # Third-party skills (ibelick/ui-skills, anthropics/skills) are declared in
+  # config/apm/apm.yml and deployed to ~/.config/claude/skills/ by apm, which is
+  # installed via mise. This replaced ibelick's install.sh, whose not_if guard
+  # meant upstream additions were never picked up after the first run.
+  #
+  # Edit config/apm/apm.yml by hand. Do NOT run `apm install -g <package>`: it
+  # rewrites the symlinked manifest and shows up as a diff in this repository.
+  apm_manifest = File.join(dotfiles_root, 'config/apm/apm.yml')
+
+  execute 'mkdir -p ~/.apm' do
+    not_if 'test -d ~/.apm'
   end
+
+  link File.expand_path('~/.apm/apm.yml') do
+    to apm_manifest
+    user node[:user]
+    force true
+  end
+
+  # Runs on every provision so newly declared skills are picked up.
+  execute 'apm install -g'
 
   # thedotmack/claude-mem: persistent memory plugin for Claude Code.
   execute 'claude plugins marketplace add https://github.com/thedotmack/claude-mem.git' do
