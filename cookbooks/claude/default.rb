@@ -21,39 +21,11 @@ when 'darwin'
     source "rust/AGENTS.md"
   end
 
-  # Personal skills are packaged as the "chck" marketplace plugin.
-  # Claude Code does not load skills from a symlinked directory, so ~/.claude/skills
-  # is not used. Instead, skills live in dotfiles as a marketplace source and are
-  # registered via the plugin CLI. Two steps are required on a new machine:
-  #   1. Register the marketplace (writes known_marketplaces.json)
-  #   2. Install the plugin (writes installed_plugins.json + populates the cache)
-  # settings.json already enables "personal-skills@chck": true.
-  chck_marketplace = File.join(dotfiles_root, 'config/.claude/plugins/chck')
-
-  execute "claude plugins marketplace add #{chck_marketplace}" do
-    not_if {
-      f = File.expand_path('~/.config/claude/plugins/known_marketplaces.json')
-      File.exist?(f) && File.read(f).include?('"chck"')
-    }
-  end
-
-  execute 'claude plugins install personal-skills@chck --scope user' do
-    not_if {
-      f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
-      File.exist?(f) && File.read(f).include?('personal-skills@chck')
-    }
-  end
-
-  # Sync skills to cache on every provision run — `claude plugins install` is a
-  # no-op when already installed, so newly added skills would otherwise be missing.
-  skills_src = File.join(dotfiles_root, 'config/.claude/plugins/chck/plugins/personal-skills/skills') + '/'
-  cache_skills = '$(find ~/.config/claude/plugins/cache/chck/personal-skills -maxdepth 2 -type d -name skills | head -1)'
-  execute 'sync personal-skills skills to plugin cache' do
-    command "rsync -a #{skills_src} #{cache_skills}/"
-    only_if {
-      Dir.glob(File.expand_path('~/.config/claude/plugins/cache/chck/personal-skills/**/skills')).any? { |f| File.directory?(f) }
-    }
-  end
+  # Personal skills are declared in config/apm/apm.yml as a local path and
+  # deployed by the `apm install -g` below, same as the third-party ones. They
+  # used to go through the "chck" marketplace plugin, which needed a marketplace
+  # registration, a plugin install, and an rsync into the plugin cache directory
+  # located by `find ... | head -1` on every run.
 
   # WakaTime for Claude Code (https://wakatime.com/claude-code): time tracking plugin.
   # settings.json already enables "claude-code-wakatime@wakatime": true.

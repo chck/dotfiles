@@ -3,7 +3,6 @@
     "defaultMode": "auto"
   },
   "enabledPlugins": {
-    "personal-skills@chck": true,
     "claude-code-wakatime@wakatime": true,
     "claude-mem@thedotmack": true,
     "code-review@claude-plugins-official": true,

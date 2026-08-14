@@ -1,21 +1,22 @@
 # apm global manifest, symlinked to ~/.apm/apm.yml by cookbooks/claude.
 #
-# Third-party Claude Code skills are declared here and deployed to
-# ~/.config/claude/skills/ by `apm install -g`. First-party skills are not
-# managed here: they ship as the personal-skills plugin under
-# config/.claude/plugins/chck/.
+# Claude Code skills are declared here and deployed to ~/.config/claude/skills/
+# by `apm install -g`.
 #
 # Edit this file by hand, then run `apm install -g`. Do NOT run
 # `apm install -g <package>`, which rewrites the manifest and would surface as a
 # diff in this repository — the same rule as config/mise/config.toml.
 name: chck-dotfiles
 version: 1.0.0
-description: Third-party agent skills for chck/dotfiles
+description: Agent skills for chck/dotfiles
 author: chck
 targets:
   - claude
 dependencies:
   apm:
+    # First-party skills. The relative path resolves against this file's real
+    # location, not the ~/.apm/apm.yml symlink, so the repo can live anywhere.
+    - ../.claude/plugins/chck/plugins/personal-skills
     # ibelick/ui-skills — design-engineer skills (MIT)
     - ibelick/ui-skills/skills/baseline-ui
     - ibelick/ui-skills/skills/create-design-md
