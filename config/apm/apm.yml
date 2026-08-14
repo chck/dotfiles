@@ -26,6 +26,18 @@ dependencies:
     - ibelick/ui-skills/skills/ui-skills-root
     # anthropics/skills
     - anthropics/skills/skills/frontend-design
-  mcp: []
+  mcp:
+    # headroom. The API key is not stored here; the server reads it from the
+    # environment (HEADROOM_TELEMETRY is set by this cookbook's zsh block).
+    - name: headroom
+      registry: false
+      transport: stdio
+      command: uvx
+      args:
+        - --from
+        - headroom-ai[all]
+        - headroom
+        - mcp
+        - serve
 includes: auto
 scripts: {}

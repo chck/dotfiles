@@ -128,13 +128,8 @@ when 'darwin'
     }
   end
 
-  # Claude Code CLI MCP servers (written to ~/.config/claude/.claude.json, not symlinkable)
-  execute "claude mcp add --scope user headroom uvx -- --from 'headroom-ai[all]' headroom mcp serve" do
-    not_if {
-      f = File.expand_path('~/.config/claude/.claude.json')
-      File.exist?(f) && File.read(f).include?('"headroom"')
-    }
-  end
+  # MCP servers are declared in config/apm/apm.yml alongside the skills and
+  # written to ~/.config/claude/.claude.json by the `apm install -g` above.
 else
   raise NotImplementedError
 end
