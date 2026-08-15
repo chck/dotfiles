@@ -34,20 +34,55 @@ roles/base/default.rb             ← cross-platform role (rare)
 
 Decide in this order:
 
-1. GUI application → `brew install --cask`
-2. Version needs controlling (language runtime, or a tool that differs per project) → **mise**
-3. Run `mise registry <name>` — if listed, → **mise**
-4. Otherwise → `brew install` (plus `apt install` if Ubuntu is in scope)
-5. `cargo-*` subcommand or crate that should track the Rust toolchain → `cargo`
-6. In no registry at all → `github_binary`
+1. Agent skill or MCP server → **apm** (no cookbook)
+2. GUI application → `brew install --cask`
+3. Version needs controlling (language runtime, or a tool that differs per project) → **mise**
+4. Run `mise registry <name>` — if listed, → **mise**
+5. Otherwise → `brew install` (plus `apt install` if Ubuntu is in scope)
+6. `cargo-*` subcommand or crate that should track the Rust toolchain → `cargo`
+7. In no registry at all → `github_binary`
 
 Build dependencies (openssl, cmake, pkg-config) always go through `brew`/`apt`,
 not mise.
+
+A Claude Code **plugin** is not an apm package: plugins ship their own runtime
+(npm builds, self-installing binaries) and stay on the plugin CLI in
+`cookbooks/claude`. apm carries file primitives only.
 
 aqua is intentionally unused here — it manages no packages in this repo. Do not
 add aqua-based cookbooks.
 
 ## Patterns
+
+### agent skill or MCP server (no cookbook needed)
+
+Add an entry to `config/apm/apm.yml`:
+
+```yaml
+dependencies:
+  apm:
+    - owner/repo/skills/<name>      # skill inside a repo
+    - ~/absolute/path/to/package    # skill kept locally
+  mcp:
+    - name: <server>
+      transport: stdio
+      command: <cmd>
+      args: [...]
+```
+
+`cookbooks/claude` symlinks that file to `~/.apm/apm.yml` and runs
+`apm install -g`. Three rules:
+
+- **Never pass a package to the CLI** (`apm install -g <pkg>`). It rewrites the
+  symlinked manifest, producing a diff in this repo.
+- **A local package needs its own `apm.yml`.** Without one apm resolves the path,
+  reports success, and deploys nothing.
+- **A local path must be absolute or `~`-expanded.** A relative path resolves
+  against `~/.apm/`, not the manifest, and fails the same silent way.
+
+The last two are not caught by `apm install --dry-run`, which reports the package
+as installable either way. After editing, verify by listing
+`~/.config/claude/skills/` rather than trusting the exit code.
 
 ### mise-managed tool (no cookbook needed)
 
