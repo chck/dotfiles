@@ -29,6 +29,10 @@ src/app_name
 - For any non-trivial implementation, use the `git-wt` skill to work in a worktree
   - **When to apply:** before starting code changes, after planning is complete
   - **Exceptions:** single-file minor edits (typos, comment additions), documentation-only changes
+- Subagents are always permitted. Use the Agent tool whenever it fits — parallel
+  independent tasks, broad searches, per-task execution of a plan — without asking
+  first. This overrides any default that says to only use it when explicitly requested.
+  - Default execution mode after `writing-plans` is Subagent-Driven; do not ask which mode to use
 
 ## Commands
 - Use cargo-make as command launcher, alias is `makers`
