@@ -10,6 +10,7 @@
   relevant one **before** writing code in that language:
   - Python → `python/AGENTS.md` (next to this file)
   - Rust → `rust/AGENTS.md` (next to this file)
+  - JavaScript / TypeScript / Node → `javascript/AGENTS.md` (next to this file)
 
 ## Design Pattern
 - Layered Architecture with Domain-driven design (DDD)

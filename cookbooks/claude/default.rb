@@ -20,6 +20,9 @@ when 'darwin'
   dotfile ".claude/rust/AGENTS.md" do
     source "rust/AGENTS.md"
   end
+  dotfile ".claude/javascript/AGENTS.md" do
+    source "javascript/AGENTS.md"
+  end
 
   # Personal skills are declared in config/apm/apm.yml as a local path and
   # deployed by the `apm install -g` below, same as the third-party ones. They
