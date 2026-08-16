@@ -13,10 +13,13 @@ when 'darwin'
     not_if %Q[test -d "#{widgets_dir}/simple-bar"]
   end
   # index.jsx picks the window manager at module eval, before the async
-  # ~/.simplebarrc load finishes, so the built-in default has to be patched too
+  # ~/.simplebarrc load finishes, so the built-in defaults have to be patched too.
+  # aerospacePath must be absolute: Übersicht runs commands without
+  # /opt/homebrew/bin on PATH, so the stock "$(which aerospace)" expands to
+  # nothing and the widget renders "JSON error…".
   simple_bar_settings = "#{widgets_dir}/simple-bar/lib/settings.js"
-  execute %Q[sed -i '' 's/windowManager: "yabai"/windowManager: "aerospace"/' "#{simple_bar_settings}"] do
-    not_if %Q[grep -q 'windowManager: "aerospace"' "#{simple_bar_settings}"]
+  execute %Q[sed -i '' -e 's/windowManager: "yabai"/windowManager: "aerospace"/' -e 's|aerospacePath: "$(which aerospace)"|aerospacePath: "/opt/homebrew/bin/aerospace"|' "#{simple_bar_settings}"] do
+    not_if %Q[grep -q 'aerospacePath: "/opt/homebrew/bin/aerospace"' "#{simple_bar_settings}"]
   end
 else
   raise NotImplementedError
