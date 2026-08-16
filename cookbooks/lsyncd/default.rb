@@ -6,7 +6,7 @@ when 'darwin'
   execute 'brew install --cask macfuse' do
     not_if 'brew list --cask | grep macfuse'
   end
-  execute 'brew install gromgit/fuse/sshfs-mac fswatch progress' do
+  execute 'brew trust --formula gromgit/fuse/sshfs-mac && brew install gromgit/fuse/sshfs-mac fswatch progress' do
     not_if 'which sshfs && which fswatch && which progress'
   end
 else

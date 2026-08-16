@@ -1,6 +1,6 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew install aquaproj/aqua/aqua' do
+  execute 'brew trust --formula aquaproj/aqua/aqua && brew install aquaproj/aqua/aqua' do
     not_if 'which aqua'
   end
 else
