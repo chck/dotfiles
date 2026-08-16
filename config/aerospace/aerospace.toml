@@ -7,7 +7,19 @@ start-at-login = true
 
 # A disabled server answers every CLI query with an error, which simple-bar
 # surfaces as "JSON error…", so always come up enabled
-after-startup-command = ['enable on']
+after-startup-command = [
+  'enable on',
+  # on-window-detected fires before startup-restored windows are attached to
+  # their container, so re-apply accordion once the tree has settled
+  'exec-and-forget sleep 2; for ws in $(/opt/homebrew/bin/aerospace list-workspaces --all); do /opt/homebrew/bin/aerospace layout --workspace $ws --root accordion; done',
+]
 
 # Possible values: tiles|accordion
 default-root-container-layout = 'accordion'
+
+# default-root-container-layout only covers workspaces created after startup, so
+# containers rebuilt from existing windows fall back to tiles. Force accordion
+# on every window AeroSpace detects instead.
+[[on-window-detected]]
+if = 'true'
+run = ['layout accordion']
