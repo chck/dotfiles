@@ -6,8 +6,8 @@ when 'darwin'
   execute 'brew install --cask nikitabobko/tap/aerospace' do
     not_if 'test -d /Applications/AeroSpace.app/'
   end
-  dotfile '.aerospace.toml' do
-    source 'aerospace.toml'
+  dotfile 'aerospace' do
+    destination "#{ENV['HOME']}/.config"
   end
 else
   raise NotImplementedError
