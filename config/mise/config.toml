@@ -19,6 +19,7 @@ pre-commit = "latest"
 python = "latest"
 rust = "latest"         # symlinks to the rustup toolchain from cookbooks/rust
 terraform = "latest"
+tflint = "latest"       # homebrew/core ships no bottle for it
 uv = "latest"
 
 [settings]

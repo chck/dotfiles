@@ -31,7 +31,8 @@ EOF
   execute 'brew install pass' do
     not_if 'which pass'
   end
-  execute 'brew tap microsoft/git && brew install --cask git-credential-manager' do
+  # brew ignores a tap until it is trusted, so trust the one cask we install
+  execute 'brew tap microsoft/git && brew trust --cask microsoft/git/git-credential-manager && brew install --cask git-credential-manager' do
     not_if 'which git-credential-manager'
   end
   execute 'brew install gh' do
@@ -78,6 +79,6 @@ else
   raise NotImplementedError
 end
 
-execute 'gh extension install github/gh-copilot' do 
+execute 'gh extension install github/gh-copilot' do
   not_if 'gh extension list | grep github/gh-copilot'
 end

@@ -1,6 +1,8 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew tap tldr-pages/tldr && brew install tldr' do
+  # the `tldr` formula was disabled 2025-10-24; tlrc is the official client and
+  # still provides the `tldr` command
+  execute 'brew install tlrc' do
     not_if 'which tldr'
   end
 when 'ubuntu'
