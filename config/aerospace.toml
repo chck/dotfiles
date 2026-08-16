@@ -1,0 +1,6 @@
+# AeroSpace config. Omitted keys fall back to the defaults shipped in
+# /Applications/AeroSpace.app/Contents/Resources/default-config.toml
+config-version = 2
+
+# simple-bar needs AeroSpace running to render its spaces widget
+start-at-login = true
