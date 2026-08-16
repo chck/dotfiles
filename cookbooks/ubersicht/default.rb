@@ -12,6 +12,12 @@ when 'darwin'
   execute %Q[git clone --depth 1 https://github.com/Jean-Tinland/simple-bar "#{widgets_dir}/simple-bar"] do
     not_if %Q[test -d "#{widgets_dir}/simple-bar"]
   end
+  # index.jsx picks the window manager at module eval, before the async
+  # ~/.simplebarrc load finishes, so the built-in default has to be patched too
+  simple_bar_settings = "#{widgets_dir}/simple-bar/lib/settings.js"
+  execute %Q[sed -i '' 's/windowManager: "yabai"/windowManager: "aerospace"/' "#{simple_bar_settings}"] do
+    not_if %Q[grep -q 'windowManager: "aerospace"' "#{simple_bar_settings}"]
+  end
 else
   raise NotImplementedError
 end
