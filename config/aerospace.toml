@@ -4,3 +4,7 @@ config-version = 2
 
 # simple-bar needs AeroSpace running to render its spaces widget
 start-at-login = true
+
+# A disabled server answers every CLI query with an error, which simple-bar
+# surfaces as "JSON error…", so always come up enabled
+after-startup-command = ['enable on']
