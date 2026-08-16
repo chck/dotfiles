@@ -21,6 +21,10 @@ when 'darwin'
   execute %Q[sed -i '' -e 's/windowManager: "yabai"/windowManager: "aerospace"/' -e 's|aerospacePath: "$(which aerospace)"|aerospacePath: "/opt/homebrew/bin/aerospace"|' "#{simple_bar_settings}"] do
     not_if %Q[grep -q 'aerospacePath: "/opt/homebrew/bin/aerospace"' "#{simple_bar_settings}"]
   end
+  # simple-bar rewrites this file whenever settings change in its UI
+  dotfile '.simplebarrc' do
+    source 'simplebarrc.json'
+  end
 else
   raise NotImplementedError
 end
