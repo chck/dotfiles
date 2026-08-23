@@ -24,6 +24,11 @@ repos:
         # karabiner.json is rewritten by Karabiner-Elements in its own format
         exclude: ^config/(settings|karabiner/karabiner)\.json$
       - id: trailing-whitespace
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      # detect-private-key only matches PEM blocks; this repo is public
+      - id: gitleaks
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.13.9
     hooks:
