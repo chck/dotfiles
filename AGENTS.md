@@ -3,6 +3,31 @@
 Repository-local rules for this dotfiles repo. These override the global
 instructions deployed from `config/AGENTS.md`.
 
+## What this repo is
+
+`./install.sh` provisions a whole machine from scratch: one mitamae run over
+every cookbook in the platform role, into a public repository. Two invariants
+follow.
+
+**Idempotent at OS scope.** Every apply re-runs every recipe, so one that works
+the first time but duplicates or fails the second takes the whole role down with
+it, not just its own cookbook. Guard installs with `not_if` / `only_if`, guard
+appends with a `grep` for a unique string, and never `sed -i` a tracked file
+unconditionally. Check with `./install.sh -n`, and make sure a second apply
+changes nothing. A few `execute` blocks deliberately run every time
+(`apm install -g`, `mise install`); they are safe only because those commands are
+themselves idempotent, so keep any new unguarded command in that class.
+
+**Public.** Before committing, read the diff for anything that should not be
+published — not only credentials, but anything that identifies this machine or
+its owner beyond what already is: tokens and API keys, licence codes, internal
+hostnames and URLs, MAC or Bluetooth device addresses, hardware serials, other
+users' absolute paths. Machine-specific values belong in the local override each
+tool already has (`~/.config/mise/conf.d/*.toml`, `~/.zshrc.local`,
+`~/.wakatime.cfg`), referenced by a comment rather than by value. `detect-private-key`
+is the only secret-related hook and it matches PEM blocks only — it is not a
+scanner, so this check is yours.
+
 ## The one rule that matters
 
 `config/` is the source. Everything under `$HOME` is a deployed artifact.
