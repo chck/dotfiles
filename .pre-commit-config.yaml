@@ -10,6 +10,8 @@ repos:
         exclude: ^config/settings\.json$
       - id: check-merge-conflict
       - id: check-toml
+        # Otty repeats open-with-app per entry, which is not valid TOML
+        exclude: ^config/otty/config\.toml$
       - id: check-yaml
       - id: detect-private-key
       - id: end-of-file-fixer

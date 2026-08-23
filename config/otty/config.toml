@@ -3,23 +3,23 @@ theme = "April Dark"
 theme-dark = "Paper"
 
 # Colors
-foreground = "#1a1a1a"
-background = "#fcfbf9"
-palette-0 = "#1a1a1a"
-palette-1 = "#a33a3a"
-palette-2 = "#2b5a38"
-palette-3 = "#a85a20"
-palette-4 = "#4a7a8a"
-palette-5 = "#4a3a6a"
-palette-6 = "#3a7a6a"
-palette-7 = "#c1beb5"
-palette-8 = "#8c8a80"
-palette-9 = "#c36a6a"
-palette-10 = "#6b9a78"
-palette-11 = "#c88a50"
-palette-12 = "#7a9aaa"
-palette-13 = "#8a7a9a"
-palette-14 = "#6abaaa"
+foreground = "#ffffff"
+background = "#141b18"
+palette-0 = "#101513"
+palette-1 = "#e06c75"
+palette-2 = "#98c379"
+palette-3 = "#e5c07b"
+palette-4 = "#61afef"
+palette-5 = "#b876b8"
+palette-6 = "#5fb8a0"
+palette-7 = "#8a9992"
+palette-8 = "#5c6b64"
+palette-9 = "#eb8a91"
+palette-10 = "#c5e86c"
+palette-11 = "#f0d499"
+palette-12 = "#82c2f3"
+palette-13 = "#d098d0"
+palette-14 = "#85cdb6"
 
 # Mouse & Input
 omit-otty-prefix = true
@@ -35,4 +35,15 @@ font-size = 18
 # text-blink = true (reset to default)
 
 auto-theme-dark-mode = false
-palette-15 = "#ebebe6"
+# palette-15 = "#ebebe6" (reset to default)
+
+sidebar-width = 262
+
+# window-hide-dirty-indicator = true (reset to default)
+
+privilege-caffeinate-agent-processing = true
+
+window-layout = "tabs-top"
+
+open-with-app = "VS Code|com.microsoft.VSCode"
+open-with-app = "Zed|dev.zed.Zed"
