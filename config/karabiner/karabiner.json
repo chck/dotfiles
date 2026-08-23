@@ -254,14 +254,6 @@
                 },
                 {
                     "identifiers": {
-                        "device_address": "c6-06-52-a0-26-4d",
-                        "is_keyboard": true,
-                        "is_pointing_device": true
-                    },
-                    "ignore": false
-                },
-                {
-                    "identifiers": {
                         "is_keyboard": true,
                         "is_pointing_device": true,
                         "product_id": 1,
