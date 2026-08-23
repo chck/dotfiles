@@ -3,7 +3,9 @@ name: git-wt
 description: >
   Use the git-wt command to create an isolated Git worktree for a task, keeping the main branch clean.
   After finishing, clean up the worktree based on whether changes exist.
-  Only trigger when the user explicitly requests worktree isolation — e.g., "use a worktree", "use wt", "work on a separate branch", "isolate this in a worktree".
+  Use for every change that touches a file — including single-file edits, typo fixes, and
+  documentation-only changes — and whenever the user explicitly requests worktree isolation
+  ("use a worktree", "use wt", "work on a separate branch", "isolate this in a worktree").
 ---
 
 # Git Worktree Workflow
@@ -13,13 +15,18 @@ If anything goes wrong, `git wt -d` cleanly removes the worktree and branch.
 
 ## Step 1: Create the worktree
 
-Choose a branch name from the task, then run:
+Choose a branch name from the task, then branch from `origin/main` — never from the current
+HEAD, which a concurrent session sharing this checkout may have moved:
 
 ```bash
-git wt <branch-name> --nocd
+git fetch origin
+git wt <branch-name> origin/main --nocd
 ```
 
 The worktree is created at `.worktrees/<branch-name>/`. Record the printed path as `WORKTREE_PATH`.
+
+Substitute the repository's default branch if it is not `main` (e.g. `origin/master`).
+The new branch tracks `origin/main`, so push it with `-u origin <branch-name>` (see Step 3).
 
 ## Step 2: Do all work inside the worktree
 
@@ -74,8 +81,8 @@ When linked to an issue, include the issue number: `feat/16-add-dark-mode`, `fix
 When spawning multiple subagents with the Agent tool, give each its own branch and worktree:
 
 ```bash
-git wt feat/feature-a --nocd  # → .worktrees/feat/feature-a
-git wt feat/feature-b --nocd  # → .worktrees/feat/feature-b
+git wt feat/feature-a origin/main --nocd  # → .worktrees/feat/feature-a
+git wt feat/feature-b origin/main --nocd  # → .worktrees/feat/feature-b
 ```
 
 Pass each agent its explicit worktree path so they don't step on each other.
