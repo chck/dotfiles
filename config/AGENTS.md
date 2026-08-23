@@ -27,9 +27,13 @@ src/app_name
 ```
 
 ## Workflow
-- For any non-trivial implementation, use the `git-wt` skill to work in a worktree
-  - **When to apply:** before starting code changes, after planning is complete
-  - **Exceptions:** single-file minor edits (typos, comment additions), documentation-only changes
+- Always use the `git-wt` skill to work in a worktree — including single-file
+  edits, typo fixes, and documentation-only changes. There are no exceptions
+  - **When to apply:** before touching any file, after planning is complete
+  - **Base the branch on `origin/main`** (fetch first), not on the current HEAD
+  - **Why:** a checkout can be shared with other concurrent sessions. Committing
+    on the shared HEAD lands the commit on whatever branch that session switched
+    to, and `git switch` / `reset` there can disturb its uncommitted work
 - Subagents are always permitted. Use the Agent tool whenever it fits — parallel
   independent tasks, broad searches, per-task execution of a plan — without asking
   first. This overrides any default that says to only use it when explicitly requested.
