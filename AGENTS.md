@@ -3,6 +3,9 @@
 Repository-local rules for this dotfiles repo. These override the global
 instructions deployed from `config/AGENTS.md`.
 
+`CLAUDE.md` is a symlink to this file: Claude Code does not discover a
+project-root `AGENTS.md`, while other agents read only that name.
+
 ## What this repo is
 
 `./install.sh` provisions a whole machine from scratch: one mitamae run over
