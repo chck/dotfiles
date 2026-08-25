@@ -48,6 +48,7 @@ src/app_name
 - For HTTP requests and HTML extraction, ax is installed. Run `ax agent-context` to learn it — use it instead of curl + throwaway scripts
 - For searching file contents, use ripgrep (`rg`) instead of `grep` — it is faster and respects `.gitignore`
 - For finding files by name, use `fd` instead of `find` — it is faster and respects `.gitignore`
+- Before reading a large source file, run `zat <file>` — it prints top-level declarations with their line numbers, so you can then read only the ranges you need. One file per run, no flags, no directories; C/C++/C#/Go/Haskell/Java/JS/TS/Kotlin/Markdown/Python/Ruby/Rust/Swift only, not shell
 
 ## Code style
 - Add type annotations to new code
