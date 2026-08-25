@@ -124,6 +124,28 @@ when 'darwin'
     }
   end
 
+  # JuliusBrussee/caveman: ultra-compressed output mode. A SessionStart hook
+  # injects the caveman style and a UserPromptSubmit hook tracks it, so code,
+  # commands and errors stay byte-exact while prose drops to telegraph form.
+  # Installed as a plugin rather than an apm skill because the hooks resolve
+  # ${CLAUDE_PLUGIN_ROOT} and apm deploys skills/ only. The hooks shell out to
+  # `node`, which mise provides (config/mise/config.toml).
+  # Only the MIT plugin is installed here — not the BSL-1.1 `@caveman-ai/cli`
+  # proxy, which would route every provider call through a local process.
+  execute 'claude plugins marketplace add https://github.com/JuliusBrussee/caveman.git' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/known_marketplaces.json')
+      File.exist?(f) && File.read(f).include?('"caveman"')
+    }
+  end
+
+  execute 'claude plugins install caveman@caveman --scope user' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
+      File.exist?(f) && File.read(f).include?('caveman@caveman')
+    }
+  end
+
   # MCP servers are declared in config/apm/apm.yml alongside the skills and
   # written to ~/.config/claude/.claude.json by the `apm install -g` above.
 else
