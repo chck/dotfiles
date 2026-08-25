@@ -103,6 +103,27 @@ when 'darwin'
     }
   end
 
+  # cathrynlavery/diagram-design: editorial HTML/SVG diagram types, plus the
+  # /export-diagram, /import-drawio, /import-mermaid, /profile and /doctor
+  # commands. Installed as a plugin rather than an apm skill because apm deploys
+  # skills/ only and would drop those commands.
+  # settings.json already enables "diagram-design@diagram-design": true.
+  # PNG export additionally needs Playwright (`pip install playwright &&
+  # playwright install chromium`); HTML and SVG output need nothing.
+  execute 'claude plugins marketplace add https://github.com/cathrynlavery/diagram-design.git' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/known_marketplaces.json')
+      File.exist?(f) && File.read(f).include?('"diagram-design"')
+    }
+  end
+
+  execute 'claude plugins install diagram-design@diagram-design --scope user' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
+      File.exist?(f) && File.read(f).include?('diagram-design@diagram-design')
+    }
+  end
+
   # MCP servers are declared in config/apm/apm.yml alongside the skills and
   # written to ~/.config/claude/.claude.json by the `apm install -g` above.
 else
