@@ -35,7 +35,8 @@
     "ailab-info@ailab": true,
     "cycloud-plugin@ailab": true,
     "mattpocock-skills@mattpocock": true,
-    "diagram-design@diagram-design": true
+    "diagram-design@diagram-design": true,
+    "caveman@caveman": true
   },
   "extraKnownMarketplaces": {
     "wakatime": {
@@ -66,6 +67,12 @@
       "source": {
         "source": "git",
         "url": "https://github.com/cathrynlavery/diagram-design.git"
+      }
+    },
+    "caveman": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/JuliusBrussee/caveman.git"
       }
     }
   },
