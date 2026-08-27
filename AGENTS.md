@@ -58,6 +58,12 @@ Search this repository instead — most of `$HOME`'s config originates here.
 | apm (`config/apm/apm.yml`) | `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/` | `~/.config/claude/skills/<name>/` | **copy** |
 | mise (`config/mise/config.toml`) | tracked, symlinked | `~/.config/mise/config.toml` | symlink |
 | Homebrew / cargo / `github_binary` | cookbook recipe | — | installs only |
+| LaunchAgent (`config/ollama/*.plist`) | tracked, symlinked | `~/Library/LaunchAgents/` | symlink + `launchctl bootstrap` |
+
+A LaunchAgent is how a GUI app gets configuration it cannot read from the shell.
+Ollama.app spawns its server as a child process, so `~/.zshrc` never reaches it;
+only the launchd user session does. `launchctl bootstrap` is guarded by
+`launchctl print`, and the app must be restarted before new values take effect.
 
 The symlink/copy distinction is the trap:
 

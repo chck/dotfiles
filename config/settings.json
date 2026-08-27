@@ -37,6 +37,23 @@
   "edit_predictions": {
     "provider": "ollama"
   },
+  // Zed gives an Ollama model a small context and no tool use unless it is
+  // declared here, which leaves the agent panel unable to do repo work.
+  // max_tokens mirrors the context length Ollama.app actually loads the model
+  // with; `ollama ps` and the n_ctx line in ~/.ollama/logs/server.log report it.
+  "language_models": {
+    "ollama": {
+      "api_url": "http://localhost:11434",
+      "available_models": [
+        {
+          "name": "qwen3.6:35b-a3b-coding",
+          "display_name": "qwen3.6 35B-A3B coding",
+          "max_tokens": 131072,
+          "supports_tools": true
+        }
+      ]
+    }
+  },
   "agent": {
     "show_turn_stats": false,
     "sidebar_side": "right",
