@@ -3,6 +3,11 @@ when 'darwin'
   execute 'brew install --cask claude' do
     not_if { File.directory?('/Applications/Claude.app') }
   end
+  # The CLI is a separate cask from the desktop app, and every `claude plugins`
+  # call below depends on it.
+  execute 'brew install --cask claude-code' do
+    not_if 'which claude'
+  end
   # settings.json is read from ~/.config/claude/ (new path since Claude Code 1.x)
   claude_settings = File.join(dotfiles_root, 'config/.claude/settings.json')
   link File.expand_path('~/.config/claude/settings.json') do

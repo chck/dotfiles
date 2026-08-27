@@ -11,6 +11,7 @@
 [tools]
 apm = "latest"          # microsoft/apm: agent package manager
 bun = "latest"
+gemini = "latest"       # npm:@google/gemini-cli, deprecated in homebrew/core
 java = "latest"
 node = "latest"
 pnpm = "latest"

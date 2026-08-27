@@ -6,10 +6,9 @@ when 'darwin'
   execute 'brew install --cask google-gemini' do
     not_if 'test -d /Applications/Gemini.app/'
   end
-  # brew's gemini-cli formula is deprecated upstream; npm is the official channel
-  execute 'pnpm i -g @google/gemini-cli' do
-    not_if "pnpm ls -g --depth=0 | grep @google/gemini-cli"
-  end
+  # The CLI is declared as gemini in config/mise/config.toml, which resolves it
+  # through mise's npm backend. brew's gemini-cli formula is deprecated upstream
+  # and its replacement cask, antigravity-cli, ships the separate `agy` binary.
   dotfile "AGENTS.md" do
     destination "#{ENV['HOME']}/.gemini"
   end
