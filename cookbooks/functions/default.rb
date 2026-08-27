@@ -8,7 +8,11 @@ define :dotfile, source: nil, destination: nil do
   filepath = File.join(dest, params[:name])
   filedir = File.dirname(filepath)
   Dir.mkdir(filedir) unless Dir.exist?(filedir)
-  File.delete(filepath) if File.exist?(filepath) && params[:name] == ".zshrc"
+  # No File.delete here: definition bodies run while the recipe is being read,
+  # which is before mitamae decides whether to converge and happens even under
+  # --dry-run. Deleting ~/.zshrc there meant `./install.sh -n` removed it and,
+  # being a dry run, never recreated it. `link ... force true` replaces an
+  # existing file or symlink on its own.
   link filepath do
     to File.expand_path("../../../config/#{source}", __FILE__)
     user node[:user]
