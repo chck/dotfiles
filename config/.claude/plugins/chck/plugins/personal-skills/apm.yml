@@ -6,6 +6,6 @@
 # Claude Code marketplace plugin. Keep name/version/description in sync with
 # .claude-plugin/plugin.json, which is what apm actually records.
 name: personal-skills
-version: "1.0.1"
+version: "1.1.0"
 description: Personal workflow skills
 author: chck
