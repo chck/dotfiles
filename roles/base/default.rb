@@ -15,3 +15,5 @@ if run_command('test -d /etc/systemd', error: false).exit_status == 0
 end
 
 include_cookbook 'functions'
+
+include_cookbook 'up'

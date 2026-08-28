@@ -1,3 +1,8 @@
+# ~/bin holds scripts such as `up`. Set before the zsh-defer'd sources below so
+# they resolve in non-interactive shells too. typeset -U keeps this idempotent.
+typeset -U path
+path=("$HOME/bin" $path)
+
 fpath+=~/.zfunc
 autoload -Uz compinit && compinit
 

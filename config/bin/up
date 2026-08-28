@@ -1,0 +1,56 @@
+#!/usr/bin/env zsh
+# Upgrade every package manager and toolchain on this machine.
+#
+# A script rather than a shell alias so it resolves in non-interactive shells
+# too; the aliases it replaced were sourced through zsh-defer, which only runs
+# once an interactive prompt is drawn.
+#
+# Steps run independently instead of being chained with &&: a single failure
+# (a Homebrew cask symlink conflict, say) used to skip every later step
+# silently. Failures are collected and reported at the end.
+
+emulate -L zsh
+setopt no_unset
+
+failed=()
+typeset -aU skipped   # -U: report each missing command once
+
+run() {
+  if ! command -v "$1" > /dev/null 2>&1; then
+    skipped+=("$1")
+    return
+  fi
+  print -P "%F{blue}==> $*%f"
+  "$@" || failed+=("$*")
+}
+
+case "$(uname)" in
+  Darwin)
+    # Bare `brew upgrade` already covers outdated casks, and Homebrew runs its
+    # own cleanup afterwards unless HOMEBREW_NO_INSTALL_CLEANUP is set.
+    run brew update
+    run brew upgrade
+    ;;
+  Linux)
+    run sudo apt update -y
+    run sudo apt full-upgrade -y
+    ;;
+esac
+
+run sheldon lock --update
+run gcloud components update --quiet
+run mise up -- --bump
+run tldr --update
+# No toolchain argument: `rustup update` updates every installed toolchain.
+run rustup update
+run cargo install-update -a
+
+(( $#skipped )) && print -P "%F{yellow}skipped (not installed):%f ${(j:, :)skipped}"
+
+if (( $#failed )); then
+  print -P "%F{red}failed:%f"
+  print -l -- $failed
+  exit 1
+fi
+
+print -P "%F{green}up: all steps succeeded%f"
