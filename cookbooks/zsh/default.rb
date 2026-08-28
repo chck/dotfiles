@@ -1,5 +1,5 @@
 case node[:platform]
-when 'darwin' 
+when 'darwin'
   dotfile '.zshrc.darwin'
   execute "sudo chsh -s /bin/zsh #{node[:user]}" do
     not_if 'test $SHELL == /bin/zsh'
@@ -16,3 +16,4 @@ end
 
 dotfile '.zsh'
 dotfile '.zshrc'
+dotfile '.zshenv'
