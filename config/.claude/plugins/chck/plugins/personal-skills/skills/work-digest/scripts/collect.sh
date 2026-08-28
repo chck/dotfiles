@@ -12,7 +12,7 @@
 #   index.tsv          one row per repo: slug, path, counts, file paths
 #   summary.txt        totals across all repos
 #   prompts/<slug>.tsv  date <TAB> user prompt (400 chars max)
-#   gitlog/<slug>.txt   date <TAB> author <TAB> subject
+#   gitlog/<slug>.txt   commit date <TAB> author <TAB> subject
 #
 # Prints the output directory on stdout as its last line.
 
@@ -108,8 +108,11 @@ while IFS=$'\t' read -r slug repo; do
   done < "$OUT/.sessions-$slug"
   rm -f "$OUT/.turn"
 
+  # %cd, not %ad: --since/--until select on commit date, so printing the author
+  # date lets a rebased or cherry-picked commit report a date outside the window
+  # and inflate the active-day count.
   git -C "$repo" log --all --since="$SINCE" --until="$UNTIL 23:59:59" \
-      --date=short --pretty=$'%ad\t%an\t%s' > "$gitlog" 2>/dev/null || : > "$gitlog"
+      --date=short --pretty=$'%cd\t%an\t%s' > "$gitlog" 2>/dev/null || : > "$gitlog"
 
   n_prompts=$(wc -l < "$prompts" | tr -d ' ')
   n_commits=$(wc -l < "$gitlog" | tr -d ' ')
