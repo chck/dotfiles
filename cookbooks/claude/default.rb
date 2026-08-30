@@ -54,9 +54,11 @@ when 'darwin'
   end
 
   # Third-party skills (ibelick/ui-skills, anthropics/skills) are declared in
-  # config/apm/apm.yml and deployed to ~/.config/claude/skills/ by apm, which is
-  # installed via mise. This replaced ibelick's install.sh, whose not_if guard
-  # meant upstream additions were never picked up after the first run.
+  # config/apm/apm.yml and deployed by apm, which is installed via mise, to
+  # ~/.config/claude/skills/ for Claude Code and ~/.agents/skills/ for the other
+  # agents — one directory per target declared in that manifest. This replaced
+  # ibelick's install.sh, whose not_if guard meant upstream additions were never
+  # picked up after the first run.
   #
   # Edit config/apm/apm.yml by hand. Do NOT run `apm install -g <package>`: it
   # rewrites the symlinked manifest and shows up as a diff in this repository.

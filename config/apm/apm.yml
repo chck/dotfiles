@@ -1,7 +1,7 @@
 # apm global manifest, symlinked to ~/.apm/apm.yml by cookbooks/claude.
 #
-# Claude Code skills are declared here and deployed to ~/.config/claude/skills/
-# by `apm install -g`.
+# Skills are declared here and deployed by `apm install -g` to one directory per
+# entry in `targets:` below.
 #
 # Edit this file by hand, then run `apm install -g`. Do NOT run
 # `apm install -g <package>`, which rewrites the manifest and would surface as a
@@ -10,8 +10,19 @@ name: chck-dotfiles
 version: 1.0.0
 description: Agent skills for chck/dotfiles
 author: chck
+# Claude Code reads only its own `<config>/.claude/skills/`, which XDG_CONFIG_HOME
+# puts at ~/.config/claude/skills/. Every other agent here follows the shared
+# convention and scans ~/.agents/skills/, which is what the `agent-skills` target
+# writes — opencode picks the skills up from there with no further wiring.
+#
+# Do not list individual agents (`opencode`, `codex`, …) instead. Their skill
+# deploy path is that same ~/.agents/skills/, so they add nothing, and each also
+# claims that agent's MCP config: `codex` writes an untracked ~/.codex/config.toml
+# even when codex is not installed, and `opencode` — which apm skips today — would
+# target ~/.config/opencode/opencode.json, a symlink to a tracked file here.
 targets:
   - claude
+  - agent-skills
 dependencies:
   apm:
     # First-party skills, kept in this repo. The path must be absolute or

@@ -39,6 +39,8 @@ reads alongside it and this repo does not manage.
 ### Add an agent skill or MCP server
 
 Add an entry to [`config/apm/apm.yml`](config/apm/apm.yml) — no cookbook needed.
-`apm install -g` deploys skills to `~/.config/claude/skills/` and MCP servers to
-Claude Code's config. Claude Code plugins are not managed there; they ship their
-own runtime and stay in [`cookbooks/claude`](cookbooks/claude/default.rb).
+`apm install -g` deploys skills to `~/.config/claude/skills/` for Claude Code and
+to `~/.agents/skills/` for every other agent (opencode reads that one), and MCP
+servers to Claude Code's config. Claude Code plugins are not managed there; they
+ship their own runtime and stay in
+[`cookbooks/claude`](cookbooks/claude/default.rb).

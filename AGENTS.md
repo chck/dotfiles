@@ -55,7 +55,7 @@ Search this repository instead — most of `$HOME`'s config originates here.
 | Mechanism | Source | Live path | Semantics |
 |-----------|--------|-----------|-----------|
 | `dotfile` / `link` in cookbooks | `config/<name>` | `$HOME/...` | **symlink** |
-| apm (`config/apm/apm.yml`) | `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/` | `~/.config/claude/skills/<name>/` | **copy** |
+| apm (`config/apm/apm.yml`) | `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/` | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | mise (`config/mise/config.toml`) | tracked, symlinked | `~/.config/mise/config.toml` | symlink |
 | Homebrew / cargo / `github_binary` | cookbook recipe | — | installs only |
 | LaunchAgent (`config/ollama/*.plist`) | tracked, symlinked | `~/Library/LaunchAgents/` | symlink + `launchctl bootstrap` |
@@ -70,10 +70,15 @@ The symlink/copy distinction is the trap:
 - **Symlinked** (`config/karabiner/`, `config/AGENTS.md`, `config/.zsh/`, …) —
   editing the live path edits a tracked file. Valid, but check `git status`
   afterwards; the change is real and needs a commit.
-- **Copied** (agent skills under `~/.config/claude/skills/`) — editing the live
-  path is lost the next time `apm install -g` runs. Always edit
+- **Copied** (agent skills under `~/.config/claude/skills/` and
+  `~/.agents/skills/`) — editing either live path is lost the next time
+  `apm install -g` runs. Always edit
   `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/SKILL.md`,
   then redeploy. No version bump in `apm.yml` / `plugin.json` is needed.
+
+apm deploys one copy per target. Claude Code reads only
+`~/.config/claude/skills/`; every other agent reads `~/.agents/skills/`, so both
+copies are live and a skill edited in one place is not edited in the other.
 
 `~/.claude/plugins/marketplaces/chck/` and `~/.claude/plugins/cache/chck/` hold
 retired copies of the same skills. They are not the source; do not edit them.
@@ -116,6 +121,6 @@ Both rewrite a symlinked, tracked file and surface as a diff here.
 ## Before committing
 
 Run `./install.sh -n` for cookbook changes, and confirm what actually landed
-(`ls ~/.config/claude/skills/`, `ls -l <live-path>`) rather than trusting an
-exit code — the apm and mitamae paths both report success while deploying
-nothing.
+(`ls ~/.config/claude/skills/`, `ls ~/.agents/skills/`, `ls -l <live-path>`)
+rather than trusting an exit code — the apm and mitamae paths both report
+success while deploying nothing.
