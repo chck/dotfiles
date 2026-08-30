@@ -43,3 +43,5 @@ alias tail="tspin"
 alias sl="rust-stakeholder --dev-type data-science --jargon high"
 # claude
 alias c="claude"
+# opencode
+alias oc="opencode"
