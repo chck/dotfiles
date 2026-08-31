@@ -38,10 +38,5 @@ else
   raise NotImplementedError
 end
 
-execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
-# opencode
-alias oc="opencode"
-EOF
-''' do
-  not_if { File.exist?(File.expand_path('~/.zsh/lib/aliases.zsh')) && File.read(File.expand_path('~/.zsh/lib/aliases.zsh')).include?('alias oc=') }
-end
+# No alias here: `oc` points at OpenCode 2 (cookbooks/opencode2), which is the
+# daily driver. v1 remains the stable fallback and is reachable as `opencode`.
