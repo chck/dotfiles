@@ -69,4 +69,11 @@ src/app_name
   - If you cannot tell which model you are, use `Claude`
 
 ## Security
-- Never read or commit files matching: `*.env`, `*.key`, `*.pem`, `*secret*`, `*password*`, `*credential*`
+- **Secret material** — the contents of `*.env`, `*.key`, `*.pem`, a private key block, an
+  access token, a live password. Do not open one to read the value, do not copy a value
+  elsewhere, never commit one. On finding a stray one, report the path and the kind of
+  credential without reproducing the value
+- **Source that handles secrets** — `secret_manager.ts`, `password.py`, `credentials.go`,
+  `03_parameter.tf`. Ordinary code: read it, review it, change it. Excluding a file because its
+  *name* contains `secret` hides the code most worth reading. Mask any literal value quoted out
+  of one
