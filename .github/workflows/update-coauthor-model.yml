@@ -19,17 +19,26 @@ jobs:
         run: |
           CLAUDE_BIN=$(which claude)
           LATEST=$(strings "$CLAUDE_BIN" | python3 -c "
-          import sys
+          import re, sys
+          # バイナリには 'Claude-Session:' のようなラベルも含まれる。startswith('Claude')
+          # だけで拾うとそれを掴み、trailer が 'Name <email>' として壊れる。
+          # 'Claude Sonnet 4.6' の形だけを受け付ける。
+          NAME = re.compile(r'Claude [A-Za-z]+ [0-9][0-9.]*( \(1M context\))?')
           lines = sys.stdin.read().split('\n')
           for i, line in enumerate(lines):
               if line.startswith('Co-Authored-By:') and i > 0:
                   prev = lines[i-1].strip()
-                  if prev.startswith('Claude'):
+                  if NAME.fullmatch(prev):
                       print(prev)
                       break
           ")
           CURRENT=$(grep 'Co-Authored-By:' config/.zsh/lib/functions.zsh \
             | sed 's/.*Co-Authored-By: \(.*\) <noreply.*/\1/' | head -1)
+          # CURRENT が壊れていると sed が空振りし、ファイル間で値がずれたまま成功する。
+          if printf '%s' "${CURRENT}" | grep -q ':'; then
+            echo "::error::current trailer name is malformed: ${CURRENT}"
+            exit 1
+          fi
           echo "latest=${LATEST}" >> "$GITHUB_OUTPUT"
           echo "current=${CURRENT}" >> "$GITHUB_OUTPUT"
           echo "Latest: ${LATEST}, Current: ${CURRENT}"
@@ -40,9 +49,11 @@ jobs:
           LATEST="${{ steps.model.outputs.latest }}"
           CURRENT="${{ steps.model.outputs.current }}"
           sed -i "s|Co-Authored-By: ${CURRENT} <noreply@anthropic.com>|Co-Authored-By: ${LATEST} <noreply@anthropic.com>|" \
-            config/.zsh/lib/functions.zsh config/AGENTS.md
+            config/.zsh/lib/functions.zsh config/AGENTS.md \
+            config/.claude/plugins/chck/plugins/personal-skills/skills/commit/SKILL.md
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add config/.zsh/lib/functions.zsh config/AGENTS.md
+          git add config/.zsh/lib/functions.zsh config/AGENTS.md \
+            config/.claude/plugins/chck/plugins/personal-skills/skills/commit/SKILL.md
           git commit -m "chore: update co-author model to ${LATEST}"
           git push

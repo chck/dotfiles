@@ -17,5 +17,5 @@ Stage all unstaged changes and create a git commit.
    - Use Conventional Commits format: `type(scope): description`
    - Common types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
    - Keep the subject line under 72 characters
-   - Append `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>` as a trailer
+   - Append `Co-Authored-By: Claude <noreply@anthropic.com>` as a trailer
 6. Commit and show the result with `git log -1 --stat`
