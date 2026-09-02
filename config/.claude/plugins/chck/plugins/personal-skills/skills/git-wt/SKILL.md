@@ -67,6 +67,30 @@ git wt -d <branch-name>
 git wt -D <branch-name>
 ```
 
+### Repositories with submodules
+
+`git wt -d` fails with `fatal: could not reset submodule index` when the repository has
+submodules that were never initialized in the worktree. The worktree is still there afterwards.
+Remove it directly instead, then drop the branch:
+
+```bash
+git worktree remove --force .worktrees/<branch-name>
+git branch -d <branch-name>          # -D if the branch is unmerged
+```
+
+`--force` here discards nothing beyond the worktree directory itself — commits already pushed
+are on the remote, and the branch is deleted separately.
+
+Two more commands need `--ignore-submodules=all` in such a repository, for the same reason:
+
+```bash
+git status --short --ignore-submodules=all
+git diff --stat --ignore-submodules=all
+```
+
+Do not run `git checkout -- .` there: it aborts on the submodule index and may leave the revert
+half-applied. Revert named files instead.
+
 ## Branch naming
 
 | Type | Prefix | Example |
