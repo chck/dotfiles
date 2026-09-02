@@ -77,3 +77,8 @@ src/app_name
   `03_parameter.tf`. Ordinary code: read it, review it, change it. Excluding a file because its
   *name* contains `secret` hides the code most worth reading. Mask any literal value quoted out
   of one
+- **Writing into a public repository** — check `gh repo view --json visibility` before posting.
+  A PR body, issue body, or comment on a public repository is world-readable, and so is its
+  edit history: removing text later leaves the original revision viewable. Do not name a
+  private or internal org, repository, or cross-reference one by link — describe the situation
+  without the identifier instead
