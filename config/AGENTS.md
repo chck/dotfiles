@@ -63,8 +63,10 @@ src/app_name
 - Commit messages describe **what changed**, not why or who asked
   - Bad: `fix review comments`, `address feedback`, `PR response`
   - Good: `fix: add null check to prevent undefined access`
-- Always add a co-author trailer to commits you (the agent) create:
-  - `Co-Authored-By: Claude <noreply@anthropic.com>`
+- Always add a co-author trailer to commits you (the agent) create, naming the model you are running as:
+  - `Co-Authored-By: <your model display name> <noreply@anthropic.com>`
+  - e.g. `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`
+  - If you cannot tell which model you are, use `Claude`
 
 ## Security
 - Never read or commit files matching: `*.env`, `*.key`, `*.pem`, `*secret*`, `*password*`, `*credential*`

@@ -34,11 +34,28 @@ function gcg() {
 }
 
 function gcgc() {
-  local title
-  title="$(claude -p "Look at the staged git changes and create a summarizing git commit title. Follow the style of conventional commits. Only respond with the title. Do not use any markdown formatting or backticks. Output the raw text only.")"
+  local out title model name family version
+  out="$(claude -p "Look at the staged git changes and create a summarizing git commit title. Follow the style of conventional commits. Only respond with the title. Do not use any markdown formatting or backticks. Output the raw text only." --output-format json)" || return 1
+  title="$(jq -r '.result' <<< "${out}")"
+  if [[ -z "${title}" || "${title}" == "null" ]]; then
+    print -u2 "gcgc: failed to generate a commit title"
+    return 1
+  fi
+  # co-author には実際に使われたモデルを入れる。サブエージェントや fallback で
+  # 複数載ることがあるため、出力トークンが最大のものを採る。
+  model="$(jq -r '[(.modelUsage // {}) | to_entries[]] | max_by(.value.outputTokens) | .value.canonicalModel // .key' <<< "${out}" 2>/dev/null)"
+  # claude-opus-5 -> Claude Opus 5 / claude-haiku-4-5 -> Claude Haiku 4.5
+  if [[ "${model}" =~ '^claude-([a-z]+)-([0-9][0-9-]*)$' ]]; then
+    family="${match[1]}"
+    version="${match[2]//-/.}"
+    name="Claude ${(C)family} ${version}"
+  else
+    # 出力形式が変わってモデル名が取れなくても、コミットは通す。
+    name="Claude"
+  fi
   git commit -m "${title}
 
-Co-Authored-By: Claude <noreply@anthropic.com>"
+Co-Authored-By: ${name} <noreply@anthropic.com>"
 }
 
 function wt() {
