@@ -11,34 +11,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
-
-      - name: Extract model names
+      - name: Resolve model names
         id: model
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          CLAUDE_BIN=$(which claude)
-          LATEST=$(strings "$CLAUDE_BIN" | python3 -c "
-          import re, sys
-          # バイナリには 'Claude-Session:' のようなラベルも含まれる。startswith('Claude')
-          # だけで拾うとそれを掴み、trailer が 'Name <email>' として壊れる。
-          # 'Claude Sonnet 4.6' の形だけを受け付ける。
-          NAME = re.compile(r'Claude [A-Za-z]+ [0-9][0-9.]*( \(1M context\))?')
-          lines = sys.stdin.read().split('\n')
-          for i, line in enumerate(lines):
-              if line.startswith('Co-Authored-By:') and i > 0:
-                  prev = lines[i-1].strip()
-                  if NAME.fullmatch(prev):
-                      print(prev)
-                      break
-          ")
+          if [ -z "${ANTHROPIC_API_KEY}" ]; then
+            echo "::notice::ANTHROPIC_API_KEY is not set; skipping"
+            exit 0
+          fi
+
+          # Models API の display_name をそのまま trailer の名前に使う。
+          # created_at 最大を無条件に採ると Haiku やプレビュー系を拾うため、
+          # Opus 系に限定する。
+          LATEST=$(curl -sS --fail https://api.anthropic.com/v1/models \
+            -H "x-api-key: ${ANTHROPIC_API_KEY}" \
+            -H "anthropic-version: 2023-06-01" \
+            | jq -r '[.data[] | select(.display_name | startswith("Claude Opus"))]
+                     | sort_by(.created_at) | last | .display_name')
+
           CURRENT=$(grep 'Co-Authored-By:' config/.zsh/lib/functions.zsh \
             | sed 's/.*Co-Authored-By: \(.*\) <noreply.*/\1/' | head -1)
+
+          # trailer の値は "Name <email>" として解釈される。コロンなど余計な
+          # 文字が入ると co-author として認識されないため、形を検査する。
+          if ! printf '%s' "${LATEST}" | grep -qE '^Claude Opus [0-9][0-9.]*$'; then
+            echo "::error::unexpected model name from Models API: ${LATEST}"
+            exit 1
+          fi
           # CURRENT が壊れていると sed が空振りし、ファイル間で値がずれたまま成功する。
           if printf '%s' "${CURRENT}" | grep -q ':'; then
             echo "::error::current trailer name is malformed: ${CURRENT}"
             exit 1
           fi
+
           echo "latest=${LATEST}" >> "$GITHUB_OUTPUT"
           echo "current=${CURRENT}" >> "$GITHUB_OUTPUT"
           echo "Latest: ${LATEST}, Current: ${CURRENT}"
