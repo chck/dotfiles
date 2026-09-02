@@ -5,6 +5,10 @@ on:
     - cron: '0 0 1 * *'
   workflow_dispatch:
 
+env:
+  # モデル ID の一覧。公開リポジトリなので資格情報は要らない。
+  MODEL_SOURCE: https://raw.githubusercontent.com/anthropics/anthropic-sdk-python/main/src/anthropic/types/model.py
+
 jobs:
   update-model:
     runs-on: ubuntu-latest
@@ -13,30 +17,23 @@ jobs:
 
       - name: Resolve model names
         id: model
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          if [ -z "${ANTHROPIC_API_KEY}" ]; then
-            echo "::notice::ANTHROPIC_API_KEY is not set; skipping"
-            exit 0
-          fi
-
-          # Models API の display_name をそのまま trailer の名前に使う。
-          # created_at 最大を無条件に採ると Haiku やプレビュー系を拾うため、
-          # Opus 系に限定する。
-          LATEST=$(curl -sS --fail https://api.anthropic.com/v1/models \
-            -H "x-api-key: ${ANTHROPIC_API_KEY}" \
-            -H "anthropic-version: 2023-06-01" \
-            | jq -r '[.data[] | select(.display_name | startswith("Claude Opus"))]
-                     | sort_by(.created_at) | last | .display_name')
+          # 公開 SDK のモデル列挙から Opus 系の ID を集める。日付付きの
+          # スナップショット（claude-opus-4-5-20251101）は末尾の引用符で除かれる。
+          # 最新を無条件に採ると Haiku やプレビュー系を拾うため Opus 系に限定する。
+          LATEST_VERSION=$(curl -sS --fail --max-time 30 "${MODEL_SOURCE}" \
+            | grep -oE '"claude-opus-[0-9]+(-[0-9]+)?"' \
+            | tr -d '"' | sort -u \
+            | sed 's/^claude-opus-//' | tr '-' '.' | sort -V | tail -1)
+          LATEST="Claude Opus ${LATEST_VERSION}"
 
           CURRENT=$(grep 'Co-Authored-By:' config/.zsh/lib/functions.zsh \
             | sed 's/.*Co-Authored-By: \(.*\) <noreply.*/\1/' | head -1)
 
           # trailer の値は "Name <email>" として解釈される。コロンなど余計な
           # 文字が入ると co-author として認識されないため、形を検査する。
-          if ! printf '%s' "${LATEST}" | grep -qE '^Claude Opus [0-9][0-9.]*$'; then
-            echo "::error::unexpected model name from Models API: ${LATEST}"
+          if ! printf '%s' "${LATEST}" | grep -qE '^Claude Opus [0-9]+(\.[0-9]+)?$'; then
+            echo "::error::unexpected model name from ${MODEL_SOURCE}: ${LATEST}"
             exit 1
           fi
           # CURRENT が壊れていると sed が空振りし、ファイル間で値がずれたまま成功する。
