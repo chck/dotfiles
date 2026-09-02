@@ -300,6 +300,43 @@
                             "to": [{ "key_code": "f19" }]
                         }
                     ]
+                },
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "is_pointing_device": true,
+                        "product_id": 36,
+                        "vendor_id": 14477
+                    },
+                    "ignore": false,
+                    "simple_modifications": [
+                        {
+                            "from": { "consumer_key_code": "volume_increment" },
+                            "to": [{ "key_code": "right_arrow" }]
+                        },
+                        {
+                            "from": { "consumer_key_code": "volume_decrement" },
+                            "to": [{ "key_code": "left_arrow" }]
+                        }
+                    ]
+                },
+                {
+                    "identifiers": {
+                        "is_consumer": true,
+                        "product_id": 36,
+                        "vendor_id": 14477
+                    },
+                    "ignore": true,
+                    "simple_modifications": [
+                        {
+                            "from": { "consumer_key_code": "volume_increment" },
+                            "to": [{ "key_code": "right_arrow" }]
+                        },
+                        {
+                            "from": { "consumer_key_code": "volume_decrement" },
+                            "to": [{ "key_code": "left_arrow" }]
+                        }
+                    ]
                 }
             ],
             "name": "Default",
