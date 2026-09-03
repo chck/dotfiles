@@ -41,6 +41,9 @@ dependencies:
     - ibelick/ui-skills/skills/ui-skills-root
     # anthropics/skills
     - anthropics/skills/skills/frontend-design
+    # stablyai/orca — Orca CLI skills, paired with cookbooks/orca (MIT)
+    - stablyai/orca/skills/orca-cli
+    - stablyai/orca/skills/orca-linear
   mcp:
     # headroom. The API key is not stored here; the server reads it from the
     # environment (HEADROOM_TELEMETRY is set by this cookbook's zsh block).
