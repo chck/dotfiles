@@ -46,6 +46,10 @@ dependencies:
     - stablyai/orca/skills/orca-linear
     - stablyai/orca/skills/computer-use
     - stablyai/orca/skills/orchestration
+    # vercel-labs/agent-browser — browser automation CLI skill, paired with
+    # cookbooks/agent-browser (Apache-2.0). The skill is a discovery stub; the
+    # CLI serves the version-matched guide via `agent-browser skills get core`.
+    - vercel-labs/agent-browser/skills/agent-browser
   mcp:
     # headroom. The API key is not stored here; the server reads it from the
     # environment (HEADROOM_TELEMETRY is set by this cookbook's zsh block).
