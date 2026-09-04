@@ -41,6 +41,8 @@ dependencies:
     - ibelick/ui-skills/skills/ui-skills-root
     # anthropics/skills
     - anthropics/skills/skills/frontend-design
+    # vercel-labs/skills — find-skills, the `npx skills` discovery skill (MIT)
+    - vercel-labs/skills/skills/find-skills
     # stablyai/orca — Orca CLI skills, paired with cookbooks/orca (MIT)
     - stablyai/orca/skills/orca-cli
     - stablyai/orca/skills/orca-linear
