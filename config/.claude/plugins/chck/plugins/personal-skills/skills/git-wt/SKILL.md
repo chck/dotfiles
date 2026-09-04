@@ -2,7 +2,7 @@
 name: git-wt
 description: >
   Use the git-wt command to create an isolated Git worktree for a task, keeping the main branch clean.
-  After finishing, clean up the worktree based on whether changes exist.
+  After finishing, delete the worktree — always and without asking once the branch is merged.
   Use for every change that touches a file — including single-file edits, typo fixes, and
   documentation-only changes — and whenever the user explicitly requests worktree isolation
   ("use a worktree", "use wt", "work on a separate branch", "isolate this in a worktree").
@@ -44,7 +44,28 @@ When done, tell the user:
 
 ## Step 4: Clean up
 
-### No changes (nothing committed or modified)
+Check the branch state first, then act. No merged worktree is ever left behind.
+
+### Merged branch — delete, never ask
+
+Once the PR is merged (or the commits are in `origin/main`), remove the worktree and the branch
+without asking, every time — single-file, typo, and documentation-only branches included.
+
+```bash
+gh pr view <branch-name> --json state,mergedAt   # state "MERGED" → safe to delete
+git wt -D <branch-name>
+```
+
+`-D`, not `-d`: a squash merge rewrites the commits, so the local branch never becomes an ancestor
+of `origin/main` and `git wt -d` refuses it as unmerged. Confirm `state: MERGED` before running
+`-D` — on a branch that was not merged, `-D` discards its commits.
+
+`gh pr merge --delete-branch` fails in this layout with
+`fatal: 'main' is already used by worktree at ...`: it tries to check the default branch out in the
+current worktree. Merge with `gh pr merge <number> --squash --repo <owner>/<repo>`, then delete the
+local side with `git wt -D`.
+
+### Unmerged, no changes (nothing committed or modified)
 
 Delete automatically — no need to ask the user.
 
@@ -52,7 +73,7 @@ Delete automatically — no need to ask the user.
 git wt -d <branch-name>
 ```
 
-### Changes or commits exist
+### Unmerged with changes or commits
 
 Ask the user: **keep** or **delete**?
 
@@ -60,10 +81,6 @@ Ask the user: **keep** or **delete**?
 - **Delete**: warn that uncommitted changes and commits will be lost, then delete only if the user confirms.
 
 ```bash
-# Normal delete (branch already merged)
-git wt -d <branch-name>
-
-# Force delete (unmerged changes — only if user explicitly requests)
 git wt -D <branch-name>
 ```
 
