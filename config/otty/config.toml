@@ -45,5 +45,4 @@ privilege-caffeinate-agent-processing = true
 
 window-layout = "tabs-top"
 
-open-with-app = "VS Code|com.microsoft.VSCode"
 open-with-app = "Zed|dev.zed.Zed"
