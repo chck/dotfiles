@@ -32,7 +32,9 @@
     "caveman@caveman": true
   },
   "skillOverrides": {
-    "skill-audit": "user-invocable-only"
+    "init-infra": "user-invocable-only",
+    "skill-audit": "user-invocable-only",
+    "work-digest": "user-invocable-only"
   },
   "extraKnownMarketplaces": {
     "wakatime": {
