@@ -13,7 +13,6 @@
     "claude-mem@thedotmack": true,
     "playwright@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
-    "plugin-dev@claude-plugins-official": true,
     "slack@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
