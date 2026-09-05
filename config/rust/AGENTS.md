@@ -13,6 +13,10 @@
 ## Code style
 - Keep `cargo fmt` clean and `cargo clippy` warning-free
 - Avoid `unwrap()`/`expect()` in non-test code — propagate errors with `Result` and `?`
+- Do not discard a `Result` with `let _ =` or `.ok()` — handle it or propagate it
+- Make illegal states unrepresentable: a newtype over a bare `String`/`u64`, an enum over a pair of
+  bools, a private field behind a checked constructor
+- `#[non_exhaustive]` on a public enum or struct that is expected to grow
 
 ## Testing
 - Put tests in the crate's `tests/` directory rather than inline `#[cfg(test)]` modules

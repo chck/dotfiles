@@ -35,6 +35,10 @@
 - Add type annotations to all new code
 - No docstrings unless explicitly requested
 - Follow the layered/DDD dependency direction: presentation → usecase → domain; external concretes live in `adapter/`
+- Express domain invariants in the model itself — `field_validator` / `model_validator` over a check in the caller
+- `ConfigDict(frozen=True)` for a value that must not change after construction
+- Prefer a constrained type (`Annotated[int, Field(gt=0)]`, an `Enum`, `StrictStr`) over a bare scalar plus a comment
+- Raise a domain exception, not a bare `Exception`; `except Exception` needs a comment saying why nothing narrower fits
 
 ## Commands
 - cargo-make (`makers`) is the entrypoint: `makers lint` / `makers format` / `makers typecheck` / `makers test`
