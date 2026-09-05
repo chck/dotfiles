@@ -12,6 +12,10 @@ standing charge. This skill measures which ones are earning it.
 The measurement is a script. The judgement is not: a count says a row was never invoked,
 never why, and the difference decides whether removing it is a cleanup or a mistake.
 
+There are three outcomes, not two — keep, hide, remove. Hiding (step 5) keeps a skill
+working while dropping it from the model's listing, which fits every skill the user
+invokes by name.
+
 ## Steps
 
 1. **Collect.** Resolve `scripts/collect.sh` against this skill's base directory, printed
@@ -79,12 +83,51 @@ never why, and the difference decides whether removing it is a cleanup or a mist
    for <feature>`) means it was wanted. Ask rather than propose. A row that appears in a
    commit adding twelve others at once is a bundle passenger.
 
-5. **Report, then ask.** Group by unit, largest `desc_chars` first. For each: what it is,
-   how long unused, what it costs, and — where you found one — the reason it was
-   installed. Recommend, do not act. Removal is the user's call.
+5. **Consider hiding before removing.** Removal is not the only lever. The
+   `skillOverrides` setting controls how each skill is listed, so a skill can stay fully
+   available while costing the model nothing:
 
-6. **On approval, retire it.** Use the `git-wt` skill and change the source, never the
-   deployed copy:
+   ```json
+   "skillOverrides": { "<skill>": "on" | "name-only" | "user-invocable-only" | "off" }
+   ```
+
+   | value | listed to the model | `/name` |
+   |---|---|---|
+   | absent / `on` | name + description | works |
+   | `name-only` | name only | works |
+   | `user-invocable-only` | not listed | works |
+   | `off` | not listed | fails |
+
+   `user-invocable-only` is the useful one, and it fits the pattern the counts keep
+   showing: a skill that gets used is usually one the user types by name, and a skill
+   typed by name does not need advertising. It saves the whole row.
+
+   Decide by asking what the description is *for*. Where it carries trigger phrases the
+   user actually relies on — `gcal-scheduling` on 「予定を調整して」,
+   `review-pr-comments` on 「#123のレビューに対応」, both confirmed in the transcripts —
+   hiding removes function, not waste. Where the skill is a chore invoked by name, hiding
+   costs nothing.
+
+   Two limits:
+
+   - **It does not work on plugin skills.** The resolver returns `on` before reading the
+     setting when a skill's source is a plugin, so a plugin's unused skills cannot be
+     trimmed this way. Nor can its manifest: `plugin.json`'s `skills` array *adds to* the
+     default `skills/` scan rather than replacing it, and an update would revert an edit
+     to the installed copy. For a plugin it is all or nothing.
+   - **It is a Claude Code setting only.** apm also deploys to `~/.agents/skills/`, where
+     the other agents read; those copies still advertise in full.
+
+6. **Report, then ask.** Group by unit, largest `desc_tokens` first. For each: what it is,
+   how long unused, what it costs, whether hiding would do instead of removing, and —
+   where you found one — the reason it was installed. Recommend, do not act. The call is
+   the user's.
+
+7. **On approval, apply it.** Use the `git-wt` skill and change the source, never the
+   deployed copy.
+
+   To hide rather than remove, add the entry to `skillOverrides` in
+   `config/.claude/settings.json`. To remove:
 
    - apm skill → remove its line from `config/apm/apm.yml`, then `apm install -g`
    - plugin → remove its `"<plugin>@<marketplace>": true` line from
@@ -98,6 +141,22 @@ never why, and the difference decides whether removing it is a cleanup or a mist
    ls ~/.config/claude/skills/ ~/.agents/skills/
    git -C <dotfiles> status --porcelain     # settings.json is a tracked symlink
    ```
+
+   A `skillOverrides` change leaves the files in place, so check its effect instead of
+   its presence. `claude -p` starts a new process and rebuilds the prompt from current
+   settings, so there is no need to wait for the next interactive session:
+
+   ```bash
+   claude -p --model claude-haiku-4-5-20251001 \
+     "Answer with exactly two lines, yes or no: does your available-skills list contain \
+      an entry named exactly '<hidden>'? and '<a skill left listed>'?"
+   claude -p --model claude-haiku-4-5-20251001 \
+     "/<hidden> Do not execute anything. Reply with the first heading of the skill \
+      instructions you just received, or UNKNOWN-COMMAND if no skill loaded."
+   ```
+
+   Expect `no` then `yes`, then the skill's heading. Always include a skill left listed
+   as a control — otherwise a listing that failed to load reads as a success.
 
    `apm install -g` cleans most stale files but has been seen to leave a skill directory
    behind in `~/.config/claude/skills/`. Check, and remove it by hand if so.
