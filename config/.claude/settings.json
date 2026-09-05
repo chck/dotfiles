@@ -23,7 +23,6 @@
     "supabase@claude-plugins-official": true,
     "linear@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
-    "ralph-loop@claude-plugins-official": true,
     "sourcegraph@claude-plugins-official": true,
     "data-engineering@claude-plugins-official": true,
     "terraform@claude-plugins-official": true,
