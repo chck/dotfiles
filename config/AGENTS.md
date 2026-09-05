@@ -26,6 +26,27 @@ src/app_name
 └ __main__.py    ... Execution entry point (Application bootstrap and configuration)
 ```
 
+## Domain types
+- A domain type carries its own invariants. A type that is nothing but fields,
+  with the rules living in `usecase/`, is an anemic model — put the rule on the type
+- Validate at construction, so that a value which exists is a value which is valid
+- Prefer making an illegal state unrepresentable to validating it away: a separate
+  type over a flag, an enum over a pair of bools, a narrow type over a bare string
+- An invariant stated only in a docstring or a comment is not enforced
+- Do not expose mutable internals; prefer immutable domain values
+
+## Error handling
+- Never swallow an error. A handler that logs nothing and changes nothing hides
+  the failure from whoever has to debug it later
+- Catch the specific error this code can act on. A broad catch also swallows the
+  bugs you did not anticipate
+- A fallback is a decision, not a default. It has to be asked for, and the caller
+  must be able to tell a fallback result from a real one
+- Propagate when this layer cannot act on the error — handle it where the decision
+  belongs, usually a boundary rather than the middle
+- Never fall back to a mock, stub, or fixture outside test code
+- An error message states what failed and what the reader can do next
+
 ## Workflow
 - Always use the `git-wt` skill to work in a worktree — including single-file
   edits, typo fixes, and documentation-only changes. There are no exceptions
