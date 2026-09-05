@@ -73,11 +73,17 @@ Decide in this order: agent skill or MCP server → apm. GUI app → cask. Versi
 needs controlling → mise. Otherwise check `mise registry <name>`, then fall back
 to `brew`, then `github_binary`.
 
-Claude Code **plugins** stay on the plugin system rather than apm, because they
-ship a runtime apm does not install — claude-mem builds from npm, and
-claude-code-wakatime shells out to a self-installing `wakatime-cli`. They are
-registered by `cookbooks/claude`. apm carries file primitives (skills, MCP
-config, hooks, commands), not package runtimes.
+A package published as a Claude Code **plugin** still goes to apm when it ships
+skills and nothing else — apm deploys it to `~/.agents/skills/` as well, so codex
+and the other agents get it too, which the plugin system cannot do.
+`mattpocock/skills` is carried that way.
+
+Reach for the plugin system only when the package carries something apm drops.
+apm deploys `skills/` alone, so a plugin's commands and hooks are lost:
+diagram-design's `/export-diagram` and `/doctor`, caveman's `${CLAUDE_PLUGIN_ROOT}`
+hooks. The same applies to a package runtime — claude-mem builds from npm, and
+claude-code-wakatime shells out to a self-installing `wakatime-cli`. Those are
+registered by `cookbooks/claude`.
 
 aqua is installed by `cookbooks/aqua` but manages no packages here on purpose.
 Its strength is per-repository pinning with checksum verification, which does not
