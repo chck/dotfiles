@@ -53,8 +53,11 @@ dependencies:
     # ships skills only, so apm can deploy it, and that also reaches
     # ~/.agents/skills/ for codex and the other agents. One entry per skill —
     # apm resolves a single skill directory, not a tree.
+    #
+    # engineering/code-review is deliberately absent: it deploys under the bare
+    # name `code-review`, which Claude Code's built-in /code-review already
+    # holds, so it never surfaced there.
     - mattpocock/skills/skills/productivity/grilling
-    - mattpocock/skills/skills/engineering/code-review
     - mattpocock/skills/skills/engineering/codebase-design
     - mattpocock/skills/skills/engineering/diagnosing-bugs
     - mattpocock/skills/skills/engineering/domain-modeling
