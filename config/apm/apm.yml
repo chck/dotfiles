@@ -48,6 +48,20 @@ dependencies:
     - stablyai/orca/skills/orca-linear
     - stablyai/orca/skills/computer-use
     - stablyai/orca/skills/orchestration
+    # mattpocock/skills — engineering and productivity skills (MIT). Carried by
+    # apm rather than the plugin marketplace it also publishes to: the package
+    # ships skills only, so apm can deploy it, and that also reaches
+    # ~/.agents/skills/ for codex and the other agents. One entry per skill —
+    # apm resolves a single skill directory, not a tree.
+    - mattpocock/skills/skills/productivity/grilling
+    - mattpocock/skills/skills/engineering/code-review
+    - mattpocock/skills/skills/engineering/codebase-design
+    - mattpocock/skills/skills/engineering/diagnosing-bugs
+    - mattpocock/skills/skills/engineering/domain-modeling
+    - mattpocock/skills/skills/engineering/prototype
+    - mattpocock/skills/skills/engineering/research
+    - mattpocock/skills/skills/engineering/resolving-merge-conflicts
+    - mattpocock/skills/skills/engineering/tdd
     # vercel-labs/agent-browser — browser automation CLI skill, paired with
     # cookbooks/agent-browser (Apache-2.0). The skill is a discovery stub; the
     # CLI serves the version-matched guide via `agent-browser skills get core`.

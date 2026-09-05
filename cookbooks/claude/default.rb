@@ -94,22 +94,6 @@ when 'darwin'
     }
   end
 
-  # mattpocock/skills: Matt Pocock's engineering skills (grill-me / grilling, etc.).
-  # settings.json already enables "mattpocock-skills@mattpocock": true.
-  execute 'claude plugins marketplace add https://github.com/mattpocock/skills.git' do
-    not_if {
-      f = File.expand_path('~/.config/claude/plugins/known_marketplaces.json')
-      File.exist?(f) && File.read(f).include?('"mattpocock"')
-    }
-  end
-
-  execute 'claude plugins install mattpocock-skills@mattpocock --scope user' do
-    not_if {
-      f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
-      File.exist?(f) && File.read(f).include?('mattpocock-skills@mattpocock')
-    }
-  end
-
   # cathrynlavery/diagram-design: editorial HTML/SVG diagram types, plus the
   # /export-diagram, /import-drawio, /import-mermaid, /profile and /doctor
   # commands. Installed as a plugin rather than an apm skill because apm deploys
