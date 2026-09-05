@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Inventory every loaded skill and subagent, with how often each was actually used.
+# Inventory every loaded skill, command and subagent, with how often each was
+# actually used.
 #
 # Usage: collect.sh [options]
 #
@@ -147,6 +148,11 @@ if [ -n "$SETTINGS" ]; then
         while IFS= read -r f; do
           emit "$(basename "$(dirname "$f")")" "skill" "plugin:$plugin" "$f"
         done < <(find "$dir" -type f -name SKILL.md 2>/dev/null)
+        # A command's description is listed in the prompt exactly like a skill's,
+        # so it is a row and it costs the same.
+        while IFS= read -r f; do
+          emit "$(basename "$f" .md)" "command" "plugin:$plugin" "$f"
+        done < <(find "$dir" -type f -path '*/commands/*.md' 2>/dev/null)
         enabled_count=$((enabled_count + 1))
       done < <(find "$root" -type f -path '*/.claude-plugin/plugin.json' 2>/dev/null)
     done

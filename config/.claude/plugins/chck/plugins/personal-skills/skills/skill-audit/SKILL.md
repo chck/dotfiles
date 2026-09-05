@@ -1,12 +1,12 @@
 ---
 name: skill-audit
-description: Find which installed skills, subagents and plugins are never used, and retire them so their descriptions stop costing prompt tokens in every session. Use when the user says "skillの棚卸し", "使ってないskillを消したい", "トークンを節約したい", "skill audit", "プラグインを整理したい", or asks which of their skills are actually being used.
+description: Find which installed skills, commands, subagents and plugins are never used, and retire them so their descriptions stop costing prompt tokens in every session. Use when the user says "skillの棚卸し", "使ってないskillを消したい", "トークンを節約したい", "skill audit", "プラグインを整理したい", or asks which of their skills are actually being used.
 ---
 
 # Skill Audit
 
-Every installed skill and subagent puts its `description` into the prompt of every
-session, whether or not it is ever invoked. A skill nobody calls is not free — it is a
+Every installed skill, slash command and subagent puts its `description` into the prompt
+of every session, whether or not it is ever invoked. A skill nobody calls is not free — it is a
 standing charge. This skill measures which ones are earning it.
 
 The measurement is a script. The judgement is not: a count says a row was never invoked,
