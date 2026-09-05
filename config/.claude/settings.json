@@ -1,12 +1,12 @@
 {
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Bash(git fetch:*)",
       "Bash(git pull:*)",
       "Bash(git merge --ff-only:*)",
       "Bash(gh pr merge:*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "enabledPlugins": {
     "claude-code-wakatime@wakatime": true,
@@ -82,6 +82,7 @@
     }
   },
   "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true
