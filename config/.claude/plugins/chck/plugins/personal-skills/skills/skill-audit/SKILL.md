@@ -27,7 +27,7 @@ never why, and the difference decides whether removing it is a cleanup or a mist
 2. **Read the TSV on stdout.** Columns:
 
    ```
-   verdict  name  source  uses  slash  last_used  installed  age_days  desc_chars  path
+   verdict  name  source  uses  slash  last_used  installed  age_days  desc_chars  desc_tokens  path
    ```
 
    `verdict` is a first pass over `uses + slash` and `age_days`, nothing more:
@@ -38,14 +38,28 @@ never why, and the difference decides whether removing it is a cleanup or a mist
    - `new` — installed within `--min-age`; too early to have a track record
    - `unknown-age` — the install date was not found in the dotfiles history
 
-   `desc_chars` is the per-session cost of the row. Sort by it when deciding what to
-   spend effort on: one 1,200-character agent description outweighs six 200-character
-   skills.
+   `desc_tokens` is the per-session cost of the row, and rows are sorted by it. It is an
+   estimate from description length — ASCII at four characters to the token, CJK at one —
+   not a tokenizer run, so treat it as a magnitude rather than a figure. A Japanese
+   description costs far more per character than its length suggests: 209 characters of
+   Japanese runs about 191 tokens where the same length of English runs about 52.
+
+   A file with no frontmatter `description` is never loaded into the prompt and is
+   skipped rather than reported as free — the count of those goes to stderr.
 
 3. **Read the rollup on stderr.** Plugins are enabled and disabled whole, so a single
    unused skill inside a plugin is not actionable on its own. The rollup groups the
    `drop` rows by the unit you would actually turn off and marks `(all)` where every row
    in that unit is unused.
+
+   The rollup also converts to a monthly figure, multiplying by the interactive sessions
+   in the last 30 days (from `history.jsonl`). Automated and subagent sessions are not
+   counted, so it errs low.
+
+   Report the saving as **cached input tokens**, not as full-price input. The system
+   prompt is prompt-cached, so on any repeat session these descriptions are cache reads.
+   The number is real but it is the cheap kind of token, and saying so keeps the estimate
+   honest.
 
    **Only propose disabling a plugin marked `(all)`.** A plugin showing `17/19 unused`
    has two rows carrying it — `claude-mem` is mostly unused *skills* around a memory

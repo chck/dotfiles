@@ -157,13 +157,24 @@ sort -u -t$'\t' -k1,3 "$TMP/rows" -o "$TMP/rows"
 
 # ------------------------------------------------------------------ reporting
 
-desc_chars() {
+desc_text() {
   awk 'NR == 1 && /^---$/ {next}
        /^description:/ {inblock = 1}
        inblock && /^[a-z_-]+:[[:space:]]/ && !/^description:/ {exit}
        /^---$/ {exit}
-       inblock {n += length($0) + 1}
-       END {print n + 0}' "$1"
+       inblock {print}' "$1"
+}
+
+# chars<TAB>tokens. The token figure is an estimate, not a tokenizer: ASCII runs
+# about 4 characters to the token, CJK about 1, and a UTF-8 CJK character is 3
+# bytes — so byte counts separate the two without needing multibyte awk.
+desc_cost() {
+  local text bytes ascii wide
+  text=$(desc_text "$1")
+  bytes=$(printf '%s' "$text" | wc -c | tr -d ' ')
+  ascii=$(printf '%s' "$text" | LC_ALL=C tr -cd '\0-\177' | wc -c | tr -d ' ')
+  wide=$(( (bytes - ascii) / 3 ))
+  printf '%s\t%s' "$(( ascii + wide ))" "$(( ascii / 4 + wide ))"
 }
 
 MANIFESTS="config/apm/apm.yml config/.claude/settings.json"
@@ -194,10 +205,16 @@ install_date() {
 
 now=$(date +%s)
 kept=0
+undescribed=0
 : > "$TMP/all_rows"
 
 {
   while IFS=$'\t' read -r name kind source path; do
+    cost=$(desc_cost "$path")
+    if [ "${cost%%	*}" -eq 0 ]; then
+      undescribed=$((undescribed + 1)); continue
+    fi
+
     uses=$(lookup "$TMP/uses" "$name")
     slash=$(lookup "$TMP/slash" "$name")
     total=$((uses + slash))
@@ -220,7 +237,7 @@ kept=0
 
     row=$(printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s' \
       "$verdict" "$name" "$source/$kind" "$uses" "$slash" "$last_used" \
-      "$installed" "$age" "$(desc_chars "$path")" "$path")
+      "$installed" "$age" "$cost" "$path")
     printf '%s\n' "$row" >> "$TMP/all_rows"
 
     if [ "$SHOW_ALL" -eq 0 ] && [ "$verdict" = "keep" ]; then
@@ -229,26 +246,44 @@ kept=0
     printf '%s\n' "$row"
   done < "$TMP/rows"
   echo "$kept" > "$TMP/kept"
-} | sort -t$'\t' -k1,1 -k9,9nr > "$TMP/out"
+  echo "$undescribed" > "$TMP/undescribed"
+} | sort -t$'\t' -k1,1 -k10,10nr > "$TMP/out"
 
-printf 'verdict\tname\tsource\tuses\tslash\tlast_used\tinstalled\tage_days\tdesc_chars\tpath\n'
+printf 'verdict\tname\tsource\tuses\tslash\tlast_used\tinstalled\tage_days\tdesc_chars\tdesc_tokens\tpath\n'
 cat "$TMP/out"
 
 # A plugin is enabled or disabled whole, so its unused rows only mean something
 # added up — and only a unit whose rows are *all* unused can simply be turned
 # off. `unused/total` says which is which; the counts include the `keep` rows
 # withheld from stdout.
+# Interactive sessions over the last 30 days, used to turn a per-session figure
+# into a monthly one. Automated and subagent sessions are not counted, so the
+# monthly estimate errs low.
+SESSIONS_30D=0
+if [ -n "$HISTORY" ]; then
+  SESSIONS_30D=$(jq -R -r --argjson c "$(( ($(date +%s) - 2592000) * 1000 ))" \
+    'fromjson? // empty | select((.timestamp // 0) >= $c) | .sessionId // empty' \
+    "$HISTORY" 2>/dev/null | sort -u | wc -l | tr -d ' ')
+fi
+
 if [ -s "$TMP/all_rows" ]; then
   {
     echo
     echo "unused, rolled up by the unit you would actually turn off:"
     awk -F'\t' '{ split($3, a, "/"); unit = a[1]; total[unit]++
-                  if ($1 == "drop") { n[unit]++; chars[unit] += $9 } }
-                 END { for (u in n) printf "%6d\t%-40s %2d/%-2d unused  %6d desc chars%s\n",
-                                            chars[u], u, n[u], total[u], chars[u],
+                  if ($1 == "drop") { n[unit]++; tok[unit] += $10 } }
+                 END { for (u in n) printf "%6d\t%-40s %2d/%-2d unused  ~%5d tok/session%s\n",
+                                            tok[u], u, n[u], total[u], tok[u],
                                             (n[u] == total[u] ? "  (all)" : "") }' "$TMP/all_rows" \
       | sort -rn | cut -f2- | sed 's/^/  /'
-    awk -F'\t' '$1 == "drop" {n++; c += $9} END {if (n) printf "  %-40s %2d rows      %6d desc chars\n", "TOTAL", n, c}' "$TMP/all_rows"
+    awk -F'\t' -v s="$SESSIONS_30D" \
+      '$1 == "drop" {n++; t += $10}
+       END {if (n) { printf "  %-40s %2d rows      ~%5d tok/session\n", "TOTAL", n, t
+                     if (s > 0) printf "  %-40s %s sessions/30d  ~%d tok/month\n", "", s, t * s }}' "$TMP/all_rows"
+    echo
+    echo "  Token figures are estimated from description length, not tokenized."
+    echo "  They are prompt-cache reads on a repeat session, so the saving is in"
+    echo "  cached input rather than full-price input."
   } >&2
 fi
 
@@ -258,6 +293,7 @@ fi
   echo "settings: ${SETTINGS:-none}  (enabled plugins resolved: $enabled_count)"
   if [ "$USE_GIT" -eq 1 ]; then echo "install dates from: $REPO"; else echo "install dating skipped (--no-git)"; fi
   echo "rows hidden as keep: $(cat "$TMP/kept" 2>/dev/null || echo 0) (rerun with --all)"
+  echo "files skipped for having no frontmatter description: $(cat "$TMP/undescribed" 2>/dev/null || echo 0) (never loaded, so no cost)"
   echo
   echo "Check why a row was installed before proposing its removal."
 } >&2
