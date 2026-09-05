@@ -31,6 +31,9 @@
     "diagram-design@diagram-design": true,
     "caveman@caveman": true
   },
+  "skillOverrides": {
+    "skill-audit": "user-invocable-only"
+  },
   "extraKnownMarketplaces": {
     "wakatime": {
       "source": {
