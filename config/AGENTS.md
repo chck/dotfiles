@@ -70,6 +70,7 @@ src/app_name
 - For searching file contents, use ripgrep (`rg`) instead of `grep` — it is faster and respects `.gitignore`
 - For finding files by name, use `fd` instead of `find` — it is faster and respects `.gitignore`
 - Before reading a large source file, run `zat <file>` — it prints top-level declarations with their line numbers, so you can then read only the ranges you need. One file per run, no flags, no directories; C/C++/C#/Go/Haskell/Java/JS/TS/Kotlin/Markdown/Python/Ruby/Rust/Swift only, not shell
+- Keep output you don't need in full out of the context: cut it with `| tail -20`, `--json` plus `-q`, or a narrower filter. Delegate wide searches to a subagent and take back only the conclusion
 
 ## Code style
 - Add type annotations to new code
