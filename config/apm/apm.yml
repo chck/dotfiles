@@ -20,6 +20,11 @@ author: chck
 # claims that agent's MCP config: `codex` writes an untracked ~/.codex/config.toml
 # even when codex is not installed, and `opencode` — which apm skips today — would
 # target ~/.config/opencode/opencode.json, a symlink to a tracked file here.
+#
+# gemini is the one agent that does need the MCP block, so cookbooks/gemini runs
+# `apm install -g --only mcp --target gemini` separately. Adding gemini here
+# instead would also copy every skill below into ~/.gemini/, which the Gemini
+# CLI does not read.
 targets:
   - claude
   - agent-skills
