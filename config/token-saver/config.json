@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "min_compression_ratio": 0.2,
+  "disabled_processors": [
+    "file_content",
+    "generic"
+  ],
+  "debug": false
+}

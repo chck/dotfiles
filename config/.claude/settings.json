@@ -25,7 +25,8 @@
     "diagram-design@diagram-design": true,
     "caveman@caveman": true,
     "pyright-lsp@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true
+    "typescript-lsp@claude-plugins-official": true,
+    "token-saver@claude-community": true
   },
   "extraKnownMarketplaces": {
     "wakatime": {
@@ -56,6 +57,12 @@
       "source": {
         "source": "git",
         "url": "https://github.com/JuliusBrussee/caveman.git"
+      }
+    },
+    "claude-community": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-community"
       }
     }
   },

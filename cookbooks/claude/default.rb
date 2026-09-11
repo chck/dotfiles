@@ -144,6 +144,36 @@ when 'darwin'
     }
   end
 
+  # ppgranger/token-saver: rewrites verbose command output before it enters the
+  # context. Measured on `rg` output at -72% cost with the answer going from
+  # wrong to right — a processor that reports a count beats making the model
+  # count 641 lines by eye. It only acts on commands it recognises, so the win
+  # is workload-shaped: `rg` hit, `uvx pytest` and `cat` did not.
+  #
+  # config/token-saver/config.json disables the two processors that can lose
+  # data: `file_content` (truncates file reads; a 42% smaller context produced a
+  # wrong answer in testing) and `generic` (the catch-all truncator).
+  # `disabled_processors` is deliberately only honoured from the global config,
+  # never from a repository, so it belongs here rather than in a project file.
+  execute 'claude plugins marketplace add anthropics/claude-plugins-community' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/known_marketplaces.json')
+      File.exist?(f) && File.read(f).include?('claude-plugins-community')
+    }
+  end
+
+  execute 'claude plugins install token-saver --scope user' do
+    not_if {
+      f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
+      File.exist?(f) && File.read(f).include?('token-saver@claude-community')
+    }
+  end
+
+  dotfile 'config.json' do
+    source 'token-saver/config.json'
+    destination "#{ENV['HOME']}/.token-saver"
+  end
+
   # Language servers. Each one adds 31 tokens to the startup payload — the
   # cheapest entry measured across 32 plugins — and earns it by letting the
   # agent jump to a definition instead of pulling a whole file into a context
