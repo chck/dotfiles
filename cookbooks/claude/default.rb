@@ -164,11 +164,3 @@ EOF
 ''' do
   not_if { File.exist?(File.expand_path('~/.zsh/lib/aliases.zsh')) && File.read(File.expand_path('~/.zsh/lib/aliases.zsh')).include?('claude') }
 end
-
-execute '''cat <<EOF >> ~/.zsh/lib/apps.zsh
-# headroom
-export HEADROOM_TELEMETRY=off
-EOF
-''' do
-  not_if { File.exist?(File.expand_path('~/.zsh/lib/apps.zsh')) && File.read(File.expand_path('~/.zsh/lib/apps.zsh')).include?('HEADROOM_TELEMETRY') }
-end

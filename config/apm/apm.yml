@@ -75,18 +75,15 @@ dependencies:
     # cookbooks/agent-browser (Apache-2.0). The skill is a discovery stub; the
     # CLI serves the version-matched guide via `agent-browser skills get core`.
     - vercel-labs/agent-browser/skills/agent-browser
-  mcp:
-    # headroom. The API key is not stored here; the server reads it from the
-    # environment (HEADROOM_TELEMETRY is set by this cookbook's zsh block).
-    - name: headroom
-      registry: false
-      transport: stdio
-      command: uvx
-      args:
-        - --from
-        - headroom-ai[all]
-        - headroom
-        - mcp
-        - serve
+  # No MCP servers are declared today. headroom used to be here; its three
+  # tools were called twice in 71 sessions of transcripts, and `headroom
+  # audit-reads` sized what they can address — identical repeats plus subset
+  # containment — at under 3% of Read bytes, against a schema cost paid in
+  # every session. The part of headroom that reaches the other 40-odd percent
+  # is its proxy, which is a separate decision, not an MCP server.
+  #
+  # The key stays so the deploy in cookbooks/claude keeps pruning servers a
+  # previous manifest left behind.
+  mcp: []
 includes: auto
 scripts: {}
