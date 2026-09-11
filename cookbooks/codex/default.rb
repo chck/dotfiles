@@ -41,7 +41,12 @@ when 'darwin'
   #
   # Runs on every provision, like the `apm install -g` it follows; apm reports
   # an already-present server as "already configured" and changes nothing.
-  execute 'mise exec -- apm install -g --only mcp --target codex'
+  #
+  # CODEX_HOME is pinned: Codex resolves its home from that variable, and a
+  # launcher that exports its own (Orca does) otherwise makes apm write the
+  # server block into that runtime home and leave ~/.codex/config.toml empty,
+  # while still reporting success.
+  execute 'CODEX_HOME="$HOME/.codex" mise exec -- apm install -g --only mcp --target codex'
 else
   raise NotImplementedError
 end
