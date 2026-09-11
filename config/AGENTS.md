@@ -49,12 +49,24 @@ src/app_name
 
 ## Workflow
 - Always use the `git-wt` skill to work in a worktree — including single-file
-  edits, typo fixes, and documentation-only changes. There are no exceptions
+  edits, typo fixes, and documentation-only changes
   - **When to apply:** before touching any file, after planning is complete
   - **Base the branch on `origin/main`** (fetch first), not on the current HEAD
   - **Why:** a checkout can be shared with other concurrent sessions. Committing
     on the shared HEAD lands the commit on whatever branch that session switched
     to, and `git switch` / `reset` there can disturb its uncommitted work
+  - **The one exception is a session already running in a linked worktree** — an
+    Orca workspace under `~/orca/workspaces/<repo>/<name>` is one. It is a real
+    worktree registered in the parent repository's `.git/worktrees/`, held by this
+    session alone, so the isolation above already holds and `git wt` would only
+    nest a second worktree inside it. Work in place and commit on the branch that
+    is checked out. Check with:
+
+    ```shell
+    [ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ]
+    # true  -> main checkout, possibly shared: create a worktree
+    # false -> already a linked worktree: work here
+    ```
 - Subagents are always permitted. Use the Agent tool whenever it fits — parallel
   independent tasks, broad searches, per-task execution of a plan — without asking
   first. This overrides any default that says to only use it when explicitly requested.
