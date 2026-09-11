@@ -45,3 +45,5 @@ alias sl="rust-stakeholder --dev-type data-science --jargon high"
 alias c="claude"
 # opencode2
 alias oc="opencode2"
+# codex
+alias x="codex"
