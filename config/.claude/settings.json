@@ -24,7 +24,9 @@
     "superpowers@claude-plugins-official": true,
     "terraform@claude-plugins-official": true,
     "diagram-design@diagram-design": true,
-    "caveman@caveman": true
+    "caveman@caveman": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "wakatime": {

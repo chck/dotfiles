@@ -144,6 +144,20 @@ when 'darwin'
     }
   end
 
+  # Language servers. Each one adds 31 tokens to the startup payload — the
+  # cheapest entry measured across 32 plugins — and earns it by letting the
+  # agent jump to a definition instead of pulling a whole file into a context
+  # that is re-read every turn. Declared here because `claude plugins install`
+  # rewrites the symlinked settings.json and would surface as a diff.
+  ['pyright-lsp', 'typescript-lsp'].each do |lsp|
+    execute "claude plugins install #{lsp}@claude-plugins-official --scope user" do
+      not_if {
+        f = File.expand_path('~/.config/claude/plugins/installed_plugins.json')
+        File.exist?(f) && File.read(f).include?("#{lsp}@claude-plugins-official")
+      }
+    end
+  end
+
   # Shared MCP servers are declared in config/apm/apm.yml alongside the skills,
   # and deployed by cookbooks/codex in a single run covering claude, gemini and
   # codex. It belongs there because that recipe puts ~/.codex/config.toml in
