@@ -90,6 +90,39 @@ Its strength is per-repository pinning with checksum verification, which does no
 fit a repo whose job is building one global environment. Use it inside individual
 project repositories; keep dotfiles' global tools in mise.
 
+### Keeping the agents in parity
+
+The same task should find the same environment whichever agent starts it, so the
+install method is chosen by how far the package reaches, not by which agent
+happened to ask for it.
+
+| The package ships | Install with | Reaches |
+|-------------------|--------------|---------|
+| skills only | apm | `~/.config/claude/skills/` and `~/.agents/skills/`, which Codex reads as well |
+| an MCP server | apm's `mcp:` block | claude, gemini and codex in one run |
+| commands, hooks or subagents | the plugin system, registered on **both** sides | whichever runtimes the plugin is added to |
+
+A plugin does not need a `.codex-plugin` manifest to be shared. Codex reads a
+`.claude-plugin` marketplace directly — `anthropics/claude-plugins-official`,
+`JuliusBrussee/caveman` and `0xhimanshu/governor` all install into Codex from the
+same repository Claude Code uses, and a `.codex-plugin` only changes which files
+Codex picks out of the package. So a plugin added on one side is a gap on the
+other until it is added there too, never a limitation.
+
+The two sides are declared in different files, which is where they drift apart:
+Claude Code writes its own `config/.claude/settings.json` as you install, while
+Codex's are `execute` blocks in `cookbooks/codex/default.rb`. After installing a
+plugin in either agent, add it to the other and commit both.
+
+Single-runtime is a last resort, and worth stating in the recipe when it happens.
+The language-server plugins (pyright, typescript, rust-analyzer) configure Claude
+Code's own LSP client and have no Codex counterpart; `cookbooks/codex` names them
+as deliberately absent rather than leaving the omission to be rediscovered.
+
+Do not install the same MCP server twice. A server that apm already deploys is
+live in Codex and Claude both, and adding the plugin that bundles it registers it
+a second time under the same name.
+
 ### Adding a mise-managed tool
 
 Add one line to `config/mise/config.toml`. Do **not** write `mise use --global`

@@ -20,7 +20,6 @@
     "slack@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "terraform@claude-plugins-official": true,
     "diagram-design@diagram-design": true,
