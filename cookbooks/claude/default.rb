@@ -140,6 +140,19 @@ when 'darwin'
 
   # MCP servers are declared in config/apm/apm.yml alongside the skills and
   # written to ~/.config/claude/.claude.json by the `apm install -g` above.
+  #
+  # gemini and codex are deliberately not targets in that manifest — a full
+  # target also copies every skill into ~/.gemini/ or ~/.codex/, which neither
+  # CLI reads — so their MCP block is written here instead, in one run with both
+  # names. It has to be one run: apm treats `--target` as the authoritative
+  # runtime set and prunes the servers it finds outside it, so two single-target
+  # runs delete each other's work (and `--target a --target b` keeps only the
+  # last flag — the list has to be comma-separated).
+  #
+  # CODEX_HOME is pinned because Codex resolves its home from that variable, and
+  # a launcher that exports its own (Orca does) otherwise takes the block while
+  # ~/.codex/config.toml stays empty and apm still reports success.
+  execute 'CODEX_HOME="$HOME/.codex" mise exec -- apm install -g --only mcp --target gemini,codex'
 else
   raise NotImplementedError
 end

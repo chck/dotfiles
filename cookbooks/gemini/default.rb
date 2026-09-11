@@ -21,18 +21,11 @@ when 'darwin'
     destination "#{ENV['HOME']}/.gemini"
   end
 
-  # MCP servers are declared once in config/apm/apm.yml. `apm install -g` in
-  # cookbooks/claude only configures the targets listed there (claude,
-  # agent-skills), and gemini is deliberately not one of them: as a full apm
-  # target it would also copy every declared skill into ~/.gemini/, which the
-  # Gemini CLI does not read. `--only mcp --target gemini` writes just the
-  # server block, into ~/.gemini/settings.json.
-  #
-  # Runs on every provision, like the `apm install -g` it follows; apm reports
-  # an already-present server as "already configured" and changes nothing.
-  # Depends on the ~/.apm/apm.yml symlink, which cookbooks/claude creates
-  # earlier in the darwin role.
-  execute 'mise exec -- apm install -g --only mcp --target gemini'
+  # MCP servers are declared once in config/apm/apm.yml and written to
+  # ~/.gemini/settings.json by cookbooks/claude, which runs the deploy for
+  # gemini and codex together. Splitting it per cookbook does not work: each
+  # `--target` run prunes the runtimes outside its own target list, so the
+  # second run would empty what the first wrote.
 else
   raise NotImplementedError
 end

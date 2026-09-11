@@ -33,20 +33,10 @@ when 'darwin'
     destination codex_config
   end
 
-  # MCP servers are declared once in config/apm/apm.yml. Same split as
-  # cookbooks/gemini: codex is deliberately not a target in that manifest,
-  # because a full target would also copy every declared skill into ~/.codex/,
-  # which Codex does not read. `--only mcp --target codex` writes just the
-  # [mcp_servers.<name>] tables, into ~/.codex/config.toml.
-  #
-  # Runs on every provision, like the `apm install -g` it follows; apm reports
-  # an already-present server as "already configured" and changes nothing.
-  #
-  # CODEX_HOME is pinned: Codex resolves its home from that variable, and a
-  # launcher that exports its own (Orca does) otherwise makes apm write the
-  # server block into that runtime home and leave ~/.codex/config.toml empty,
-  # while still reporting success.
-  execute 'CODEX_HOME="$HOME/.codex" mise exec -- apm install -g --only mcp --target codex'
+  # MCP servers are declared once in config/apm/apm.yml and written to
+  # ~/.codex/config.toml ([mcp_servers.<name>] tables) by cookbooks/claude,
+  # which runs the deploy for gemini and codex together — one run, because each
+  # `--target` run prunes the runtimes outside its own target list.
 else
   raise NotImplementedError
 end
