@@ -6,3 +6,6 @@
 # automatically, while sandbox boundary crossings request approval.
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false
