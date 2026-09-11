@@ -112,10 +112,31 @@ when 'darwin'
     }
   end
 
-  # MCP servers are declared once in config/apm/apm.yml and written to
-  # ~/.codex/config.toml ([mcp_servers.<name>] tables) by cookbooks/claude,
-  # which runs the deploy for gemini and codex together — one run, because each
-  # `--target` run prunes the runtimes outside its own target list.
+  # Shared MCP servers are declared once in config/apm/apm.yml and written to
+  # every agent's native config by this single run.
+  #
+  # It runs from here rather than from cookbooks/claude because apm creates
+  # ~/.codex/config.toml when that file is missing: started earlier, it would
+  # win the race against the copy above, which then finds a real file and leaves
+  # Codex without approval_policy or sandbox_mode.
+  #
+  # Every target goes in one run. apm treats `--target` as the authoritative
+  # runtime set and prunes the servers of every runtime outside it, so two runs
+  # delete each other's work — claude is named for that reason, even though
+  # config/apm/apm.yml already targets it. `--target a --target b` keeps only
+  # the last flag, so the list has to be comma-separated.
+  #
+  # CODEX_HOME is pinned because Codex resolves its home from that variable, and
+  # a launcher that exports its own (Orca does) otherwise takes the block while
+  # ~/.codex/config.toml stays empty and apm still reports success.
+  execute 'CODEX_HOME="$HOME/.codex" mise exec -- apm install -g --only mcp --target claude,gemini,codex'
+
+  # Fails the provision when the deploy above reports success without writing
+  # the block. grep, not rg: cookbooks/ripgrep is included after this recipe in
+  # the darwin role, so rg does not exist yet on a fresh machine.
+  execute 'verify Codex MCP configuration' do
+    command 'test -f "$HOME/.codex/config.toml" && grep -q "^\\[mcp_servers\\." "$HOME/.codex/config.toml"'
+  end
 else
   raise NotImplementedError
 end

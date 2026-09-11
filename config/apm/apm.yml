@@ -1,11 +1,14 @@
 # apm global manifest, symlinked to ~/.apm/apm.yml by cookbooks/claude.
 #
-# Skills are declared here and deployed by `apm install -g` to one directory per
-# entry in `targets:` below.
+# Skills are declared here and deployed by `apm install -g --only apm` to one
+# directory per entry in `targets:` below.
 #
-# Edit this file by hand, then run `apm install -g`. Do NOT run
+# Edit this file by hand, then run `apm install -g --only apm`. Do NOT run
 # `apm install -g <package>`, which rewrites the manifest and would surface as a
-# diff in this repository — the same rule as config/mise/config.toml.
+# diff in this repository — the same rule as config/mise/config.toml. Do not
+# drop the `--only apm` either: a plain `apm install -g` also takes over the MCP
+# block, resolves its target set from `targets:` below, and prunes the servers
+# of every runtime outside it — which strips context7 from Codex and Gemini.
 name: chck-dotfiles
 version: 1.0.0
 description: Agent skills for chck/dotfiles
@@ -20,12 +23,13 @@ author: chck
 # claims that agent's MCP config — `opencode`, which apm skips today, would
 # target ~/.config/opencode/opencode.json, a symlink to a tracked file here.
 #
-# gemini and codex are the agents that do need the MCP block, so cookbooks/claude
-# runs `apm install -g --only mcp --target gemini,codex` after the plain install
-# above. Listing either here instead would also copy every skill below into
-# ~/.gemini/ or ~/.codex/, which neither CLI reads. Both names go in one run:
-# apm prunes the servers of every runtime outside the target list, so two
-# single-target runs would each undo the other.
+# gemini and codex are the agents that do need the MCP block, so cookbooks/codex
+# runs `apm install -g --only mcp --target claude,gemini,codex` — every MCP
+# target in one run. Listing gemini or codex here instead would also copy every
+# skill below into ~/.gemini/ or ~/.codex/, which neither CLI reads. The names
+# have to share a single run: apm prunes the servers of every runtime outside
+# the target list, so two runs would each undo the other. That is also why
+# claude repeats there despite being a target below.
 targets:
   - claude
   - agent-skills
@@ -75,15 +79,12 @@ dependencies:
     # cookbooks/agent-browser (Apache-2.0). The skill is a discovery stub; the
     # CLI serves the version-matched guide via `agent-browser skills get core`.
     - vercel-labs/agent-browser/skills/agent-browser
-  # No MCP servers are declared today. headroom used to be here; its three
-  # tools were called twice in 71 sessions of transcripts, and `headroom
-  # audit-reads` sized what they can address — identical repeats plus subset
-  # containment — at under 3% of Read bytes, against a schema cost paid in
-  # every session. The part of headroom that reaches the other 40-odd percent
-  # is its proxy, which is a separate decision, not an MCP server.
-  #
-  # The key stays so the deploy in cookbooks/claude keeps pruning servers a
-  # previous manifest left behind.
-  mcp: []
+  # Context7 is registered in the apm MCP registry and can be deployed to each
+  # target. MCP entries are registry-resolved by apm, even when a URL is also
+  # supplied, so keep unregistered servers out of this manifest.
+  mcp:
+    - name: context7
+      transport: http
+      url: https://mcp.context7.com/mcp
 includes: auto
 scripts: {}
