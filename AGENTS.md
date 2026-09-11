@@ -93,6 +93,24 @@ This repo has no `Makefile.toml` — the global `makers` convention does not app
 apm install -g    # redeploy skills / MCP config after editing config/apm/apm.yml
 ```
 
+## Role file layout
+
+`roles/darwin/default.rb` is grouped by purpose under `# --- <section> ---`
+comments, ordered by how early a tool is wanted on a fresh machine. A new
+`include_cookbook` line goes in its section, not at the end of the file; reading
+that one file is the whole lookup, so no cookbook carries a category comment of
+its own.
+
+Order does not express dependency. A cookbook that needs another one includes it
+itself — `include_cookbook 'mas'` at the top of a Mac App Store recipe,
+`include_cookbook 'rust'` in a `cargo` one, `include_cookbook 'mise'` in one that
+shells out to `mise exec`. `include_recipe` is idempotent in mitamae, so the
+included recipe still runs exactly once however many recipes ask for it.
+
+`zsh` is the exception and stays first: cookbooks append to `~/.zsh/lib/*.zsh`
+through the symlink it creates, and appending before that link exists writes a
+real file where the link belongs.
+
 ## Files a tool owns
 
 Do not reformat or hand-restructure these; the owning app rewrites them in its
