@@ -71,6 +71,7 @@ include_cookbook 'datagrip'
 # --- AI agents ---
 include_cookbook 'claude'
 include_cookbook 'gemini'
+include_cookbook 'codex'
 include_cookbook 'opencode'
 include_cookbook 'opencode2'
 include_cookbook 'agent-browser'

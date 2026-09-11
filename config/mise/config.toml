@@ -11,6 +11,10 @@
 [tools]
 apm = "latest"          # microsoft/apm: agent package manager
 bun = "latest"
+# OpenAI Codex CLI, paired with cookbooks/codex. The backend is explicit: a bare
+# `codex` entry resolves through mise's aqua backend, which tracks a separate
+# alpha release stream, and nothing here is installed through aqua.
+"npm:@openai/codex" = "latest"
 gemini = "latest"       # npm:@google/gemini-cli, deprecated in homebrew/core
 java = "latest"
 node = "latest"
