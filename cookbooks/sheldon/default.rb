@@ -1,3 +1,5 @@
+include_cookbook 'rust'
+
 cargo "sheldon"
 execute "mkdir -p ~/.config/sheldon" do
   not_if "test -d ~/.config/sheldon"

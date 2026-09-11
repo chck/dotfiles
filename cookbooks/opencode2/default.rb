@@ -1,5 +1,6 @@
 case node[:platform]
 when 'darwin'
+  include_cookbook 'mise'
   # OpenCode 2 is the beta that becomes 2.0. It installs as `opencode2` and
   # deliberately does not replace v1's `opencode`, so cookbooks/opencode stays
   # as the stable fallback — see the alias note below.

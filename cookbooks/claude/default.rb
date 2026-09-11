@@ -1,5 +1,6 @@
 case node[:platform]
 when 'darwin'
+  include_cookbook 'mise'
   execute 'brew install --cask claude' do
     not_if { File.directory?('/Applications/Claude.app') }
   end

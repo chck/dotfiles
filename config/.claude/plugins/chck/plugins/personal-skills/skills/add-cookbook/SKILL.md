@@ -26,9 +26,39 @@ roles/base/default.rb             ← cross-platform role (rare)
 2. **Create `cookbooks/<app-name>/default.rb`** following the patterns below.
    - Only create `files/` and `templates/` subdirectories if the cookbook actually uses them. Do not create them with `.keep` files just for structure.
 
-3. **Add to role** — append `include_cookbook '<app-name>'` to the appropriate role file:
+3. **Add to role** — add `include_cookbook '<app-name>'` to the appropriate role file:
    - `roles/darwin/default.rb` — macOS-only or GUI apps
    - `roles/base/default.rb` — truly cross-platform CLI tools
+
+   Put the line in the section it belongs to, not at the end of the file.
+   `roles/darwin/default.rb` is grouped by purpose under `# --- <section> ---`
+   comments (editors, AI agents, containers, CLI utilities, Mac App Store, …),
+   ordered by how early the tool is wanted on a fresh machine. Reading that one
+   file is the whole lookup — no cookbook needs to be opened to find the right
+   place, and no cookbook carries a category comment of its own. If nothing
+   fits, add a section rather than appending to an unrelated one.
+
+4. **Declare dependencies in the cookbook, not by position.** A cookbook that
+   needs another one calls `include_cookbook '<other>'` at the top of its own
+   recipe. `include_recipe` is idempotent in mitamae — the included recipe runs
+   once no matter how many recipes ask for it — so this costs nothing and makes
+   the entry safe to move around in the role file.
+
+   ```ruby
+   case node[:platform]
+   when 'darwin'
+     include_cookbook 'mas'
+     execute 'mas install <id>' do
+   ```
+
+   Existing dependencies to copy the shape from: `mas` (every Mac App Store
+   cookbook), `rust` (anything installed with the `cargo` define), `mise`
+   (anything that shells out to `mise exec`).
+
+   `zsh` is the exception that stays positional: cookbooks append to
+   `~/.zsh/lib/*.zsh` through the symlink the zsh cookbook creates, and
+   appending before it exists writes a real file where the link belongs. It is
+   first in the role file and depended on implicitly.
 
 ## Choosing an install method
 
@@ -38,9 +68,10 @@ Decide in this order:
 2. GUI application → `brew install --cask`
 3. Version needs controlling (language runtime, or a tool that differs per project) → **mise**
 4. Run `mise registry <name>` — if listed, → **mise**
-5. Otherwise → `brew install` (plus `apt install` if Ubuntu is in scope)
-6. `cargo-*` subcommand or crate that should track the Rust toolchain → `cargo`
-7. In no registry at all → `github_binary`
+5. Distributed only through the Mac App Store → `mas install <id>`
+6. Otherwise → `brew install` (plus `apt install` if Ubuntu is in scope)
+7. `cargo-*` subcommand or crate that should track the Rust toolchain → `cargo`
+8. In no registry at all → `github_binary`
 
 Build dependencies (openssl, cmake, pkg-config) always go through `brew`/`apt`,
 not mise.
@@ -128,6 +159,23 @@ else
 end
 ```
 
+### Mac App Store app (darwin only)
+```ruby
+case node[:platform]
+when 'darwin'
+  include_cookbook 'mas'
+  execute 'mas install <id>' do
+    not_if 'mas list | grep -qw <id>'
+  end
+else
+  raise NotImplementedError
+end
+```
+The id is the number in the App Store URL (`.../id1594063111`). Guard on the
+`mas list` receipt rather than on `/Applications/<App>.app`: a bundle name that
+carries a space or drops a version suffix is not derivable from the listing, and
+a wrong path re-downloads the app on every apply.
+
 ### Cross-platform (darwin + ubuntu)
 ```ruby
 case node[:platform]
@@ -206,6 +254,7 @@ tokens, licence codes) and nothing machine-specific. Two things to watch for:
 
 - CLI tool: `not_if 'which <cmd>'`
 - macOS app bundle: `not_if 'test -d /Applications/<App>.app'`
+- Mac App Store app: `not_if 'mas list | grep -qw <id>'`
 - File existence: `not_if 'test -f <path>'`
 - apt package: `not_if "dpkg -l | grep '^ii' | grep <pkg>"`
 - Alias already present: `not_if 'grep <unique-string> ~/.zsh/lib/aliases.zsh'`
