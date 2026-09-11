@@ -27,7 +27,6 @@ include_cookbook 'mas'
 include_cookbook 'brave-browser'
 include_cookbook 'google-chrome'
 include_cookbook 'arc'
-include_cookbook 'dia'
 
 # --- communication ---
 # Early for the same reason as browsers: these need a sign-in before they are
