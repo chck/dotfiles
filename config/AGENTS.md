@@ -85,10 +85,13 @@ src/app_name
 - Commit messages describe **what changed**, not why or who asked
   - Bad: `fix review comments`, `address feedback`, `PR response`
   - Good: `fix: add null check to prevent undefined access`
-- Always add a co-author trailer to commits you (the agent) create, naming the model you are running as:
-  - `Co-Authored-By: <your model display name> <noreply@anthropic.com>`
-  - e.g. `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`
-  - If you cannot tell which model you are, use `Claude`
+- Always add a co-author trailer to commits you (the agent) create, using the
+  host's canonical footprint so agent involvement is measurable:
+  - Claude Code → `Co-Authored-By: Claude <noreply@anthropic.com>`
+  - Codex → `Co-Authored-By: Codex <noreply@openai.com>`
+- Keep the host name (`Claude`, `Codex`, etc.) in the display name even when the
+  model has a more specific name. If the host is unknown, use the host's
+  vendor-neutral canonical name rather than guessing a vendor address.
 
 ## Security
 - **Secret material** — the contents of `*.env`, `*.key`, `*.pem`, a private key block, an
