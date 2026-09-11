@@ -33,6 +33,23 @@ when 'darwin'
     destination codex_config
   end
 
+  # The personal skill source is also a Claude Code marketplace plugin. Codex
+  # can consume the same package from a local marketplace, so the skill
+  # definitions stay in one place instead of being copied into a Codex-only
+  # tree. The apm deployment remains for other agents that use ~/.agents/skills.
+  codex_marketplace = File.join(dotfiles_root, 'config/.claude/plugins/chck')
+  execute "codex plugin marketplace add #{codex_marketplace}" do
+    not_if {
+      `codex plugin marketplace list 2>/dev/null`.include?(codex_marketplace)
+    }
+  end
+
+  execute 'codex plugin add personal-skills@chck' do
+    not_if {
+      `codex plugin list 2>/dev/null`.match?(/personal-skills/)
+    }
+  end
+
   # MCP servers are declared once in config/apm/apm.yml and written to
   # ~/.codex/config.toml ([mcp_servers.<name>] tables) by cookbooks/claude,
   # which runs the deploy for gemini and codex together — one run, because each
