@@ -164,7 +164,7 @@ end
 case node[:platform]
 when 'darwin'
   include_cookbook 'mas'
-  execute 'mas install <id>' do
+  execute 'mas get <id>' do
     not_if 'mas list | grep -qw <id>'
   end
 else
@@ -172,9 +172,28 @@ else
 end
 ```
 The id is the number in the App Store URL (`.../id1594063111`). Guard on the
-`mas list` receipt rather than on `/Applications/<App>.app`: a bundle name that
-carries a space or drops a version suffix is not derivable from the listing, and
-a wrong path re-downloads the app on every apply.
+`mas list` receipt rather than on `/Applications/<App>.app`: the bundle name is
+not derivable from the listing (the App Store calls it "Tunacan 2", the bundle
+is `Tunacan2.app`), and a wrong path re-downloads the app on every apply.
+
+`mas get`, not `mas install`: `install` only re-downloads an app the signed-in
+Apple Account has already acquired, and fails on a fresh one with `This
+redownload is not available for this Apple Account`. `get` acquires a free app
+first, and installs an already-acquired one, so it covers both a new machine and
+a new app. Three things it still cannot do:
+
+- **Paid apps** have to be bought once in the App Store GUI per Apple Account
+  (mas-cli/mas#558). After that the cookbook handles the install.
+- **Root** is required by `get`/`install`. mas reuses valid sudo credentials and
+  otherwise prompts for the password, so a non-interactive `./install.sh` dies
+  on `sudo: a terminal is required`. Run `sudo -v` first, in a real terminal.
+- **The right Apple Account** must be signed in to the App Store; an app owned
+  by another account gives the redownload error above.
+
+There is no non-mas route for an App Store-only app: Homebrew rejects a cask
+whose software is distributed exclusively through the Mac App Store, so a cask
+exists only when the developer also ships a direct download — check
+`brew search <name>` before reaching for mas.
 
 ### Cross-platform (darwin + ubuntu)
 ```ruby
