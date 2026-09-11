@@ -98,6 +98,19 @@ This repo has no `Makefile.toml` — the global `makers` convention does not app
 apm install -g    # redeploy skills / MCP config after editing config/apm/apm.yml
 ```
 
+**Apply only from the main checkout, never from a worktree.** `dotfile` / `link`
+resolve their source against the repository the run starts in, so applying from
+`.worktrees/<branch>` or an Orca workspace repoints every deployed symlink — the
+four `AGENTS.md` links, `~/.zsh`, `config/karabiner/`, the LaunchAgents — at a
+directory that is deleted when the worktree is. A dry run from a worktree is safe
+and reports the repointing as a pending change; read those lines as the signal to
+apply elsewhere, not as drift to fix:
+
+```
+link[/Users/…/.codex/AGENTS.md] to will change from '…/dotfiles/config/AGENTS.md'
+  to '…/orca/workspaces/dotfiles/<name>/config/AGENTS.md'
+```
+
 ## Role file layout
 
 `roles/darwin/default.rb` is grouped by purpose under `# --- <section> ---`
