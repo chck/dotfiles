@@ -20,6 +20,15 @@ include_cookbook 'aqua'
 include_cookbook 'rust'
 include_cookbook 'mas'
 
+# --- browsers ---
+# Early on purpose: the run is sequential, so installing browsers up front lets
+# the sign-ins they gate (Google, GitHub, password manager) happen in parallel
+# with the rest of the apply instead of after it.
+include_cookbook 'brave-browser'
+include_cookbook 'google-chrome'
+include_cookbook 'arc'
+include_cookbook 'dia'
+
 # --- shell ---
 include_cookbook 'sheldon'
 include_cookbook 'starship'
@@ -207,12 +216,6 @@ include_cookbook 'obsidian'
 include_cookbook 'zotero'
 include_cookbook 'steam'
 include_cookbook 'bathyscaphe'
-
-# --- browsers ---
-include_cookbook 'brave-browser'
-include_cookbook 'google-chrome'
-include_cookbook 'arc'
-include_cookbook 'dia'
 
 # --- Mac App Store (needs `mas`) ---
 include_cookbook 'bear'
