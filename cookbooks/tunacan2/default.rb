@@ -1,9 +1,6 @@
 case node[:platform]
 when 'darwin'
   include_cookbook 'mas'
-  # Tunacan 2 is a separate App Store listing from cookbooks/tunacan (id
-  # 980577198), not an upgrade of it, so v1 stays installed alongside.
-  #
   # Guarded on the mas receipt rather than on /Applications/<App>.app: the
   # bundle is Tunacan2.app while the listing says "Tunacan 2", and a wrong path
   # would re-download the app on every apply.
