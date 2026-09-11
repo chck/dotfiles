@@ -119,6 +119,14 @@ The language-server plugins (pyright, typescript, rust-analyzer) configure Claud
 Code's own LSP client and have no Codex counterpart; `cookbooks/codex` names them
 as deliberately absent rather than leaving the omission to be rediscovered.
 
+That gap stays open on purpose. An LSP-backed MCP server (serena) would close it
+for every agent at once, but it was measured at +1,814 tokens of startup load
+against a benefit that the same measurement failed to observe at all — across 51
+transcripts the agent never called an LSP or serena tool, reaching for plain file
+reads instead, while the Claude-side plugins cost +31. Closing a gap in a
+capability nothing calls buys startup load and no parity. Reconsider once a run
+that forbids whole-file reads shows the tools actually being used.
+
 Do not install the same MCP server twice. A server that apm already deploys is
 live in Codex and Claude both, and adding the plugin that bundles it registers it
 a second time under the same name.
