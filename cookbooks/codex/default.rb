@@ -16,6 +16,13 @@ when 'darwin'
   # global instructions file is AGENTS.md there — the same file every other
   # agent here gets.
   codex_config = "#{ENV['HOME']}/.codex"
+  codex_config_file = File.join(dotfiles_root, 'config/codex/config.toml')
+  link File.join(codex_config, 'config.toml') do
+    to codex_config_file
+    user node[:user]
+    force true
+  end
+
   dotfile 'AGENTS.md' do
     destination codex_config
   end
