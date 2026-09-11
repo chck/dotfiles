@@ -1,5 +1,6 @@
 case node[:platform]
 when 'darwin'
+  include_cookbook 'mise'
   execute 'brew install --cask antigravity' do
     not_if 'test -d /Applications/Antigravity.app/'
   end
