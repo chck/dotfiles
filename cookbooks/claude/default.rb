@@ -162,5 +162,5 @@ execute '''cat <<EOF >> ~/.zsh/lib/aliases.zsh
 alias c="claude"
 EOF
 ''' do
-  not_if { File.exist?(File.expand_path('~/.zsh/lib/aliases.zsh')) && File.read(File.expand_path('~/.zsh/lib/aliases.zsh')).include?('claude') }
+  not_if { File.exist?(File.expand_path('~/.zsh/lib/aliases.zsh')) && File.read(File.expand_path('~/.zsh/lib/aliases.zsh')).include?('alias c="claude"') }
 end
