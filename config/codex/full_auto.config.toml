@@ -1,9 +1,0 @@
-# Codex full_auto profile, layered over config.toml with `codex -p full_auto`.
-# Copied to $CODEX_HOME/full_auto.config.toml by cookbooks/codex, on the same
-# first-use-only terms as config.toml next to it.
-#
-# Only the keys that differ from the base config belong here. The base asks for
-# approval on every sandbox boundary crossing; this profile drops that prompt
-# and leaves the sandbox itself — workspace-write, no network — in place, so an
-# unattended run still cannot leave the worktree or reach the network.
-approval_policy = "never"

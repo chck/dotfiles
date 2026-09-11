@@ -5,9 +5,15 @@
 # Keep authentication, history, logs, caches, and hooks outside this tracked
 # file; CODEX_HOME is the root for all of those, not an XDG config directory.
 
-# Interactive auto mode: worktree changes and routine local commands run
-# automatically, while sandbox boundary crossings request approval.
-approval_policy = "on-request"
+# Auto mode: everything inside the sandbox runs without asking, and approval is
+# requested only when the sandbox actually blocks a command — a write outside
+# the workspace, or the network below. `on-request` asks whenever the model
+# decides to; `never` does not ask at all and hands the failure back instead.
+# The other two the loader accepts are `untrusted` and `granular`.
+#
+# The TUI starts in the mode this sets and cycles through the others with
+# shift+tab, so a session can be tightened or loosened without editing anything.
+approval_policy = "on-failure"
 sandbox_mode = "workspace-write"
 
 [sandbox_workspace_write]
