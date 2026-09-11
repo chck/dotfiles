@@ -67,6 +67,51 @@ when 'darwin'
     destination codex_config
   end
 
+  # The personal skill source is also a Claude Code marketplace plugin. Codex
+  # can consume the same package from a local marketplace, so the skill
+  # definitions stay in one place instead of being copied into a Codex-only
+  # tree. The apm deployment remains for other agents that use ~/.agents/skills.
+  codex_marketplace = File.join(dotfiles_root, 'config/.claude/plugins/chck')
+  execute "mise exec -- codex plugin marketplace add #{codex_marketplace}" do
+    not_if {
+      `mise exec -- codex plugin marketplace list --json 2>/dev/null`.include?(codex_marketplace)
+    }
+  end
+
+  execute 'mise exec -- codex plugin add personal-skills@chck' do
+    not_if {
+      `mise exec -- codex plugin list 2>/dev/null`.include?('personal-skills@chck')
+    }
+  end
+
+  # WakaTime's official Codex plugin records prompts and file-edit events while
+  # reusing the standard ~/.wakatime.cfg configuration.
+  execute 'mise exec -- codex plugin marketplace add wakatime/codex-cli-wakatime' do
+    not_if {
+      `mise exec -- codex plugin marketplace list --json 2>/dev/null`.include?('https://github.com/wakatime/codex-cli-wakatime.git')
+    }
+  end
+
+  execute 'mise exec -- codex plugin add codex-cli-wakatime@wakatime' do
+    not_if {
+      `mise exec -- codex plugin list 2>/dev/null`.include?('codex-cli-wakatime@wakatime')
+    }
+  end
+
+  # Diagram Design publishes a native Codex plugin with the same diagram
+  # skills and commands as its Claude Code plugin.
+  execute 'mise exec -- codex plugin marketplace add cathrynlavery/diagram-design' do
+    not_if {
+      `mise exec -- codex plugin marketplace list --json 2>/dev/null`.include?('https://github.com/cathrynlavery/diagram-design.git')
+    }
+  end
+
+  execute 'mise exec -- codex plugin add diagram-design@diagram-design' do
+    not_if {
+      `mise exec -- codex plugin list 2>/dev/null`.include?('diagram-design@diagram-design')
+    }
+  end
+
   # MCP servers are declared once in config/apm/apm.yml and written to
   # ~/.codex/config.toml ([mcp_servers.<name>] tables) by cookbooks/claude,
   # which runs the deploy for gemini and codex together — one run, because each
