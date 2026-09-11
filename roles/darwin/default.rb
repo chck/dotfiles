@@ -29,6 +29,14 @@ include_cookbook 'google-chrome'
 include_cookbook 'arc'
 include_cookbook 'dia'
 
+# --- communication ---
+# Early for the same reason as browsers: these need a sign-in before they are
+# usable, and doing it while the rest of the apply runs costs no extra time.
+include_cookbook 'slack'
+include_cookbook 'discord'
+include_cookbook 'zoom'
+include_cookbook 'linear'
+
 # --- shell ---
 include_cookbook 'sheldon'
 include_cookbook 'starship'
@@ -180,12 +188,6 @@ include_cookbook 'adobe-creative-cloud'
 include_cookbook 'penpot'
 include_cookbook 'amazon-photos'
 include_cookbook 'scrcpy'
-
-# --- communication ---
-include_cookbook 'slack'
-include_cookbook 'discord'
-include_cookbook 'zoom'
-include_cookbook 'linear'
 
 # --- desktop / window management ---
 include_cookbook 'aerospace'
