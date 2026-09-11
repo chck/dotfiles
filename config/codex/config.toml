@@ -1,0 +1,14 @@
+# Codex user configuration. cookbooks/codex copies this file to
+# ~/.codex/config.toml on a machine that has none yet and never deploys it
+# again, because Codex writes its own state into the live file; a setting
+# changed here has to be applied there by hand.
+# Keep authentication, history, logs, caches, and hooks outside this tracked
+# file; CODEX_HOME is the root for all of those, not an XDG config directory.
+
+# Interactive auto mode: worktree changes and routine local commands run
+# automatically, while sandbox boundary crossings request approval.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false

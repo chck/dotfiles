@@ -57,6 +57,7 @@ Search this repository instead — most of `$HOME`'s config originates here.
 | `dotfile` / `link` in cookbooks | `config/<name>` | `$HOME/...` | **symlink** |
 | apm (`config/apm/apm.yml`) | `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/` | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | mise (`config/mise/config.toml`) | tracked, symlinked | `~/.config/mise/config.toml` | symlink |
+| `execute` copy in `cookbooks/codex` | `config/codex/*.toml` | `~/.codex/...` | **copy, once** |
 | Homebrew / cargo / `github_binary` | cookbook recipe | — | installs only |
 | LaunchAgent (`config/ollama/*.plist`) | tracked, symlinked | `~/Library/LaunchAgents/` | symlink + `launchctl bootstrap` |
 
@@ -75,6 +76,11 @@ The symlink/copy distinction is the trap:
   `apm install -g` runs. Always edit
   `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/SKILL.md`,
   then redeploy. No version bump in `apm.yml` / `plugin.json` is needed.
+- **Copied once** (`config/codex/config.toml`,
+  `config/codex/full_auto.config.toml`) — the copy is made only on a machine
+  that has no `~/.codex/<name>` yet. Editing the source changes nothing live,
+  and editing the live file never reaches this repository, so a setting has to
+  be written on both sides.
 
 apm deploys one copy per target. Claude Code reads only
 `~/.config/claude/skills/`; every other agent reads `~/.agents/skills/`, so both
@@ -123,6 +129,12 @@ own format, and pre-commit already excludes them:
   destroys the symlink, so the live copy drifts. Re-import from
   `~/.config/otty/config.toml` and recreate the link rather than editing here.
   Otty also repeats `open-with-app` per entry, which is not valid TOML.
+- `config/codex/config.toml`, `config/codex/full_auto.config.toml` — Codex. It
+  writes its own state into whichever config file it loads: `[marketplaces.*]`
+  and `[plugins.*]` entries carrying absolute paths, `[hooks.state.*]` trust
+  hashes, `[projects.*]` trust levels, `[tui.*]` counters. That is why
+  `cookbooks/codex` copies them instead of linking them; keep these two files
+  to the settings a fresh machine needs.
 - `config/.zsh/lib/{aliases,apps}.zsh` — appended to by cookbooks through the
   `~/.zsh` symlink; add new entries at the tail, do not reorder
 

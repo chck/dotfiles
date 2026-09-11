@@ -16,6 +16,40 @@ when 'darwin'
   # global instructions file is AGENTS.md there — the same file every other
   # agent here gets.
   codex_config = "#{ENV['HOME']}/.codex"
+  # ~/.codex holds Codex's own state next to its configuration, so the two
+  # tracked files below are copied in rather than symlinked. Codex writes back
+  # into whichever config file it loads — plugin and marketplace entries, hook
+  # trust hashes, per-project trust, TUI counters — and through a symlink all of
+  # that, absolute paths included, lands in this public repository.
+  #
+  # The copy is made once, for a machine that has no file yet; an existing
+  # ~/.codex/<name> is left alone. A setting changed in config/codex/ therefore
+  # has to be applied to the live file by hand, the same drift config/otty has.
+  directory codex_config do
+    user node[:user]
+    mode '755'
+  end
+
+  {
+    'config.toml' => 'config/codex/config.toml',
+    'full_auto.config.toml' => 'config/codex/full_auto.config.toml',
+  }.each do |name, source|
+    live = File.join(codex_config, name)
+    tracked = File.join(dotfiles_root, source)
+
+    # A machine provisioned while these were symlinks keeps whatever state Codex
+    # wrote: the link is replaced by a file holding the same content.
+    execute "convert #{live} from a symlink to a copy" do
+      command %(t="$(mktemp)" && cat "#{live}" > "$t" && mv "$t" "#{live}" && chmod 644 "#{live}")
+      only_if "test -L \"#{live}\" && test -e \"#{live}\""
+    end
+
+    execute "copy #{source} to #{live}" do
+      command %(rm -f "#{live}" && cp "#{tracked}" "#{live}")
+      not_if "test -f \"#{live}\" && ! test -L \"#{live}\""
+    end
+  end
+
   dotfile 'AGENTS.md' do
     destination codex_config
   end
