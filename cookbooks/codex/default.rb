@@ -46,6 +46,14 @@ when 'darwin'
     not_if "test -f \"#{codex_config_file}\" && ! test -L \"#{codex_config_file}\""
   end
 
+  # `codex -p yolo` layers this file over config.toml: no sandbox, no approvals.
+  # A profile layer is never written back to by Codex, so it is linked rather
+  # than copied and stays in sync with the repository.
+  dotfile 'yolo.config.toml' do
+    source 'codex/yolo.config.toml'
+    destination codex_config
+  end
+
   dotfile 'AGENTS.md' do
     destination codex_config
   end

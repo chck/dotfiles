@@ -1,0 +1,24 @@
+# Codex profile layered on top of config.toml by `codex -p yolo`, deployed as a
+# symlink to ~/.codex/yolo.config.toml by cookbooks/codex.
+#
+# This is the config form of `--dangerously-bypass-approvals-and-sandbox`: the
+# agent runs commands with no sandbox and asks nobody, so a session can read and
+# write anything this user can and reach the network. Use it only where the
+# machine or the workspace is already isolated by something else.
+#
+# Profile v2 is one file per profile: `-p <name>` loads $CODEX_HOME/<name>.config.toml.
+# The legacy `[profiles.<name>]` table in config.toml no longer loads — Codex
+# rejects writes to it with "use `--profile <name>` with `<name>.config.toml`".
+# Only keys repeated here override the base file; everything else in
+# config.toml, including the MCP servers, still applies.
+#
+# Codex persists its own state to config.toml and refuses to write to any other
+# layer ("Only writes to the user config are allowed"), so unlike config.toml
+# this file is safe to symlink out of the repository.
+
+# Nothing is submitted for approval, so the auto_review reviewer in the base
+# config never runs; naming `user` here keeps the unused reviewer from costing
+# a model call if a future release asks anyway.
+approval_policy = "never"
+approvals_reviewer = "user"
+sandbox_mode = "danger-full-access"
