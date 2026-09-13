@@ -88,6 +88,23 @@ copies are live and a skill edited in one place is not edited in the other.
 `~/.claude/plugins/marketplaces/chck/` and `~/.claude/plugins/cache/chck/` hold
 retired copies of the same skills. They are not the source; do not edit them.
 
+### Which Claude Code directory is live
+
+`config/.zsh/lib/apps.zsh` exports `CLAUDE_CONFIG_DIR=$XDG_CONFIG_HOME/claude`,
+so settings, plugins and MCP state are read from `~/.config/claude/` and nothing
+under `~/.claude/settings*.json` is loaded. The one file still read from
+`~/.claude/` is `CLAUDE.md`: the user memory path is fixed, which is why
+`cookbooks/claude` links it there and links `settings.json` into
+`~/.config/claude/`.
+
+Two settings files, both under `~/.config/claude/`:
+
+- `settings.json` — symlink to `config/.claude/settings.json`, tracked and
+  public. Shared preferences and `enabledPlugins` only.
+- `settings.local.json` — untracked, machine-local. Everything that must not be
+  published or that another app rewrites: the Orca and Otty hook blocks, the
+  statusline command, Vertex/`env` values, host-specific permission entries.
+
 ## Commands
 
 This repo has no `Makefile.toml` — the global `makers` convention does not apply.

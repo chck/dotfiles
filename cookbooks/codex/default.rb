@@ -134,11 +134,17 @@ when 'darwin'
   #
   # claude-mem's marketplace names itself `claude-mem-local`, so its plugin is
   # addressed that way rather than by the repository owner.
+  #
+  # token-saver is registered for parity, but does nothing here yet: its
+  # PreToolUse hook returns early unless `tool_name` is `Bash`, and Codex names
+  # its shell tool `shell` and passes the command as an array rather than a
+  # string. It compresses output on the Claude Code side only until upstream
+  # handles that shape.
   {
     'anthropics/claude-plugins-official' => 'https://github.com/anthropics/claude-plugins-official.git',
     'JuliusBrussee/caveman' => 'https://github.com/JuliusBrussee/caveman.git',
     'thedotmack/claude-mem' => 'https://github.com/thedotmack/claude-mem.git',
-    '0xhimanshu/governor' => 'https://github.com/0xhimanshu/governor.git',
+    'anthropics/claude-plugins-community' => 'https://github.com/anthropics/claude-plugins-community.git',
   }.each do |source, url|
     execute "#{codex_cli} plugin marketplace add #{source}" do
       not_if {
@@ -155,7 +161,7 @@ when 'darwin'
     terraform@claude-plugins-official
     caveman@caveman
     claude-mem@claude-mem-local
-    governor@governor
+    token-saver@claude-community
   ].each do |plugin|
     execute "#{codex_cli} plugin add #{plugin}" do
       not_if {
