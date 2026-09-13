@@ -164,6 +164,10 @@ own format, and pre-commit already excludes them:
   absolute paths, `[hooks.state.*]` trust hashes, `[projects.*]` trust levels,
   `[tui.*]` counters. That is why `cookbooks/codex` copies it instead of linking
   it; keep this file to the settings a fresh machine needs.
+- `config/codex/yolo.config.toml` — Codex, same writer, but symlinked, so the
+  state lands here as an uncommitted diff instead of drifting out of sight.
+  `codex -p yolo` collects at least `[hooks.state.*]` this way. Discard those
+  hunks; the hashes regenerate on the next hook approval.
 - `config/.zsh/lib/{aliases,apps}.zsh` — appended to by cookbooks through the
   `~/.zsh` symlink; add new entries at the tail, do not reorder
 
