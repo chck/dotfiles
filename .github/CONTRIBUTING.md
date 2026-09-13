@@ -101,11 +101,12 @@ happened to ask for it.
 | skills only | apm | `~/.config/claude/skills/` and `~/.agents/skills/`, which Codex reads as well |
 | an MCP server | apm's `mcp:` block | claude, gemini and codex in one run |
 | commands, hooks or subagents | the plugin system, registered on **both** sides | whichever runtimes the plugin is added to |
+| skills from a repository this repository may not name | `cookbooks/private-skills` | the same two skill directories apm writes |
 
 A plugin does not need a `.codex-plugin` manifest to be shared. Codex reads a
 `.claude-plugin` marketplace directly — `anthropics/claude-plugins-official`,
-`JuliusBrussee/caveman` and `0xhimanshu/governor` all install into Codex from the
-same repository Claude Code uses, and a `.codex-plugin` only changes which files
+`JuliusBrussee/caveman` and `thedotmack/claude-mem` all install into Codex from
+the same repository Claude Code uses, and a `.codex-plugin` only changes which files
 Codex picks out of the package. So a plugin added on one side is a gap on the
 other until it is added there too, never a limitation.
 
@@ -177,6 +178,30 @@ Use `apm outdated -g` to see drift and `apm update -g` to refresh. Pinning is
 possible (`#<tag>`) but `apm update` will then skip that entry, and a `#<sha>`
 pin also makes `apm outdated` report `unknown` — you lose any signal that an
 update exists.
+
+### Adding a skill that cannot be named here
+
+A skill repository that is private, or whose owner identifies an internal org,
+cannot go in `config/apm/apm.yml`: that file is published. `cookbooks/private-skills`
+holds the mechanism instead and reads the identifiers from
+`~/.config/dotfiles/private-skills`, one `OWNER/REPO` per line, which is not
+tracked:
+
+```shell
+mkdir -p ~/.config/dotfiles
+printf '%s\n' 'owner/repo' >> ~/.config/dotfiles/private-skills
+./install.sh
+```
+
+Each line is installed twice, once per agent target, because `gh skill` writes
+one directory per agent: `--agent claude-code` follows `CLAUDE_CONFIG_DIR` to
+`~/.config/claude/skills/` and `--agent codex` writes `~/.agents/skills/`, which
+every other agent reads. Dropping the second run is the parity gap this cookbook
+exists to close.
+
+Nothing else belongs there. A public skill repository is more legible as an
+`apm.yml` entry, and only `apm.yml` records which skill of a repository is
+wanted — `gh skill install --all` takes them all.
 
 ## What belongs in this repository
 

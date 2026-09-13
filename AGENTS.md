@@ -58,6 +58,7 @@ Search this repository instead — most of `$HOME`'s config originates here.
 | apm (`config/apm/apm.yml`) | `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/` | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | mise (`config/mise/config.toml`) | tracked, symlinked | `~/.config/mise/config.toml` | symlink |
 | `execute` copy in `cookbooks/codex` | `config/codex/config.toml` | `~/.codex/config.toml` | **copy, once** |
+| `gh skill` in `cookbooks/private-skills` | `~/.config/dotfiles/private-skills` (untracked list) | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | Homebrew / cargo / `github_binary` | cookbook recipe | — | installs only |
 | LaunchAgent (`config/ollama/*.plist`) | tracked, symlinked | `~/Library/LaunchAgents/` | symlink + `launchctl bootstrap` |
 
