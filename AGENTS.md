@@ -154,7 +154,6 @@ own format, and pre-commit already excludes them:
 
 - `config/karabiner/karabiner.json` — Karabiner-Elements
 - `config/settings.json` — Zed (JSONC, so it is excluded from JSON hooks)
-- `config/simplebarrc.json` — simple-bar
 - `config/otty/config.toml` — Otty. It saves by replacing the file, which
   destroys the symlink, so the live copy drifts. Re-import from
   `~/.config/otty/config.toml` and recreate the link rather than editing here.
