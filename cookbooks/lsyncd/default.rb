@@ -1,7 +1,7 @@
 case node[:platform]
 when 'darwin'
-  execute 'brew install rsync lsyncd lua' do
-    not_if 'which rsync && which lsyncd && which lua'
+  execute 'brew install rsync' do
+    not_if 'which rsync'
   end
   execute 'brew install --cask macfuse' do
     not_if 'brew list --cask | grep macfuse'
