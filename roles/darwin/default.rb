@@ -138,6 +138,7 @@ include_cookbook 'ngrok'
 include_cookbook 'telnet'
 include_cookbook 'wget'
 include_cookbook 'monolith'
+include_cookbook 'cloudflare-warp'
 include_cookbook 'tailscale'
 
 # --- security ---
