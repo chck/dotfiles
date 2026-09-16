@@ -86,3 +86,67 @@ must still be tested because both clients can affect DNS. If full WARP mode is
 required, enable it only while another recovery path is available, keep
 Tailscale's incoming connections enabled, and verify from a second tailnet
 device before relying on unattended remote access.
+
+## Japanese IPoE / IPv4-over-IPv6 connections
+
+IPoE and IPv4-over-IPv6 describe the ISP access path; WARP cannot increase the
+physical last-mile capacity or replace the router/ISP access method. WARP can
+change DNS handling and the encrypted egress path after the Mac reaches
+Cloudflare. Cloudflare says that WARP may
+choose a shorter path to a destination (especially Cloudflare-served sites),
+but also explicitly says that encryption can reduce throughput on high-speed
+desktop broadband. Treat any speed or latency gain as a measurement result,
+not as a property of IPoE itself.
+
+Enable the ISP-supported IPoE and IPv4-over-IPv6 function on the home router
+first. That is the layer designed to bypass the traditional PPPoE congestion
+point; WARP is an optional overlay after that foundation is working.
+
+- [Cloudflare WARP modes](https://developers.cloudflare.com/warp-client/warp-modes/)
+- [Cloudflare WARP FAQ: throughput](https://developers.cloudflare.com/warp-client/known-issues-and-faq/)
+- [IIJ: why IPv4-over-IPv6 uses IPoE](https://techlog.iij.ad.jp/archives/2524)
+
+For a home connection, start with consumer **DNS-only** mode if the goal is
+DNS privacy without changing the default IP routes. DNS-only can improve lookup
+latency, but it cannot improve the throughput of an established transfer. For
+selected browser or application traffic, desktop WARP's **Local proxy** mode is
+the safer performance experiment: it sends only proxy-configured applications
+through WARP and leaves the rest of the Mac on its normal routes. The current
+default tunnel protocol is **MASQUE**; keep that default unless measurements
+show a connection-specific problem.
+
+Full **WARP / Traffic and DNS** mode tunnels all device traffic and is the mode
+most likely to interfere with Tailscale. Consumer WARP's documented macOS UI
+lets the user change the connection protocol and DNS protocol, but it does not
+provide the Zero Trust device-profile split-tunnel controls described above. If
+full WARP is needed, preserve Tailscale inbound access only as an experimentally
+verified result.
+
+- [Cloudflare WARP Local proxy mode](https://developers.cloudflare.com/warp-client/warp-modes/)
+- [Cloudflare tunnel protocol parameters](https://developers.cloudflare.com/cloudflare-one/team-and-resources/devices/cloudflare-one-client/deployment/mdm-deployment/parameters/)
+
+Cloudflare's current requirements page recommends an MTU of 1381 bytes for
+macOS. Its Cloudflare One PMTUD documentation reports protocol-specific
+minimums of 1361 bytes (MASQUE/IPv4), 1381 bytes (MASQUE/IPv6), 1340 bytes
+(WireGuard/IPv4), and 1360 bytes (WireGuard/IPv6); below 1361 bytes, the
+Cloudflare One Client automatically disables IPv6 on the tunnel interface when
+PMTUD is enabled. These exact PMTUD controls are documented for the Zero Trust
+client, so do not assume the consumer cask exposes them. On an IPv6-capable
+IPoE path, check that IPv6 remains usable after enabling WARP rather than
+forcing a manual MTU change first.
+
+- [Cloudflare WARP requirements](https://developers.cloudflare.com/warp-client/get-started/)
+- [Cloudflare One PMTUD and MTU](https://developers.cloudflare.com/cloudflare-one/team-and-resources/devices/cloudflare-one-client/deployment/mdm-deployment/path-mtu-discovery/)
+
+### Benchmark before choosing a setting
+
+Run each case for several repeated samples at the same time of day, from the
+same Mac and connection: (1) WARP off, (2) DNS-only, and (3) full WARP. Record
+IPv4 and IPv6 reachability separately, DNS lookup latency, unloaded and loaded
+latency, download/upload throughput, packet loss, and the selected WARP
+protocol/edge. Also run a sustained transfer and the real remote-access test
+from an outside Tailscale node (`tailscale ping` plus the service port) in every
+case. Compare medians and failure rates; a single speed-test peak is not
+evidence of acceleration. If full WARP improves a Cloudflare-hosted workload
+but reduces general throughput or breaks inbound Tailscale, keep DNS-only (or
+disable WARP when remote access is needed).
