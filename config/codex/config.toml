@@ -27,3 +27,8 @@ sandbox_mode = "workspace-write"
 
 [sandbox_workspace_write]
 network_access = false
+
+[tui]
+# Preserve terminal scrollback instead of translating mouse-wheel events into
+# prompt-history navigation while Codex owns the alternate screen.
+alternate_screen = "never"
