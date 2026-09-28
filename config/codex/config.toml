@@ -5,6 +5,11 @@
 # Keep authentication, history, logs, caches, and hooks outside this tracked
 # file; CODEX_HOME is the root for all of those, not an XDG config directory.
 
+# mise owns the Codex installation and the global `up` alias upgrades it. The
+# built-in updater runs pnpm directly, which creates a second installation that
+# shadows mise's executable on PATH.
+check_for_update_on_startup = false
+
 # Escalations out of the sandbox — a write outside the workspace, or the network
 # below — go to automatic review instead of stopping for a human. A rejected
 # action comes back to the agent with instructions to find a safer route and to
