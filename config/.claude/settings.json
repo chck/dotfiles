@@ -66,10 +66,11 @@
       }
     }
   },
+  "promptSuggestionEnabled": false,
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "promptSuggestionEnabled": false
+  "model": "claude-sonnet-5-5"
 }
