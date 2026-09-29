@@ -4,11 +4,16 @@ when 'darwin'
   execute 'brew install --cask claude' do
     not_if { File.directory?('/Applications/Claude.app') }
   end
-  # The CLI is a separate cask from the desktop app, and every `claude plugins`
-  # call below depends on it.
-  execute 'brew install --cask claude-code' do
-    not_if 'which claude'
-  end
+  # The CLI is declared as npm:@anthropic-ai/claude-code in
+  # config/mise/config.toml, not installed here: the `claude-code` cask lags the
+  # npm channel by several patch versions, which gates features released behind a
+  # minimum version (Opus 5.5 needs 2.1.280+). Every `claude plugins` call below
+  # depends on that entry being installed, which `mise install` in
+  # cookbooks/mise does.
+  #
+  # A machine still holding the cask keeps a /opt/homebrew/bin/claude that wins
+  # over the mise shim. Remove it once, by hand:
+  #   brew uninstall --cask claude-code
   # settings.json is read from ~/.config/claude/ (new path since Claude Code 1.x)
   claude_settings = File.join(dotfiles_root, 'config/.claude/settings.json')
   link File.expand_path('~/.config/claude/settings.json') do

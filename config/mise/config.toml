@@ -11,6 +11,11 @@
 [tools]
 apm = "latest"          # microsoft/apm: agent package manager
 bun = "latest"
+# Claude Code CLI, paired with cookbooks/claude. The backend is explicit: a bare
+# `claude-code` entry resolves through mise's aqua backend, and nothing here is
+# installed through aqua. npm is the channel `claude update` itself ships on, so
+# a new release is available the day it lands.
+"npm:@anthropic-ai/claude-code" = "latest"
 # OpenAI Codex CLI, paired with cookbooks/codex. The backend is explicit: a bare
 # `codex` entry resolves through mise's aqua backend, which tracks a separate
 # alpha release stream, and nothing here is installed through aqua.
