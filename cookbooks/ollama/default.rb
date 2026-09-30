@@ -24,6 +24,13 @@ when 'darwin'
     not_if 'ollama list | grep -q "qwen3\.6:35b-a3b-coding"'
     only_if 'curl -sf http://localhost:11434/api/tags >/dev/null'
   end
+
+  # Decision model for POST /v1/systemone (Ollama >= 0.35), which answers typed
+  # choice/score/yes-no questions in one request. Same only_if guard as above.
+  execute 'ollama pull nimble' do
+    not_if 'ollama list | grep -q "^nimble:"'
+    only_if 'curl -sf http://localhost:11434/api/tags >/dev/null'
+  end
 else
   raise NotImplementedError
 end
