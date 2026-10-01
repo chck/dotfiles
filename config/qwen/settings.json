@@ -10,6 +10,8 @@
   },
   "model": {
     "generationConfig": {
+      "streamIdleTimeoutMs": 600000,
+      "timeout": 600000,
       "contextWindowSize": 131072,
       "extra_body": {
         "reasoning_effort": "none"
