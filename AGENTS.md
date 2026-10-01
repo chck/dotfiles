@@ -58,6 +58,7 @@ Search this repository instead — most of `$HOME`'s config originates here.
 | apm (`config/apm/apm.yml`) | `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/` | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | mise (`config/mise/config.toml`) | tracked, symlinked | `~/.config/mise/config.toml` | symlink |
 | `execute` merge in `cookbooks/codex` | `config/codex/{config,yolo.config}.toml` | `~/.codex/{config,yolo.config}.toml` | **merge managed keys on every apply** |
+| `execute` merge in `cookbooks/claude` | `config/.claude/settings.json` | `~/.config/claude/settings.json` | **merge tracked keys on every apply** |
 | `gh skill` in `cookbooks/private-skills` | `~/.config/dotfiles/private-skills` (untracked list) | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | Homebrew / cargo / `github_binary` | cookbook recipe | — | installs only |
 | LaunchAgent (`config/ollama/*.plist`) | tracked, symlinked | `~/Library/LaunchAgents/` | symlink + `launchctl bootstrap` |
@@ -96,16 +97,18 @@ retired copies of the same skills. They are not the source; do not edit them.
 so settings, plugins and MCP state are read from `~/.config/claude/` and nothing
 under `~/.claude/settings*.json` is loaded. The one file still read from
 `~/.claude/` is `CLAUDE.md`: the user memory path is fixed, which is why
-`cookbooks/claude` links it there and links `settings.json` into
-`~/.config/claude/`.
+`cookbooks/claude` links it there.
 
-Two settings files, both under `~/.config/claude/`:
-
-- `settings.json` — symlink to `config/.claude/settings.json`, tracked and
-  public. Shared preferences and `enabledPlugins` only.
-- `settings.local.json` — untracked, machine-local. Everything that must not be
-  published or that another app rewrites: the Orca and Otty hook blocks, the
-  statusline command, Vertex/`env` values, host-specific permission entries.
+`~/.config/claude/settings.json` is a regular file, not a link. Claude Code has no
+user-scope `settings.local.json` (only `.claude/settings.local.json` per project),
+and it writes machine-local values — `autoMode`, `model`, hook blocks, `env` — into
+whichever `settings.json` it loads. `cookbooks/claude` therefore merges the keys of
+the tracked, public `config/.claude/settings.json` into the live file on every apply
+(`cookbooks/claude/settings-sync/sync_settings.py`) and keeps every other live key.
+Dicts merge per key; arrays and scalars are replaced whole. Keep the tracked file to
+shared preferences and `enabledPlugins`; put nothing in it that names a private org,
+project or account. Removing a key from the tracked file releases it without deleting
+it live.
 
 ## Commands
 

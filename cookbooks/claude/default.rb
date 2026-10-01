@@ -20,11 +20,18 @@ when 'darwin'
     not_if 'mise exec -- claude --version >/dev/null 2>&1'
   end
 
-  # settings.json is read from ~/.config/claude/ (new path since Claude Code 1.x)
+  # settings.json is read from ~/.config/claude/ (new path since Claude Code 1.x).
+  # Claude Code writes machine-local values (autoMode, model, plugin state) into
+  # whichever settings.json it loads, and there is no user-scope settings.local.json
+  # to take them. So the file is merged, not linked: the keys tracked in
+  # config/.claude/settings.json are applied and everything else stays live-only.
   claude_settings = File.join(dotfiles_root, 'config/.claude/settings.json')
-  link File.expand_path('~/.config/claude/settings.json') do
-    to claude_settings
-    force true
+  claude_settings_live = File.expand_path('~/.config/claude/settings.json')
+  settings_sync = File.join(dotfiles_root, 'cookbooks/claude/settings-sync/sync_settings.py')
+  settings_sync_command = %(python3 "#{settings_sync}" "#{claude_settings}" "#{claude_settings_live}")
+  execute 'sync managed Claude Code settings' do
+    command settings_sync_command
+    not_if "#{settings_sync_command} --check"
   end
   # CLAUDE.md is shared with other coding agents as AGENTS.md
   dotfile ".claude/CLAUDE.md" do
@@ -189,7 +196,7 @@ when 'darwin'
   # cheapest entry measured across 32 plugins — and earns it by letting the
   # agent jump to a definition instead of pulling a whole file into a context
   # that is re-read every turn. Declared here because `claude plugins install`
-  # rewrites the symlinked settings.json and would surface as a diff.
+  # rewrites settings.json, which is merged from the tracked file.
   ['pyright-lsp', 'typescript-lsp'].each do |lsp|
     execute "claude plugins install #{lsp}@claude-plugins-official --scope user" do
       not_if {
