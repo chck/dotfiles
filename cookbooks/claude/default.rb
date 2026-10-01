@@ -14,6 +14,12 @@ when 'darwin'
   # A machine still holding the cask keeps a /opt/homebrew/bin/claude that wins
   # over the mise shim. Remove it once, by hand:
   #   brew uninstall --cask claude-code
+  # The npm package's native binary is installed as an optional dependency.
+  # If its postinstall was skipped, the CLI remains a stub and cannot start.
+  execute 'mise exec -- node "$(mise where npm:@anthropic-ai/claude-code)/node_modules/@anthropic-ai/claude-code/install.cjs" && mise exec -- claude --version >/dev/null' do
+    not_if 'mise exec -- claude --version >/dev/null 2>&1'
+  end
+
   # settings.json is read from ~/.config/claude/ (new path since Claude Code 1.x)
   claude_settings = File.join(dotfiles_root, 'config/.claude/settings.json')
   link File.expand_path('~/.config/claude/settings.json') do
