@@ -34,3 +34,21 @@ repos:
     hooks:
       - id: commitizen
         stages: [commit-msg]
+  - repo: local
+    hooks:
+      - id: codex-config-ruff-check
+        name: Codex config sync lint
+        entry: uv run --locked --project cookbooks/codex/config-sync ruff check
+        language: system
+        files: ^cookbooks/codex/config-sync/.*\.py$
+      - id: codex-config-ruff-format
+        name: Codex config sync format
+        entry: uv run --locked --project cookbooks/codex/config-sync ruff format --check
+        language: system
+        files: ^cookbooks/codex/config-sync/.*\.py$
+      - id: codex-config-ty
+        name: Codex config sync types
+        entry: uv run --locked --project cookbooks/codex/config-sync ty check cookbooks/codex/config-sync/src
+        language: system
+        files: ^cookbooks/codex/config-sync/.*\.(py|toml|lock)$
+        pass_filenames: false

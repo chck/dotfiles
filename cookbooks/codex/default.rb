@@ -16,16 +16,7 @@ when 'darwin'
   # global instructions file is AGENTS.md there — the same file every other
   # agent here gets.
   codex_config = "#{ENV['HOME']}/.codex"
-  # ~/.codex holds Codex's own state next to its configuration, so config.toml
-  # is copied in rather than symlinked. Codex writes back into whichever config
-  # file it loads — plugin and marketplace entries, hook trust hashes,
-  # per-project trust, TUI counters — and through a symlink all of that,
-  # absolute paths included, lands in this public repository.
-  #
-  # The copy is made once, for a machine that has no file yet; an existing
-  # ~/.codex/config.toml is left alone. A setting changed in config/codex/
-  # therefore has to be applied to the live file by hand, the same drift
-  # config/otty has.
+  # Keep Codex-owned state local; merge only keys declared in the tracked file.
   directory codex_config do
     user node[:user]
     mode '755'
@@ -33,17 +24,15 @@ when 'darwin'
 
   codex_config_file = File.join(codex_config, 'config.toml')
   tracked_config_file = File.join(dotfiles_root, 'config/codex/config.toml')
+  removal_file = File.join(dotfiles_root, 'config/codex/remove-keys.toml')
+  sync_project = File.join(dotfiles_root, 'cookbooks/codex/config-sync')
+  sync_command = %(mise exec -- uv run --locked --no-dev --project "#{sync_project}" python "#{sync_project}/src/sync_config.py" "#{tracked_config_file}" "#{removal_file}" "#{codex_config_file}")
 
-  # A machine provisioned while this was a symlink keeps whatever state Codex
-  # wrote: the link is replaced by a file holding the same content.
-  execute "convert #{codex_config_file} from a symlink to a copy" do
-    command %(t="$(mktemp)" && cat "#{codex_config_file}" > "$t" && mv "$t" "#{codex_config_file}" && chmod 644 "#{codex_config_file}")
-    only_if "test -L \"#{codex_config_file}\" && test -e \"#{codex_config_file}\""
-  end
-
-  execute "copy config/codex/config.toml to #{codex_config_file}" do
-    command %(rm -f "#{codex_config_file}" && cp "#{tracked_config_file}" "#{codex_config_file}")
-    not_if "test -f \"#{codex_config_file}\" && ! test -L \"#{codex_config_file}\""
+  # The check reports key names only, never local values. The writer preserves
+  # unknown keys/comments and converts legacy symlinks without touching their source.
+  execute 'sync managed Codex settings' do
+    command sync_command
+    not_if "#{sync_command} --check"
   end
 
   # `codex -p yolo` layers this file over config.toml: no sandbox, no approvals.
@@ -173,10 +162,8 @@ when 'darwin'
   # Shared MCP servers are declared once in config/apm/apm.yml and written to
   # every agent's native config by this single run.
   #
-  # It runs from here rather than from cookbooks/claude because apm creates
-  # ~/.codex/config.toml when that file is missing: started earlier, it would
-  # win the race against the copy above, which then finds a real file and leaves
-  # Codex without approval_policy or sandbox_mode.
+  # Run after managed settings have been merged into ~/.codex/config.toml.
+  # The sync preserves the MCP tables owned by apm.
   #
   # Every target goes in one run. apm treats `--target` as the authoritative
   # runtime set and prunes the servers of every runtime outside it, so two runs

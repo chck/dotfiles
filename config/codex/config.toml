@@ -1,7 +1,6 @@
-# Codex user configuration. cookbooks/codex copies this file to
-# ~/.codex/config.toml on a machine that has none yet and never deploys it
-# again, because Codex writes its own state into the live file; a setting
-# changed here has to be applied there by hand.
+# Managed Codex settings. cookbooks/codex merges these keys into
+# ~/.codex/config.toml on every apply, preserving all other keys and comments.
+# To retire a setting, remove it here and list its path in remove-keys.toml.
 # Keep authentication, history, logs, caches, and hooks outside this tracked
 # file; CODEX_HOME is the root for all of those, not an XDG config directory.
 

@@ -57,7 +57,7 @@ Search this repository instead — most of `$HOME`'s config originates here.
 | `dotfile` / `link` in cookbooks | `config/<name>` | `$HOME/...` | **symlink** |
 | apm (`config/apm/apm.yml`) | `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/` | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | mise (`config/mise/config.toml`) | tracked, symlinked | `~/.config/mise/config.toml` | symlink |
-| `execute` copy in `cookbooks/codex` | `config/codex/config.toml` | `~/.codex/config.toml` | **copy, once** |
+| `execute` merge in `cookbooks/codex` | `config/codex/config.toml` | `~/.codex/config.toml` | **merge managed keys on every apply** |
 | `gh skill` in `cookbooks/private-skills` | `~/.config/dotfiles/private-skills` (untracked list) | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | Homebrew / cargo / `github_binary` | cookbook recipe | — | installs only |
 | LaunchAgent (`config/ollama/*.plist`) | tracked, symlinked | `~/Library/LaunchAgents/` | symlink + `launchctl bootstrap` |
@@ -77,10 +77,11 @@ The symlink/copy distinction is the trap:
   `apm install -g` runs. Always edit
   `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/SKILL.md`,
   then redeploy. No version bump in `apm.yml` / `plugin.json` is needed.
-- **Copied once** (`config/codex/config.toml`) — the copy is made only on a
-  machine that has no `~/.codex/config.toml` yet. Editing the source changes
-  nothing live, and editing the live file never reaches this repository, so a
-  setting has to be written on both sides.
+- **Merged** (`config/codex/config.toml`) — every apply synchronizes the keys
+  declared in the source, preserving Codex-owned state and machine-local keys.
+  Edit the source, then apply from the main checkout. To retire a key, remove it
+  from the source and add its component path to `config/codex/remove-keys.toml`.
+  Removing it from the source alone releases management without deleting it live.
 
 apm deploys one copy per target. Claude Code reads only
 `~/.config/claude/skills/`; every other agent reads `~/.agents/skills/`, so both
@@ -161,8 +162,8 @@ own format, and pre-commit already excludes them:
 - `config/codex/config.toml` — Codex. It writes its own state into whichever
   config file it loads: `[marketplaces.*]` and `[plugins.*]` entries carrying
   absolute paths, `[hooks.state.*]` trust hashes, `[projects.*]` trust levels,
-  `[tui.*]` counters. That is why `cookbooks/codex` copies it instead of linking
-  it; keep this file to the settings a fresh machine needs.
+  `[tui.*]` counters. That is why `cookbooks/codex` merges managed keys instead of linking
+  it; keep this file to shared settings, with local state only in the live file.
 - `config/codex/yolo.config.toml` — Codex, same writer, but symlinked, so the
   state lands here as an uncommitted diff instead of drifting out of sight.
   `codex -p yolo` collects at least `[hooks.state.*]` this way. Discard those
