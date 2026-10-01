@@ -20,6 +20,8 @@ bun = "latest"
 # `codex` entry resolves through mise's aqua backend, which tracks a separate
 # alpha release stream, and nothing here is installed through aqua.
 "npm:@openai/codex" = "latest"
+# Qwen Code, paired with cookbooks/qwen-code. Talks to the local Ollama model.
+"npm:@qwen-code/qwen-code" = "latest"
 gemini = "latest"       # npm:@google/gemini-cli, deprecated in homebrew/core
 java = "latest"
 node = "latest"
