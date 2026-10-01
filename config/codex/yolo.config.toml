@@ -1,5 +1,5 @@
-# Codex profile layered on top of config.toml by `codex -p yolo`, deployed as a
-# symlink to ~/.codex/yolo.config.toml by cookbooks/codex.
+# Codex profile layered on top of config.toml by `codex -p yolo`, merged into
+# ~/.codex/yolo.config.toml by cookbooks/codex.
 #
 # This is the config form of `--dangerously-bypass-approvals-and-sandbox`: the
 # agent runs commands with no sandbox and asks nobody, so a session can read and
@@ -12,12 +12,11 @@
 # Only keys repeated here override the base file; everything else in
 # config.toml, including the MCP servers, still applies.
 #
-# Codex refuses some writes to a non-user layer ("Only writes to the user
-# config are allowed"), but not all of them: approving a hook writes its
-# `[hooks.state."<plugin>:<file>:<event>:0:0"] trusted_hash` into whichever
-# profile file is loaded, so this one collects state through the symlink and it
-# surfaces here as an uncommitted diff. Discard those hunks rather than
-# committing them; the hash is regenerated the next time the hook is approved.
+# Codex writes its own state (`[projects."<abs path>"]` trust levels,
+# `[hooks.state.*]` hashes, `[tui.*]` counters, model choice) into whichever
+# profile file it loads. This file is merged into ~/.codex/yolo.config.toml by
+# cookbooks/codex rather than linked, so that state stays local and untracked.
+# Keep only shared settings here.
 
 # Nothing is submitted for approval, so the auto_review reviewer in the base
 # config never runs; naming `user` here keeps the unused reviewer from costing
