@@ -36,11 +36,17 @@ when 'darwin'
   end
 
   # `codex -p yolo` layers this file over config.toml: no sandbox, no approvals.
-  # A profile layer is never written back to by Codex, so it is linked rather
-  # than copied and stays in sync with the repository.
-  dotfile 'yolo.config.toml' do
-    source 'codex/yolo.config.toml'
-    destination codex_config
+  # Codex writes trust levels (with absolute paths) and hook hashes into the
+  # profile file it loads, so it is merged like config.toml rather than linked:
+  # local state stays in ~/.codex/yolo.config.toml and never reaches the repo.
+  # The shared removal list applies to both files.
+  codex_yolo_file = File.join(codex_config, 'yolo.config.toml')
+  tracked_yolo_file = File.join(dotfiles_root, 'config/codex/yolo.config.toml')
+  yolo_sync_command = %(mise exec -- uv run --locked --no-dev --project "#{sync_project}" python "#{sync_project}/src/sync_config.py" "#{tracked_yolo_file}" "#{removal_file}" "#{codex_yolo_file}")
+
+  execute 'sync managed Codex yolo profile' do
+    command yolo_sync_command
+    not_if "#{yolo_sync_command} --check"
   end
 
   dotfile 'AGENTS.md' do

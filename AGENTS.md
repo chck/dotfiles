@@ -57,7 +57,7 @@ Search this repository instead — most of `$HOME`'s config originates here.
 | `dotfile` / `link` in cookbooks | `config/<name>` | `$HOME/...` | **symlink** |
 | apm (`config/apm/apm.yml`) | `config/.claude/plugins/chck/plugins/personal-skills/skills/<name>/` | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | mise (`config/mise/config.toml`) | tracked, symlinked | `~/.config/mise/config.toml` | symlink |
-| `execute` merge in `cookbooks/codex` | `config/codex/config.toml` | `~/.codex/config.toml` | **merge managed keys on every apply** |
+| `execute` merge in `cookbooks/codex` | `config/codex/{config,yolo.config}.toml` | `~/.codex/{config,yolo.config}.toml` | **merge managed keys on every apply** |
 | `gh skill` in `cookbooks/private-skills` | `~/.config/dotfiles/private-skills` (untracked list) | `~/.config/claude/skills/<name>/` and `~/.agents/skills/<name>/` | **copy** |
 | Homebrew / cargo / `github_binary` | cookbook recipe | — | installs only |
 | LaunchAgent (`config/ollama/*.plist`) | tracked, symlinked | `~/Library/LaunchAgents/` | symlink + `launchctl bootstrap` |
@@ -164,10 +164,10 @@ own format, and pre-commit already excludes them:
   absolute paths, `[hooks.state.*]` trust hashes, `[projects.*]` trust levels,
   `[tui.*]` counters. That is why `cookbooks/codex` merges managed keys instead of linking
   it; keep this file to shared settings, with local state only in the live file.
-- `config/codex/yolo.config.toml` — Codex, same writer, but symlinked, so the
-  state lands here as an uncommitted diff instead of drifting out of sight.
-  `codex -p yolo` collects at least `[hooks.state.*]` this way. Discard those
-  hunks; the hashes regenerate on the next hook approval.
+- `config/codex/yolo.config.toml` — Codex, same writer and same merge: `cookbooks/codex`
+  syncs its keys into `~/.codex/yolo.config.toml`, so `[projects.*]` trust levels,
+  `[hooks.state.*]` hashes and model choices stay in the live file only.
+  Keep this file to shared settings.
 - `config/.zsh/lib/{aliases,apps}.zsh` — appended to by cookbooks through the
   `~/.zsh` symlink; add new entries at the tail, do not reorder
 
