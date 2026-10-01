@@ -12,7 +12,7 @@
     "generationConfig": {
       "contextWindowSize": 131072,
       "extra_body": {
-        "enable_thinking": false
+        "reasoning_effort": "none"
       },
       "samplingParams": {
         "max_tokens": 16384,
