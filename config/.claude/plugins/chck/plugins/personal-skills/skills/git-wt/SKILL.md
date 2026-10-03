@@ -6,12 +6,29 @@ description: >
   Use for every change that touches a file — including single-file edits, typo fixes, and
   documentation-only changes — and whenever the user explicitly requests worktree isolation
   ("use a worktree", "use wt", "work on a separate branch", "isolate this in a worktree").
+  Do NOT use when the session already runs in a linked worktree (e.g. an Orca workspace) —
+  work in place; see Step 0.
 ---
 
 # Git Worktree Workflow
 
 Use `git-wt` to create a worktree and do all work there, keeping the main branch untouched.
 If anything goes wrong, `git wt -d` cleanly removes the worktree and branch.
+
+## Step 0: Skip if already in a linked worktree
+
+Run this first:
+
+```bash
+[ "$(git rev-parse --git-dir)" = "$(git rev-parse --git-common-dir)" ]
+# true  -> main checkout, possibly shared: continue with Step 1
+# false -> already a linked worktree (Orca workspace, `git wt` checkout, ...): STOP
+```
+
+On `false`, this skill does not apply. The worktree is already isolated and held by this
+session alone, so `git wt` would only nest a second one inside it. Work in place, commit on
+the checked-out branch, and skip every step below — including Step 4: the worktree is not
+yours to delete (Orca owns its workspaces).
 
 ## Step 1: Create the worktree
 
