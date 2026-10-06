@@ -9,6 +9,10 @@ Reconstruct what was worked on over a period by pairing **what was asked** (Clau
 session logs) with **what shipped** (git log), one repository at a time, then synthesise
 across repositories.
 
+**Scope is everything chck did, never the repository the session happens to run in.** Run the
+skill from any directory; the digest still covers every repository, plus the tools below.
+Digesting only the current repo is the wrong output.
+
 Default window is the last 14 days, matching the biweekly meeting cadence. The user may
 override it (`/work-digest 1ヶ月`, `--since 2026-07-27`).
 
@@ -49,18 +53,32 @@ override it (`/work-digest 1ヶ月`, `--since 2026-07-27`).
    Do not read the agents' `output_file` — that is the full transcript and it will
    overflow context. Wait for the completion notifications.
 
-4. **Synthesise** across the returned reports:
+4. **Collect outside git** — work that leaves no commit lives in other tools. Query each for
+   the window, in parallel, and skip any that is not connected rather than failing:
+
+   - GitHub across all repositories: `gh search prs --author @me`, `gh search issues
+     --involves @me`, and reviews given (`gh search prs --reviewed-by @me`)
+   - Slack (own posts and threads), Notion (pages edited), Linear (issues touched),
+     Google Calendar (meetings held)
+
+   Keep these as リポジトリ外の作業, grouped by theme, with titles and dates only.
+
+5. **Synthesise** across the returned reports:
 
    - 3-5 cross-cutting themes, each naming the repos and PR numbers that evidence it
    - per-repo highlights
    - open items at the end of the window, separated into 次 (picked up next) and 保留 (parked)
 
-5. **Publish an Artifact** — load `artifact-design` first, write the page to a file named
+6. **Publish an Artifact, always** — load `artifact-design` first, write the page to a file named
    `work-digest-<until-date>.html`, then publish it. A new file path per period means each
    meeting keeps its own URL and the previous digest stays readable. Set the `<title>` to
    the period, e.g. 「八月後半の作業録」.
 
-6. **Answer in chat** with the spoken version: the totals line, the cross-cutting themes,
+7. **Submit** — when the user asks to submit, find the Notion page titled `Debriefing` with
+   Notion search and add the digest there. The page URL contains a company domain and is not
+   stored in this repository; if search does not find it, ask the user for the link.
+
+8. **Answer in chat** with the spoken version: the totals line, the cross-cutting themes,
    one line per repo, and the open items worth raising. Put the Artifact URL first.
 
 ## Reading the numbers honestly
@@ -96,6 +114,9 @@ The extraction is fiddly enough that writing it inline gets it wrong:
 
 - Session logs live in `~/.config/claude/projects`, overridable with `CLAUDE_PROJECTS_DIR`.
   `~/.claude/projects` holds an older archive and is not read.
+- This skill lives in a public repository. Never write an organisation name, a private
+  repository name, or a workspace URL into it. The Artifact is private and may name them;
+  anything posted to a public place may not.
 - Prompts are the user's own words and can contain anything personal. Summarise topics at a
   high level for anything outside work; never quote it into the digest.
 - If `collect.sh` reports zero repos, the window is wrong before the logs are missing —
