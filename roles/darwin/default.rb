@@ -189,6 +189,7 @@ include_cookbook 'yt-dlp'
 include_cookbook 'capcut'
 include_cookbook 'adobe-creative-cloud'
 include_cookbook 'penpot'
+include_cookbook 'firealpaca'
 include_cookbook 'amazon-photos'
 include_cookbook 'scrcpy'
 
