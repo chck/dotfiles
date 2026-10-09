@@ -43,9 +43,11 @@ override it (`/work-digest 1ヶ月`, `--since 2026-07-27`).
 
    - name the repository, the window, and the two absolute file paths
    - say the two files are the **only** input and that repo source must not be explored
-   - ask for the report in Japanese, structured as: one- or two-sentence overview of the
-     repo and the period's focus, 3-8 workstreams (heading, concrete deliverable bullets,
-     representative PR/commit numbers, date range), metrics, and open items
+   - ask for the report in Japanese, shaped to drop straight into the repo block of the page
+     (see step 5): a headline naming what the repo's work achieved this period, a one- or
+     two-sentence lede, 3-6 bullets each opening with a bold aspect label (取り込み, 指標の定義,
+     コスト, ドキュメント ...) followed by the concrete deliverables and PR numbers, the merged
+     PR count, and an 進行中 line with the open PR numbers
    - require that inferences are marked 推定 and that PR numbers, file names, and features
      are quoted from the data rather than guessed
    - state that its final message *is* the report and gets relayed to a human
@@ -63,23 +65,35 @@ override it (`/work-digest 1ヶ月`, `--since 2026-07-27`).
 
    Keep these as リポジトリ外の作業, grouped by theme, with titles and dates only.
 
-5. **Synthesise** across the returned reports:
+5. **Synthesise by repository.** The digest is organised around repositories, not themes: a
+   reader finds a repo and sees what moved in it. Build the page from these parts, in order:
 
-   - 3-5 cross-cutting themes, each naming the repos and PR numbers that evidence it
-   - per-repo highlights
-   - open items at the end of the window, separated into 次 (picked up next) and 保留 (parked)
+   - **Masthead** — period and one line of scope
+   - **Metrics strip** — merged PRs split into 業務 and 環境, repository count, open PRs
+   - **One block per repository**, busiest first. The repo with the most PRs is marked 主軸.
+     Repositories that share a purpose (a family of skill repos, say) may share one block,
+     with a bullet per repo. Each block holds the slug and PR count, the headline, the lede,
+     the labelled bullets, and an 進行中 box listing open PR numbers
+   - **リポジトリ外の作業** — one block after the repos, grouped by theme, from step 4
+   - **Footer** — what the digest leaves out (personal repositories, manuscripts) so the
+     omission is visible
+
+   Cross-cutting themes are not a section. Mention one only inside a block when it explains
+   why that repo moved, and give the full list in chat if the user wants it. Open items live
+   in each block's 進行中 box; sort them into 次 (picked up next) and 保留 (parked) only when
+   the window ends with a clear split.
 
 6. **Publish an Artifact, always** — load `artifact-design` first, write the page to a file named
    `work-digest-<until-date>.html`, then publish it. A new file path per period means each
    meeting keeps its own URL and the previous digest stays readable. Set the `<title>` to
-   the period, e.g. 「八月後半の作業録」.
+   the period, e.g. 「進捗ダイジェスト 8/27–9/10」.
 
 7. **Submit** — when the user asks to submit, find the Notion page titled `Debriefing` with
    Notion search and add the digest there. The page URL contains a company domain and is not
    stored in this repository; if search does not find it, ask the user for the link.
 
-8. **Answer in chat** with the spoken version: the totals line, the cross-cutting themes,
-   one line per repo, and the open items worth raising. Put the Artifact URL first.
+8. **Answer in chat** with the spoken version: the totals line, one line per repo
+   (busiest first), and the open items worth raising. Put the Artifact URL first.
 
 ## Reading the numbers honestly
 
