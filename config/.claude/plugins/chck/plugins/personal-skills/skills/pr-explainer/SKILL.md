@@ -2,7 +2,7 @@
 name: pr-explainer
 description: >
   Write a reviewer's map into a pull request body: one-line gist, a reading order with a one-line summary per file,
-  new concepts, evidence you actually ran, what is not verified, where to look hard, and a diagram of the change, all derived
+  new concepts, evidence you actually ran, what is not verified, ★ on the files to read closely, and a diagram of the change, all derived
   from the diff. Use when the user wants an agent-made PR to be easier to review, or says "PR を読みやすくして",
   "レビュー用の説明を付けて", "PR explainer", "explain this PR", "make this PR reviewable". Simple diagrams go in
   the body as Mermaid; complex ones are exported with diagram-design and hosted on a `pr-assets` branch.
@@ -11,7 +11,7 @@ argument-hint: "[PR number (defaults to the current branch's PR)] [--lang ja|en]
 
 # PR Explainer
 
-Goal: the reviewer knows **what changed, where to look first, what was actually checked, and where to look hard**
+Goal: the reviewer knows **what changed, where to look first, what was actually checked, and which files to read closely**
 before opening the diff. Describe the change from the diff, not from the commit messages: agent-written messages
 often describe intent, not result.
 
@@ -36,10 +36,10 @@ so they cannot disagree.
 {
   "gist": "one sentence: what happens once this is merged",
   "new_concepts": ["term: what it is, where it lives"],
-  "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core logic | contract change | tests | mechanical"}],
+  "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core logic | contract change | tests | mechanical",
+                     "focus": [{"where": "path:line", "what": "why this place deserves a close read", "how_to_check": "..."}]}],
   "evidence": [{"claim": "...", "cmd": "...", "output": "pasted verbatim"}],
   "unverified": [{"claim": "...", "why_not": "..."}],
-  "review_focus": [{"where": "path:line", "what": "why this place deserves a close read", "how_to_check": "..."}],
   "coverage": {"files_total": 0, "files_opened": 0},
   "diagram": {
     "type": "mermaid | sequence | data-flow | architecture | none",
@@ -57,7 +57,7 @@ where this gets skipped.
 
 Rules:
 - **Facts and judgment stay apart.** `reading_order` (its `what`), `evidence` and `diagram.edges` are facts taken from the diff or from a
-  run. `review_focus` is the author's judgment: it asks the reviewer to look, it does not claim a defect, and its heading carries no label saying so. Never write a verdict word anywhere
+  run. A `focus` entry is the author's judgment: it asks the reviewer to look, it does not claim a defect. The ★ and the "Why look closely" line set it apart from the facts around it. Never write a verdict word anywhere
   (SAFE, LOW RISK, MERGEABLE, "no impact"): this skill reads a diff, it does not know runtime impact.
 - `gist` is one sentence about the effect after merge, with a verb that says what now happens or what a user can
   now do ("calling X now writes Y"). "Adds X" or "changes Y" alone is a label, not a gist. The deletion test in
@@ -76,8 +76,10 @@ Rules:
 - Keep the section short enough to read: above about 15000 characters, group `reading_order` by area. The PR body is
   capped at 65536 characters, the existing body included; `check-model.py --section` fails above 40000.
 - `new_concepts` comes before the reading order in the body, so the terms the order uses are already known. It lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
-- `review_focus` must name a place and a way to check it. An entry with neither is noise; drop it. Write each as a
-  reason to read closely, not as a verdict that something is broken.
+- A `reading_order` entry gets a `focus` list, and a ★ in the body, when a wrong line there costs the most. Each
+  focus names a place (`path:line`, which may be in another file the change affects) and a way to check it; one with
+  neither is noise, drop it. Write it as a reason to read closely, not as a verdict that something is broken. Star
+  few entries: when most have a ★, none stands out.
 - Every `diagram.edges` entry cites a place in the diff. An edge without one is not drawn.
 - Empty sections are omitted, never padded. `diagram.type` is `none` when there is no structure to draw:
   typo, docs-only, config value, single-function fix.
@@ -164,8 +166,11 @@ Build this section, then put it in the PR body between the markers so a re-run r
 - term — what and where
 
 ### Read in this order
-1. `path` — what changed ({why it is here})
-2. ...
+★ = read closely
+1. ★ `path` — what changed ({why it is here})
+   - Why look closely: `path:line` — reason. Check by: how
+2. `path` — what changed ({why it is here})
+3. ...
 (files of one kind: one directory entry with the count; mechanical files last, one line)
 
 ### Evidence (ran just now)
@@ -178,8 +183,6 @@ Build this section, then put it in the PR body between the markers so a re-run r
 - Opened {files_opened} of {files_total} files; the rest are described from the diff stat
 - {claim} — {why not}
 
-### Review focus
-- `path:line` — what. Check by: how
 <!-- pr-explainer:end -->
 ````
 
@@ -192,7 +195,8 @@ Headings by language (the marker lines are always the English comments, so a re-
 | Read in this order | 読む順序 |
 | Evidence (ran just now) | 実行結果（直前に実行） |
 | Not verified | 未検証 |
-| Review focus | 重点的に見てほしい箇所 |
+| ★ = read closely | ★ = 重点的に見てほしいファイル |
+| Why look closely / Check by | 見る理由 / 確認方法 |
 
 Translate the prose and the gist; keep paths, commands, identifiers, `path:line` citations and the pasted
 evidence output **verbatim**. Mermaid node labels may be translated, but then the edge comparison in Step 5

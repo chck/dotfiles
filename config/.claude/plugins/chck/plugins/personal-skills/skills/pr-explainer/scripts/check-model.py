@@ -36,7 +36,6 @@ LISTS = {
     "reading_order": ("list", ("path", "what", "why")),
     "evidence": ("list", ("claim", "cmd", "output")),
     "unverified": ("list", ("claim", "why_not")),
-    "review_focus": ("list", ("where", "what", "how_to_check")),
 }
 
 
@@ -59,6 +58,19 @@ def check_model(model: dict) -> list[str]:
                     problems.append(f"{key}[{i}].{field}: empty or placeholder. Fill it in or drop the entry.")
     if not model.get("reading_order"):
         problems.append("reading_order: empty. A PR with files has an order to read them in.")
+    entries = model.get("reading_order") if isinstance(model.get("reading_order"), list) else []
+    for i, entry in enumerate(entries):
+        focus = entry.get("focus", []) if isinstance(entry, dict) else []
+        if not isinstance(focus, list):
+            problems.append(f"reading_order[{i}].focus: must be a list.")
+            continue
+        for j, item in enumerate(focus):
+            for field in ("where", "what", "how_to_check"):
+                if not isinstance(item, dict) or blank(item.get(field)):
+                    problems.append(f"reading_order[{i}].focus[{j}].{field}: empty or placeholder. Name a place and a way to check it, or drop the focus.")
+    starred = sum(1 for e in entries if isinstance(e, dict) and e.get("focus"))
+    if len(entries) >= 5 and starred * 2 > len(entries):
+        print(f"note: {starred} of {len(entries)} entries are starred; when most have a star, none stands out.", file=sys.stderr)
     concepts = model.get("new_concepts")
     if not isinstance(concepts, list) or any(blank(c) for c in concepts):
         problems.append("new_concepts: must be a list of non-empty strings (empty list is fine).")
