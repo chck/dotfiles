@@ -2,7 +2,7 @@
 name: pr-explainer
 description: >
   Write a reviewer's map into a pull request body: one-line gist, review order, per-file change summary,
-  new concepts, evidence you actually ran, what is not verified, risks, and a diagram of the change, all derived
+  new concepts, evidence you actually ran, what is not verified, where to look hard, and a diagram of the change, all derived
   from the diff. Use when the user wants an agent-made PR to be easier to review, or says "PR を読みやすくして",
   "レビュー用の説明を付けて", "PR explainer", "explain this PR", "make this PR reviewable". Simple diagrams go in
   the body as Mermaid; complex ones are exported with diagram-design and hosted on a `pr-assets` branch.
@@ -11,7 +11,7 @@ argument-hint: "[PR number (defaults to the current branch's PR)] [--lang ja|en]
 
 # PR Explainer
 
-Goal: the reviewer knows **what changed, where to look first, what was actually checked, and what could be wrong**
+Goal: the reviewer knows **what changed, where to look first, what was actually checked, and where to look hard**
 before opening the diff. Describe the change from the diff, not from the commit messages: agent-written messages
 often describe intent, not result.
 
@@ -40,7 +40,7 @@ so they cannot disagree.
   "new_concepts": ["term: what it is, where it lives"],
   "evidence": [{"claim": "...", "cmd": "...", "output": "pasted verbatim"}],
   "unverified": [{"claim": "...", "why_not": "..."}],
-  "risks": [{"where": "path:line", "what": "behaviour that could be wrong", "how_to_check": "..."}],
+  "review_focus": [{"where": "path:line", "what": "why this place deserves a close read", "how_to_check": "..."}],
   "coverage": {"files_total": 0, "files_opened": 0},
   "diagram": {
     "type": "mermaid | sequence | data-flow | architecture | none",
@@ -58,7 +58,7 @@ where this gets skipped.
 
 Rules:
 - **Facts and judgment stay apart.** `changes`, `evidence` and `diagram.edges` are facts taken from the diff or from a
-  run. `risks` is the author's judgment and the body labels it so. Never write a verdict word anywhere
+  run. `review_focus` is the author's judgment: it asks the reviewer to look, it does not claim a defect, and its heading carries no label saying so. Never write a verdict word anywhere
   (SAFE, LOW RISK, MERGEABLE, "no impact"): this skill reads a diff, it does not know runtime impact.
 - `review_order` starts with the file where a wrong line costs the most; mechanical files (renames, lockfiles,
   generated code) go last.
@@ -73,7 +73,8 @@ Rules:
 - Keep the section short enough to read: above about 15000 characters, group `changes` by area. The PR body is
   capped at 65536 characters, the existing body included; `check-model.py --section` fails above 40000.
 - `new_concepts` lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
-- `risks` must name a place and a way to verify. A risk with neither is noise; drop it.
+- `review_focus` must name a place and a way to check it. An entry with neither is noise; drop it. Write each as a
+  reason to read closely, not as a verdict that something is broken.
 - Every `diagram.edges` entry cites a place in the diff. An edge without one is not drawn.
 - Empty sections are omitted, never padded. `diagram.type` is `none` when there is no structure to draw:
   typo, docs-only, config value, single-function fix.
@@ -177,7 +178,7 @@ Build this section, then put it in the PR body between the markers so a re-run r
 - Opened {files_opened} of {files_total} files; the rest are described from the diff stat
 - {claim} — {why not}
 
-### Where it could be wrong (author's judgment)
+### Review focus
 - `path:line` — what. Check by: how
 <!-- pr-explainer:end -->
 ````
@@ -192,7 +193,7 @@ Headings by language (the marker lines are always the English comments, so a re-
 | New concepts | 新しい概念 |
 | Evidence (ran just now) | 実行結果（直前に実行） |
 | Not verified | 未検証 |
-| Where it could be wrong (author's judgment) | 誤りうる箇所（作者の判断） |
+| Review focus | 重点的に見てほしい箇所 |
 
 Translate the prose and the gist; keep paths, commands, identifiers, `path:line` citations and the pasted
 evidence output **verbatim**. Mermaid node labels may be translated, but then the edge comparison in Step 5

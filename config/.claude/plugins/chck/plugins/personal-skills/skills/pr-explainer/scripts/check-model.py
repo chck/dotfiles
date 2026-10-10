@@ -37,7 +37,7 @@ LISTS = {
     "changes": ("list", ("path", "what")),
     "evidence": ("list", ("claim", "cmd", "output")),
     "unverified": ("list", ("claim", "why_not")),
-    "risks": ("list", ("where", "what", "how_to_check")),
+    "review_focus": ("list", ("where", "what", "how_to_check")),
 }
 
 
