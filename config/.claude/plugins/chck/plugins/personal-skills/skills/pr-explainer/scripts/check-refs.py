@@ -77,6 +77,9 @@ def main() -> int:
     checked = 0
 
     for span in dict.fromkeys(SPAN.findall(unfenced(args.body.read_text()))):
+        if span.endswith(":") and parse_span(span[:-1]):
+            problems.append(f"`{span}`: ends with a colon and no line number. Add the line (path:line) or drop the colon.")
+            continue
         match = parse_span(span)
         if not match:
             if PATH.fullmatch(span) and "/" not in span:
