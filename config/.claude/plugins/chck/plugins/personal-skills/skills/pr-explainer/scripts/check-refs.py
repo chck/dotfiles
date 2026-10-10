@@ -6,7 +6,8 @@ Usage: check-refs.py <body.md> [--expect-head <sha>] [--root <dir>]
 Scans backticked spans for `path` and `path:line` / `path:start-end` and fails when
 a path is not tracked at HEAD or a line number is past the end of the file. Spans
 without a file extension (and not ending in `/`) are not paths and are ignored,
-so `origin/main` and `pr-assets` pass through.
+so `origin/main` and `pr-assets` pass through. A span with no `/` counts as a file
+only for a common source/doc extension, so `ast.parse` passes through too.
 
 --expect-head fails fast when HEAD is not the PR head commit, so a stale checkout
 cannot vouch for the wrong tree.
@@ -21,6 +22,14 @@ import pathlib
 import re
 import subprocess
 import sys
+
+# A span with no "/" is read as a file name only when its extension is one of these,
+# so identifiers such as `ast.parse` or `os.path` are not mistaken for files.
+BARE_EXTENSIONS = {
+    "py", "sh", "md", "json", "toml", "yaml", "yml", "js", "ts", "tsx", "jsx", "rs", "go", "rb",
+    "java", "kt", "swift", "c", "h", "cpp", "html", "css", "txt", "cfg", "ini", "lock", "tf",
+    "png", "svg", "jpg", "gif", "sql", "rake",
+}
 
 SPAN = re.compile(r"`([^`\n]+)`")
 PATH = re.compile(r"(?P<path>[\w.@+-]+(?:/[\w.@+-]+)*(?:\.\w{1,8}|/))(?::(?P<start>\d+)(?:-(?P<end>\d+))?)?")
@@ -63,6 +72,8 @@ def main() -> int:
         if not match:
             continue
         path = match["path"]
+        if "/" not in path and path.rsplit(".", 1)[-1] not in BARE_EXTENSIONS:
+            continue
         checked += 1
         if path.endswith("/"):
             if not any(f.startswith(path) for f in tracked):

@@ -148,11 +148,18 @@ Before applying:
 2. **Citation check.** `scripts/check-refs.py <body-file> --expect-head <headRefOid>` must exit 0: every
    backticked path or `path:line` in the body exists in the PR-head checkout. Fix or drop what it reports.
 
+Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.
+
 Then:
 - Existing body has the markers: replace between them. Otherwise append the section after the existing body.
   Never delete text outside the markers.
+- Match each marker as a **whole line** (`^<!-- pr-explainer:start -->$`). A PR description may mention the
+  marker text in prose (for example inside backticks); a substring match would cut there.
+- Read the body with `body=$(gh pr view <n> --json body -q .body)`; the command substitution drops the newline
+  `gh` appends. Writing `gh`'s raw output back adds one blank line per round trip.
 - Write in the language the PR body already uses; default to the user's language.
-- Apply with `gh pr edit <n> --body-file <file>`.
+- Apply with `gh pr edit <n> --body-file <file>`, then read the body back and confirm the text outside the
+  markers is unchanged.
 - Report the PR URL, which sections were included, and what is in "Not verified". If the diagram was skipped,
   say why.
 
