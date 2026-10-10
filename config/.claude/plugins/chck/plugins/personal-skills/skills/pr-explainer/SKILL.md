@@ -18,10 +18,14 @@ often describe intent, not result.
 ## Step 1: Resolve the PR and check visibility
 
 - Use `$ARGUMENTS` as the PR number, else `gh pr view --json number` for the current branch.
-- `gh repo view --json visibility,nameWithOwner` — keep both. **PUBLIC** changes Steps 4 and 6.
-- `gh pr view <n> --json title,body,files,baseRefName,headRefOid` and `gh pr diff <n>`.
-- Work from a checkout of the PR head (the PR's own worktree, or `gh pr checkout`); Steps 3 and 7 read files from it.
-- Read the repo's `AGENTS.md` for conventions the diff is judged against.
+- `gh repo view --json visibility,nameWithOwner` — keep both. **PUBLIC** changes Steps 4 and 6. For another
+  repository pass it positionally (`gh repo view <owner/repo>`); `-R <owner/repo>` belongs to `gh pr`.
+- `gh pr view <n> --json title,body,baseRefName,headRefOid`, `gh pr diff <n>`, and `gh pr diff <n> --name-only`
+  for the file list: `gh pr view --json files` stops at 100 files.
+- Work from a checkout of the PR head; Steps 3 and 7 read files from it, and the scripts take `--root <dir>`.
+  For your own open PR that is its worktree. For a merged PR or someone else's:
+  `git fetch origin pull/<n>/head`, `git worktree add --detach <dir> FETCH_HEAD`, and remove it when done.
+- Read the repo's `AGENTS.md` (or `CLAUDE.md` when there is none) for conventions the diff is judged against.
 
 ## Step 2: Build the model first, prose second
 
@@ -37,20 +41,30 @@ so they cannot disagree.
   "evidence": [{"claim": "...", "cmd": "...", "output": "pasted verbatim"}],
   "unverified": [{"claim": "...", "why_not": "..."}],
   "risks": [{"where": "path:line", "what": "behaviour that could be wrong", "how_to_check": "..."}],
+  "coverage": {"files_total": 0, "files_opened": 0},
   "diagram": {
     "type": "mermaid | sequence | data-flow | architecture | none",
     "focus": ["1-2 nodes that changed"],
-    "edges": [{"from": "...", "to": "...", "evidence": "path:line"}]
+    "edges": [{"from": "node id", "to": "node id", "evidence": "path:line"}]
   }
 }
 ```
+
+Write the **whole** model before any prose: no placeholders, no stub entries. Then run
+`scripts/check-model.py pr-<n>.json`; it must exit 0 (it rejects empty entries, "...", TODO, a missing
+`coverage`, and an edge with no cited place). A PR of 100 files is where this gets skipped.
 
 Rules:
 - **Facts and judgment stay apart.** `changes`, `evidence` and `diagram.edges` are facts taken from the diff or from a
   run. `risks` is the author's judgment and the body labels it so. Never write a verdict word anywhere
   (SAFE, LOW RISK, MERGEABLE, "no impact"): this skill reads a diff, it does not know runtime impact.
 - `review_order` starts with the file where a wrong line costs the most; mechanical files (renames, lockfiles,
-  generated code) go last and collapse into one line in the body.
+  generated code) go last. Five or more of one kind become **one** entry that cites the directory (ending in
+  `/`) and gives the count, never one entry per file.
+- Tests are a change like any other: say what behaviour they cover and roughly how much, in `changes`. A PR
+  whose tests are only named reads as untested.
+- `coverage` is honest: `files_opened` counts the files you actually read, not the ones you skimmed in the
+  diff stat.
 - `new_concepts` lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
 - `risks` must name a place and a way to verify. A risk with neither is noise; drop it.
 - Every `diagram.edges` entry cites a place in the diff. An edge without one is not drawn.
@@ -66,6 +80,13 @@ PR-head checkout, and paste the output **verbatim**. Never retype or summarise o
   for shell, a dry run of a new script.
 - A claim you did not or could not run goes to `unverified` with the reason. "Not run" is a fine answer; an
   unlabelled claim is not.
+- Claims copied from the PR body or commit messages ("278 tests pass") go to `unverified` unless you ran them.
+  Operational steps the body lists (a flag to flip, a migration to run) are carried over there too, attributed to
+  the PR body.
+- Dependencies missing in the checkout: do not install. Name the repo's own check command first in
+  `unverified`, and say it was not run.
+- Name the exact command you ran. If it differs from the repo's wrapper (for example `makers`), say so.
+  Keep the exit status: do not let a pipe swallow it (`set -o pipefail`, or print `exit=$?`).
 - When reporting a green result, say what was checked and over what range ("shellcheck on the one new script"),
   not just "passes".
 
@@ -82,8 +103,13 @@ Pick the cheaper tier that is enough.
 **Mermaid in the body** — when the diagram is a flowchart or sequence of up to about 6 nodes. GitHub renders a
 ```` ```mermaid ```` fence in a PR body, so nothing is exported or hosted.
 1. Write the fence from `diagram.edges` only.
-2. List the edges in the finished source and compare with `diagram.edges` **in both directions**: an edge only in
-   the source is invented, an edge only in the model is missing. Fix the source until both lists match.
+2. Run `scripts/check-model.py pr-<n>.json --section <section.md>`. It compares the fence's edges with
+   `diagram.edges` **in both directions** (an edge only in the source is invented, one only in the model is
+   missing); `from` and `to` in the model are the Mermaid node ids. Fix the source until it exits 0.
+3. When the flow needs more than about 6 nodes, or one diagram is not enough: draw only the path that changed
+   and add one line under the diagram saying what is not drawn. Do not pack extra nodes in. If the PNG tier
+   is the right one but publishing is not allowed (public repository, no consent yet), stay on Mermaid with
+   that line.
 
 **PNG** — when Mermaid cannot express it or the diagram is larger. Use the `diagram-design` skill with the model's
 `diagram` block: at most 9 nodes, colour only the `focus` nodes, show the change and not the whole system.
@@ -135,6 +161,7 @@ Build this section, then put it in the PR body between the markers so a re-run r
 ```
 
 ### Not verified
+- Opened {files_opened} of {files_total} files; the rest are described from the diff stat
 - {claim} — {why not}
 
 ### Where it could be wrong (author's judgment)
@@ -161,8 +188,12 @@ runs on the translated labels.
 Before applying:
 1. **Deletion test.** Remove "What changed" and "Evidence": the gist must still stand. Remove the gist: if what
    remains only reads the evidence aloud, rewrite the gist. Cut any section whose removal changes nothing.
-2. **Citation check.** `scripts/check-refs.py <body-file> --expect-head <headRefOid>` must exit 0: every
-   backticked path or `path:line` in the body exists in the PR-head checkout. Fix or drop what it reports.
+2. **Citation check.** `scripts/check-refs.py <body-file> --expect-head <headRefOid> [--root <dir>]` must exit 0:
+   every backticked path or `path:line` in the body exists in the PR-head checkout. Fix or drop what it reports.
+   It prints the text of every cited line but only checks that the line exists, so read each printed line and
+   confirm it says what the body claims.
+   Cite a directory ending in `/`, never a glob (globs are skipped). Write a deleted file in plain text, without
+   backticks: it is not tracked at HEAD. Routes such as `/privacy` are not checked either.
 
 Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.
 

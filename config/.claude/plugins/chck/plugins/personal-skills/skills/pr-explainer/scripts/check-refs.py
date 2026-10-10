@@ -12,6 +12,13 @@ only for a common source/doc extension, so `ast.parse` passes through too.
 --expect-head fails fast when HEAD is not the PR head commit, so a stale checkout
 cannot vouch for the wrong tree.
 
+Routes such as `/privacy` (leading slash) and globs such as `src/*.ts` are not checked: cite a
+directory ending in `/` instead of a glob, and write deleted files in plain text, since a deleted
+file is not tracked at HEAD.
+
+For every cited `path:line` the script prints the text of that line. It only checks that the
+line exists, so read each printed line and confirm it says what the body claims.
+
 Exit 0: all cited paths verified. Exit 1: at least one problem. Exit 2: usage or git error.
 """
 
@@ -32,7 +39,7 @@ BARE_EXTENSIONS = {
 }
 
 SPAN = re.compile(r"`([^`\n]+)`")
-PATH = re.compile(r"(?P<path>[\w.@+-]+(?:/[\w.@+-]+)*(?:\.\w{1,8}|/))(?::(?P<start>\d+)(?:-(?P<end>\d+))?)?")
+PATH = re.compile(r"(?P<path>[\w.@+()\[\]~-]+(?:/[\w.@+()\[\]~-]+)*(?:\.\w{1,8}|/))(?::(?P<start>\d+)(?:-(?P<end>\d+))?)?")
 
 
 def git(root: pathlib.Path, *args: str) -> str:
@@ -65,6 +72,7 @@ def main() -> int:
 
     tracked = set(git(args.root, "ls-files").splitlines())
     problems: list[str] = []
+    cited_lines: list[str] = []
     checked = 0
 
     for span in dict.fromkeys(SPAN.findall(args.body.read_text())):
@@ -84,18 +92,21 @@ def main() -> int:
             hint = f" Use the repo-relative path: {', '.join(same_name[:3])}." if same_name else ""
             problems.append(f"`{span}`: {path} is not tracked at HEAD.{hint} Otherwise fix the path or drop the claim.")
             continue
+        file_lines = (args.root / path).read_text(errors="replace").splitlines()
         for bound in (match["start"], match["end"]):
             if bound is None:
                 continue
-            length = len((args.root / path).read_text(errors="replace").splitlines())
-            if int(bound) > length or int(bound) < 1:
-                problems.append(f"`{span}`: {path} has {length} lines. Fix the line number.")
+            if int(bound) > len(file_lines) or int(bound) < 1:
+                problems.append(f"`{span}`: {path} has {len(file_lines)} lines. Fix the line number.")
                 break
+            cited_lines.append(f"  {path}:{bound}: {file_lines[int(bound) - 1].strip()[:100]}")
 
     for line in problems:
         print(line)
     if problems:
         return 1
+    for line in dict.fromkeys(cited_lines):
+        print(line)
     print(f"ok: {checked} cited path(s) verified at {head[:10]}")
     return 0
 
