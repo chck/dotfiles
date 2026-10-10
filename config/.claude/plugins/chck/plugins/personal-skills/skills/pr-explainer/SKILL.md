@@ -269,8 +269,8 @@ Then:
 
 ## Reviewer mode (a PR someone else wrote)
 
-Read `references/reviewer-mode.md` as soon as Step 1 picks reviewer mode. The model gets `"mode": "reviewer"` and four more lists (`claims`,
-`unmentioned`, `test_gaps`, `questions`). Nothing is written to the PR: the report goes to the terminal and a private
+Read `references/reviewer-mode.md` as soon as Step 1 picks reviewer mode. The model gets `"mode": "reviewer"` and three more lists (`claims`,
+`unmentioned`, `questions`). Nothing is written to the PR: the report goes to the terminal and a private
 Artifact, and the questions for the author are displayed only. Never run the PR's code unless it is trusted.
 
 ## Design sources

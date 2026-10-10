@@ -4,8 +4,8 @@
 Usage: check-model.py <pr-N.json> [--section section.md] [--files names.txt] [--root DIR]
 
 The model's optional "mode" is "author" (default) or "reviewer". A reviewer model also needs `claims`,
-`unmentioned`, `test_gaps` and `questions`; with --files every `unmentioned` path must be a changed file. A
-reviewer report is not a PR body, so the size limit only prints a note.
+`unmentioned` and `questions`; with --files every `unmentioned` path must be a changed file. A
+reviewer report is not a PR body: there is no size limit, only a note above 12000 characters.
 
 Fails on a missing key, an empty entry, or a placeholder ("...", TODO, TBD). With --section it
 also compares the edges of the Mermaid fence in the section with `diagram.edges`, in both
@@ -34,6 +34,7 @@ PLACEHOLDER = re.compile(r"^\s*(\.\.\.|…|todo|tbd|placeholder|n/a|<.*>)?\s*$",
 VERDICT = re.compile(r"\bSAFE\b|\bLOW RISK\b|\bMERGEABLE\b|影響なし|\b[Nn][Oo] impact\b")
 MAX_SECTION = 45000
 WARN_SECTION = 25000
+WARN_REPORT = 12000
 MAX_WHAT = 300
 MODES = ("author", "reviewer")
 STATUS = ("matches", "differs", "not_in_diff", "not_checked")
@@ -58,7 +59,6 @@ def reviewer_problems(model: dict) -> list[str]:
     shapes = {
         "claims": ("claim", "source", "evidence"),
         "unmentioned": ("path", "what"),
-        "test_gaps": ("behaviour", "where", "note"),
         "questions": ("where", "ask"),
     }
     for key, fields in shapes.items():
@@ -236,8 +236,8 @@ def main() -> int:
             break
         if len(text) > MAX_SECTION and model.get("mode") != "reviewer":
             problems.append(f"section is {len(text)} characters (limit {MAX_SECTION}; the PR body is capped at 65536 and the existing body counts). Group `reading_order` by directory.")
-        elif len(text) > WARN_SECTION:
-            print(f"note: section is {len(text)} characters; consider grouping `reading_order` by area.", file=sys.stderr)
+        elif len(text) > (WARN_REPORT if model.get("mode") == "reviewer" else WARN_SECTION):
+            print(f"note: the {'report' if model.get('mode') == 'reviewer' else 'section'} is {len(text)} characters; the reader has to check all of it. Cut what does not change a decision.", file=sys.stderr)
     if args.section and not problems and model["diagram"]["type"] == "mermaid":
         drawn = mermaid_edges(args.section.read_text())
         wanted = {(e["from"], e["to"]) for e in model["diagram"]["edges"]}
