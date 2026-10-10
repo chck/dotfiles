@@ -177,11 +177,13 @@ It creates `pr-assets` as an orphan branch on first use, commits `pr-<n>/diagram
 
 (Author mode. In reviewer mode nothing is written to the PR: see `references/reviewer-mode.md`.)
 
-Build this section, then put it in the PR body between the markers so a re-run replaces it in place:
+Build this section, then put it in the PR body between the markers so a re-run replaces it in place. It has no title
+(the body is the map, and it starts with the gist). If the PR body already holds the author's own text above the block,
+begin the block with a `---` line so the generated part is set apart; when the block is the whole body, leave it out.
 
 ````markdown
 <!-- pr-explainer:start -->
-## Reviewer's map
+{--- only when the author's own text comes first}
 
 **{gist}**
 
@@ -222,7 +224,6 @@ Headings by language (the marker lines are always the English comments, so a re-
 
 | `en` | `ja` |
 |------|------|
-| Reviewer's map | Reviewer's map (kept in English: the title is a fixed name, not a translation) |
 | New concepts | 新しい概念 |
 | Read in this order | 読む順序 |
 | Not verified | 未検証 |
