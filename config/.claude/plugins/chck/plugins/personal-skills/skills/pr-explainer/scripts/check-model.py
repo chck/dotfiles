@@ -3,10 +3,14 @@
 
 Usage: check-model.py <pr-N.json> [--section section.md] [--files names.txt] [--root DIR]
 
+The model's optional "mode" is "author" (default) or "reviewer". A reviewer model also needs `claims`,
+`unmentioned`, `test_gaps` and `questions`; with --files every `unmentioned` path must be a changed file. A
+reviewer report is not a PR body, so the size limit only prints a note.
+
 Fails on a missing key, an empty entry, or a placeholder ("...", TODO, TBD). With --section it
 also compares the edges of the Mermaid fence in the section with `diagram.edges`, in both
 directions; `from` and `to` in the model are the Mermaid node ids. Run it on the section after the
-citations are linked: links add about 60% to the length. A section with a verdict word
+citations are linked: links add 40-60% to the length. A section with a verdict word
 (SAFE, LOW RISK, MERGEABLE, "no impact", 影響なし) fails, and so does one over 45000 characters (the
 whole PR body is limited to 65536, and the existing body counts too).
 --files takes the output of `gh pr diff <n> --name-only`: every file must be covered by a `reading_order`
@@ -31,6 +35,8 @@ VERDICT = re.compile(r"\bSAFE\b|\bLOW RISK\b|\bMERGEABLE\b|影響なし|\b[Nn][O
 MAX_SECTION = 45000
 WARN_SECTION = 25000
 MAX_WHAT = 300
+MODES = ("author", "reviewer")
+STATUS = ("matches", "differs", "not_in_diff", "not_checked")
 WHY = ("core", "contract", "migration", "config", "tests", "docs", "mechanical")
 EVIDENCE = re.compile(r"(?P<path>.+?):(?P<start>\d+)(?:-(?P<end>\d+))?")
 DIAGRAM_TYPES = {"mermaid", "sequence", "data-flow", "architecture", "none"}
@@ -47,8 +53,35 @@ def blank(value: object) -> bool:
     return not isinstance(value, str) or bool(PLACEHOLDER.match(value))
 
 
+def reviewer_problems(model: dict) -> list[str]:
+    problems: list[str] = []
+    shapes = {
+        "claims": ("claim", "source", "evidence"),
+        "unmentioned": ("path", "what"),
+        "test_gaps": ("behaviour", "where", "note"),
+        "questions": ("where", "ask"),
+    }
+    for key, fields in shapes.items():
+        entries = model.get(key)
+        if not isinstance(entries, list):
+            problems.append(f"{key}: missing. A reviewer model needs it; use an empty list when there is nothing to say.")
+            continue
+        for i, entry in enumerate(entries):
+            for field in fields:
+                if not isinstance(entry, dict) or blank(entry.get(field)):
+                    problems.append(f"{key}[{i}].{field}: empty or placeholder. Fill it in or drop the entry.")
+            if key == "claims" and isinstance(entry, dict) and entry.get("status") not in STATUS:
+                problems.append(f"claims[{i}].status: {entry.get('status')!r} is not one of {', '.join(STATUS)}.")
+    return problems
+
+
 def check_model(model: dict) -> list[str]:
     problems: list[str] = []
+    mode = model.get("mode", "author")
+    if mode not in MODES:
+        problems.append(f"mode: {mode!r} is not one of {', '.join(MODES)}.")
+    elif mode == "reviewer":
+        problems.extend(reviewer_problems(model))
     if blank(model.get("gist")):
         problems.append("gist: write one sentence saying what the PR does now that it did not before.")
     for key, (_, fields) in LISTS.items():
@@ -152,14 +185,21 @@ def missing_evidence(model: dict, root: pathlib.Path) -> list[str]:
     return problems
 
 
+NODE = re.compile(r"(\w+)(?:\[[^\]]*\]|\([^)]*\)|\{[^}]*\})?")
+
+
 def mermaid_edges(section: str) -> set[tuple[str, str]]:
+    """Edges of the first Mermaid fence; a chain `a --> b --> c` gives (a, b) and (b, c)."""
     blocks = re.findall(r"```mermaid\n(.*?)```", section, flags=re.S)
     if not blocks:
         return set()
     edges: set[tuple[str, str]] = set()
     for line in blocks[0].splitlines():
-        for src, dst in re.findall(r"(\w+)(?:\[[^\]]*\]|\([^)]*\)|\{[^}]*\})?\s*-->(?:\|[^|]*\|)?\s*(\w+)", line):
-            edges.add((src, dst))
+        parts = re.split(r"\s*-->(?:\|[^|]*\|)?\s*", line.strip())
+        if len(parts) < 2:
+            continue
+        ids = [m.group(1) for m in (NODE.match(p) for p in parts) if m]
+        edges.update(zip(ids, ids[1:]))
     return edges
 
 
@@ -182,6 +222,10 @@ def main() -> int:
     if args.files and not problems:
         names = [n for n in args.files.read_text().splitlines() if n.strip()]
         problems.extend(coverage_problems(model, names))
+        if model.get("mode") == "reviewer":
+            for i, u in enumerate(model.get("unmentioned", [])):
+                if isinstance(u, dict) and u.get("path") not in names:
+                    problems.append(f"unmentioned[{i}].path: {u.get('path')!r} is not a changed file of this PR.")
     if args.root and not problems and model["diagram"]["type"] != "none":
         problems.extend(missing_evidence(model, args.root))
 
@@ -190,7 +234,7 @@ def main() -> int:
         for m in VERDICT.finditer(text):
             problems.append(f"section contains the verdict word {m.group(0)!r}: this skill reads a diff and does not know runtime impact. Reword it as a fact or as the author's judgment.")
             break
-        if len(text) > MAX_SECTION:
+        if len(text) > MAX_SECTION and model.get("mode") != "reviewer":
             problems.append(f"section is {len(text)} characters (limit {MAX_SECTION}; the PR body is capped at 65536 and the existing body counts). Group `reading_order` by directory.")
         elif len(text) > WARN_SECTION:
             print(f"note: section is {len(text)} characters; consider grouping `reading_order` by area.", file=sys.stderr)

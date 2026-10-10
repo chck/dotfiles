@@ -35,7 +35,14 @@ if ! gh api "repos/${repo}/git/ref/heads/${branch}" >/dev/null 2>&1; then
 fi
 
 # Re-publishing the same path needs the current blob SHA.
-existing=$(gh api "repos/${repo}/contents/${dest}?ref=${branch}" --jq .sha 2>/dev/null || true)
+if ! existing=$(gh api "repos/${repo}/contents/${dest}?ref=${branch}" --jq .sha 2>&1); then
+  if [[ $existing == *"Not Found"* ]]; then
+    existing=""
+  else
+    echo "could not read ${dest} on ${branch}: ${existing}. Check gh auth and access to ${repo}." >&2
+    exit 1
+  fi
+fi
 
 args=(-X PUT "repos/${repo}/contents/${dest}" -f "message=chore: add ${dest}" -f "branch=${branch}")
 [[ -n $existing ]] && args+=(-f "sha=${existing}")

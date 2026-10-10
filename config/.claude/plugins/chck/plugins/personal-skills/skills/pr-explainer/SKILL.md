@@ -1,23 +1,29 @@
 ---
 name: pr-explainer
 description: >
-  Write a reviewer's map into a pull request body: one-line gist, a reading order with a one-line summary per file,
-  new concepts, evidence you actually ran, what is not verified, ★ on the files to read closely, and a diagram of the change, all derived
-  from the diff. Use when the user wants an agent-made PR to be easier to review, or says "PR を読みやすくして",
-  "レビュー用の説明を付けて", "PR explainer", "explain this PR", "make this PR reviewable". Simple diagrams go in
-  the body as Mermaid; complex ones are exported with diagram-design and hosted on a `pr-assets` branch.
-argument-hint: "[PR number (defaults to the current branch's PR)] [--lang ja|en]"
+  Make a pull request easy to review. For your own PR (author mode) it writes a reviewer's map into the PR body: a
+  one-line gist, new concepts, a reading order with a one-line summary per file and a star on the files to read
+  closely, the checks you actually ran, what is not verified, and a diagram. For someone else's PR (reviewer mode) it
+  prints a report in the terminal and a private Artifact instead: the PR's claims against the diff, changes the
+  description does not mention, test gaps, the reading order, and draft questions for the author; it never edits the
+  PR. Use when the user says "PR を読みやすくして", "レビュー用の説明を付けて", "この PR をレビューしたい",
+  "この PR を理解したい", "PR explainer", "explain this PR", "make this PR reviewable", "review this PR".
+  Small diagrams go in as Mermaid; large ones are exported with diagram-design and hosted on a `pr-assets` branch.
+argument-hint: "[PR number (defaults to the current branch's PR)] [--lang ja|en] [--as author|reviewer]"
 ---
 
 # PR Explainer
 
-Goal: the reviewer knows **what changed, where to look first, what was actually checked, and which files to read closely**
+Goal (author mode; for reviewer mode read `references/reviewer-mode.md`): the reviewer knows **what changed, where to look first, what was actually checked, and which files to read closely**
 before opening the diff. Describe the change from the diff, not from the commit messages: agent-written messages
 often describe intent, not result.
 
 ## Step 1: Resolve the PR and check visibility
 
 - Use `$ARGUMENTS` as the PR number, else `gh pr view --json number` for the current branch.
+- Pick the mode: the PR's author (`gh pr view <n> --json author -q .author.login`) against you (`gh api user -q .login`).
+  The same login is author mode, even for an agent-made PR opened under your account; a different one is
+  reviewer mode (`references/reviewer-mode.md`). `--as author|reviewer` overrides.
 - `gh repo view --json visibility,nameWithOwner` — keep both. **PUBLIC** changes Steps 4 and 6. For another
   repository pass it positionally (`gh repo view <owner/repo>`); `-R <owner/repo>` belongs to `gh pr`.
 - `gh pr view <n> --json title,body,baseRefName,baseRefOid,headRefOid`, `gh pr diff <n>`, and `gh pr diff <n> --name-only`
@@ -74,6 +80,8 @@ Rules:
   compares it with the real number, so a group cannot silently swallow files. A deleted file is covered by an entry
   with its old path; write it in plain text in the body, not in backticks.
 - Numbers in the body (cases, tests, lines, files) come from a command you ran, or are left out. Do not estimate.
+  Count test cases with the runner when it can list them (`vitest list`, `cargo test -- --list`); a pattern count
+  must handle multi-line `it.each([`, and is called approximate.
 - Tests are a change like any other: say what behaviour they cover and roughly how much, in `reading_order`. A PR
   whose tests are only named reads as untested.
 - `coverage` is honest: a file is *opened* when you read its diff or its content. Seeing its name in the diff stat
@@ -84,7 +92,7 @@ Rules:
   the gist or the first line of "Not verified" says so.
 - Keep the section short enough to read: above about 25000 characters of the final, linked section, group `reading_order` by
   area. The PR body is capped at 65536 characters, the existing body included; `check-model.py --section` fails above
-  45000. Links add about 60%, so measure after linking.
+  45000. Links add 40-60%, so measure after linking.
 - `new_concepts` comes before the reading order in the body, so the terms the order uses are already known. It lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
 - A `reading_order` entry gets a `focus` list, and a ★ in the body, when a wrong line there costs the most. Each
   focus names a place (`path:line`, which may be in another file the change affects) and a way to check it; one with
@@ -107,7 +115,8 @@ PR-head checkout, and paste the output **verbatim**. Never retype or summarise o
 - Claims copied from the PR body or commit messages ("278 tests pass") go to `unverified` unless you ran them.
   Operational steps the body lists (a flag to flip, a migration to run) are carried over there too, attributed to
   the PR body.
-- Dependencies missing in the checkout: do not install. Name the repo's own check command first in
+- Dependencies missing in the checkout: do not install, and do not borrow another checkout's `node_modules` or build
+  cache: a test run writes into the checkout. Name the repo's own check command first in
   `unverified`, one entry per toolchain (for example `cargo test` and `npm run check`), and say it was not run.
 - A copied claim you could check by reading the code (not by running it) is written as exactly that: "read the
   code, did not run the test".
@@ -116,7 +125,8 @@ PR-head checkout, and paste the output **verbatim**. Never retype or summarise o
   check reads backticked names as repo paths.
 - Name the exact command you ran. If it differs from the repo's wrapper (a Makefile or task-runner target), say so.
   Keep the exit status: run the command without a pipe and print `exit=$?` on the next line (a pipe loses it, and
-  `PIPESTATUS` differs between bash and zsh). A `cmd; echo exit=$?` sequence is fine. Avoid `sed -i` in scripts you give the reader: BSD and GNU differ.
+  `PIPESTATUS` differs between bash and zsh). A `cmd; echo exit=$?` sequence is fine, and a loop prints one line per pass
+  (`for f in ...; do cmd "$f"; echo "exit=$? $f"; done`). Avoid `sed -i` in scripts you give the reader: BSD and GNU differ.
 - When reporting a green result, say what was checked and over what range ("shellcheck on the one new script"),
   not just "passes".
 
@@ -163,6 +173,8 @@ It creates `pr-assets` as an orphan branch on first use, commits `pr-<n>/diagram
 **On a PUBLIC repo, show the PNG path and ask before running it.** On a private repo, run it.
 
 ## Step 7: Write the body section
+
+(Author mode. In reviewer mode nothing is written to the PR: see `references/reviewer-mode.md`.)
 
 Build this section, then put it in the PR body between the markers so a re-run replaces it in place:
 
@@ -234,7 +246,7 @@ Before applying:
    otherwise to a permalink at the head commit (`.../blob/<sha>/<path>#L<line>`). Fenced code and existing links are
    left alone. Run `check-refs.py` once more on the linked text; it must still exit 0.
 4. **Size and edges on the final text.** Run `check-model.py pr-<n>.json --files <names.txt> --root <dir> --section <body-file>`
-   on the linked text, after the model-alone run of Step 2. Links add about 60% to the length, so the size limit
+   on the linked text, after the model-alone run of Step 2. Links add 40-60% to the length, so the size limit
    is judged here.
 
 Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.
@@ -253,6 +265,12 @@ Then:
   markers is unchanged.
 - Report the PR URL, which sections were included, and what is in "Not verified". If the diagram was skipped,
   say why.
+
+## Reviewer mode (a PR someone else wrote)
+
+Read `references/reviewer-mode.md` before Step 2. The model gets `"mode": "reviewer"` and four more lists (`claims`,
+`unmentioned`, `test_gaps`, `questions`). Nothing is written to the PR: the report goes to the terminal and a private
+Artifact, and the questions for the author are displayed only. Never run the PR's code unless it is trusted.
 
 ## Design sources
 

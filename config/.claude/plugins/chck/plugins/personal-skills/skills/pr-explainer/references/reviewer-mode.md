@@ -1,0 +1,35 @@
+# Reviewer mode (a PR someone else wrote)
+
+The goal changes from "make this PR easy to read" to "help me decide what to ask the author". The model, the
+evidence, the ★ reading order and the citation links all apply unchanged; these differ.
+
+- **Read-only against the remote.** Never edit the PR body, never comment, never push `pr-assets` or anything else.
+  Skip Steps 4 and 6 and the marker block. The detached worktree of Step 1 is not optional: you have no checkout.
+- **Do not run code you do not trust.** Tests and builds execute the PR's own code with the user's credentials. Run
+  them only when `gh pr view <n> --json isCrossRepository` is false and the author is someone the user works with;
+  otherwise read only, and put "not run: code from a fork or a stranger" in `unverified`. Read the diff before
+  running anything.
+- **Judge the PR's account of itself.** Add `"mode": "reviewer"` to the model, and:
+
+```json
+  "claims": [{"claim": "what the title, body or a commit says, in the author's words",
+              "source": "title | body | commit <sha>",
+              "status": "matches | differs | not_in_diff | not_checked", "evidence": "path:line, or what you ran"}],
+  "unmentioned": [{"path": "a changed file the description does not mention", "what": "one line"}],
+  "test_gaps": [{"behaviour": "...", "where": "path:line", "note": "no test covers it, or the test asserts less than its name says"}],
+  "questions": [{"where": "path:line", "ask": "a question the author can answer in one line"}]
+```
+
+  `check-model.py` checks the shape and, with `--files`, that every `unmentioned` path is a changed file. List every
+  claim the description makes; `not_in_diff` means the diff does not show it, which is not the same as false.
+  Agent-written PRs overstate, so look first at "tests added", "no behaviour change" and "refactor only". The size
+  limit does not apply to a report.
+- **Output**, in the reviewer's language, as one Markdown report: the gist; "Claims vs the diff" (every claim with
+  its status and place); "Not in the description" (`unmentioned`); "Test gaps"; then "New concepts", "Read in this
+  order" (★ lines and links), "Evidence", "Not verified"; and "Questions for the author", each with its `path:line`
+  link. Run the citation check and `link-refs.py` on it as in Step 7. Then:
+  1. Print the report in the terminal. That is the primary output.
+  2. If the `Artifact` tool is available, load `artifact-design` and publish the same report as a **private**
+     Artifact (this skill asks for a Markdown page: it is a text report with links). Do not share it.
+  3. The questions are **displayed only**. Do not post them as a review or a comment. If the user asks, draft a
+     pending review for them to submit themselves.
