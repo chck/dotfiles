@@ -40,6 +40,7 @@ so they cannot disagree.
 
 ```json
 {
+  "mode": "author",
   "gist": "one sentence: what happens once this is merged",
   "new_concepts": ["term: what it is, where it lives"],
   "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core | contract | migration | config | tests | docs | mechanical",
@@ -88,7 +89,7 @@ Rules:
   or its title does not count. A file you read only in part is counted in `files_partial` and named under "Not verified". Partial means the head or
   a slice of a long file, or one sample standing for a family of similar files (query caches, generated code, a
   lockfile); say which in "Not verified".
-  A starred file counts as opened: do not star a file you did not read. If fewer than half the files were opened,
+  A starred file counts as opened: do not star a file you did not read (`check-model.py` can only compare the number of starred entries with `files_opened`). If fewer than half the files were opened,
   the gist or the first line of "Not verified" says so.
 - Keep the section short enough to read: above about 25000 characters of the final, linked section, group `reading_order` by
   area. The PR body is capped at 65536 characters, the existing body included; `check-model.py --section` fails above
@@ -268,7 +269,7 @@ Then:
 
 ## Reviewer mode (a PR someone else wrote)
 
-Read `references/reviewer-mode.md` before Step 2. The model gets `"mode": "reviewer"` and four more lists (`claims`,
+Read `references/reviewer-mode.md` as soon as Step 1 picks reviewer mode. The model gets `"mode": "reviewer"` and four more lists (`claims`,
 `unmentioned`, `test_gaps`, `questions`). Nothing is written to the PR: the report goes to the terminal and a private
 Artifact, and the questions for the author are displayed only. Never run the PR's code unless it is trusted.
 
