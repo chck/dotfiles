@@ -173,7 +173,7 @@ Headings by language (the marker lines are always the English comments, so a re-
 
 | `en` | `ja` |
 |------|------|
-| Reviewer's map | レビューの地図 |
+| Reviewer's map | Reviewer's map (kept in English: the title is a fixed name, not a translation) |
 | Read in this order | 読む順序 |
 | What changed | 変更点 |
 | New concepts | 新しい概念 |
