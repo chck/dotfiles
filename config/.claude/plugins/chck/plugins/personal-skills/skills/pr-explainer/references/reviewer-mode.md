@@ -94,6 +94,9 @@ with a one-line heading, so the Artifact has a meaningful title.
   the linked text (links add 30-60%). It counts characters, not bytes (`wc -c` counts bytes).
 - The verdict-word check reads quoted claims too. Paraphrase the author's wording ("the author calls it safe")
   instead of quoting SAFE, LOW RISK or MERGEABLE.
+- `--lang` checks the model's fields only, not the finished report. Read the report's language yourself before you
+  print or publish it: the prose comes from the fields, so a Japanese model rarely yields an English report, but
+  nothing stops it.
 - A deleted file is written in plain text, without backticks, and without a path the citation check could look up:
   it is not tracked at HEAD, so a backticked name fails.
 - `check-refs.py` only sees backticked paths and `path:line` outside fenced code. Paste command output inside a
