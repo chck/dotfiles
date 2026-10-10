@@ -1,7 +1,7 @@
 ---
 name: pr-explainer
 description: >
-  Write a reviewer's map into a pull request body: one-line gist, review order, per-file change summary,
+  Write a reviewer's map into a pull request body: one-line gist, a reading order with a one-line summary per file,
   new concepts, evidence you actually ran, what is not verified, where to look hard, and a diagram of the change, all derived
   from the diff. Use when the user wants an agent-made PR to be easier to review, or says "PR を読みやすくして",
   "レビュー用の説明を付けて", "PR explainer", "explain this PR", "make this PR reviewable". Simple diagrams go in
@@ -35,8 +35,7 @@ so they cannot disagree.
 ```json
 {
   "gist": "one sentence: what happens once this is merged",
-  "review_order": [{"path": "...", "why": "core logic | contract change | tests | mechanical"}],
-  "changes": [{"path": "...", "what": "one line, from the diff"}],
+  "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core logic | contract change | tests | mechanical"}],
   "new_concepts": ["term: what it is, where it lives"],
   "evidence": [{"claim": "...", "cmd": "...", "output": "pasted verbatim"}],
   "unverified": [{"claim": "...", "why_not": "..."}],
@@ -53,27 +52,28 @@ so they cannot disagree.
 Write the **whole** model before any prose: no placeholders, no stub entries. Then run
 `scripts/check-model.py pr-<n>.json --files <names.txt> --root <checkout>`, where `names.txt` is the output of
 `gh pr diff <n> --name-only`; it must exit 0. It rejects empty entries, "...", TODO, a missing `coverage`, an edge
-whose cited `path:line` does not exist, and any changed file that no `changes` entry covers. A PR of 100 files is
+whose cited `path:line` does not exist, and any changed file that no `reading_order` entry covers. A PR of 100 files is
 where this gets skipped.
 
 Rules:
-- **Facts and judgment stay apart.** `changes`, `evidence` and `diagram.edges` are facts taken from the diff or from a
+- **Facts and judgment stay apart.** `reading_order` (its `what`), `evidence` and `diagram.edges` are facts taken from the diff or from a
   run. `review_focus` is the author's judgment: it asks the reviewer to look, it does not claim a defect, and its heading carries no label saying so. Never write a verdict word anywhere
   (SAFE, LOW RISK, MERGEABLE, "no impact"): this skill reads a diff, it does not know runtime impact.
 - `gist` is one sentence about the effect after merge, with a verb that says what now happens or what a user can
   now do ("calling X now writes Y"). "Adds X" or "changes Y" alone is a label, not a gist. The deletion test in
   Step 7 judges it; `check-model.py` only checks that it is not empty.
-- `review_order` starts with the file where a wrong line costs the most; mechanical files (renames, lockfiles,
-  generated code) go last.
-- Five or more files of one kind (mechanical files, or the test files of one directory) become **one** `changes`
+- `reading_order` is one list that is both the order to read in and the per-file summary. It starts with the file
+  where a wrong line costs the most, and `why` says in a few words why it sits there. Mechanical files (renames,
+  lockfiles, generated code) go last.
+- Five or more files of one kind (mechanical files, or the test files of one directory) become **one** `reading_order`
   entry that cites the directory (ending in `/`), gives the count, and says what they cover; never one entry per
   file. Whatever the grouping, every changed file is covered by some entry (`check-model.py --files` checks it).
 - Numbers in the body (cases, tests, lines, files) come from a command you ran, or are left out. Do not estimate.
-- Tests are a change like any other: say what behaviour they cover and roughly how much, in `changes`. A PR
+- Tests are a change like any other: say what behaviour they cover and roughly how much, in `reading_order`. A PR
   whose tests are only named reads as untested.
 - `coverage` is honest: a file is *opened* when you read its diff or its content. Seeing its name in the diff stat
   or its title does not count. A file you read only in part is counted, and named under "Not verified".
-- Keep the section short enough to read: above about 15000 characters, group `changes` by area. The PR body is
+- Keep the section short enough to read: above about 15000 characters, group `reading_order` by area. The PR body is
   capped at 65536 characters, the existing body included; `check-model.py --section` fails above 40000.
 - `new_concepts` lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
 - `review_focus` must name a place and a way to check it. An entry with neither is noise; drop it. Write each as a
@@ -161,12 +161,9 @@ Build this section, then put it in the PR body between the markers so a re-run r
 {Mermaid fence, or ![diagram](pinned image URL); omit when there is no diagram}
 
 ### Read in this order
-1. `path` — why
+1. `path` — what changed ({why it is here})
 2. ...
-(mechanical files: one collapsed line)
-
-### What changed
-- `path` — what
+(files of one kind: one directory entry with the count; mechanical files last, one line)
 
 ### New concepts
 - term — what and where
@@ -192,7 +189,6 @@ Headings by language (the marker lines are always the English comments, so a re-
 |------|------|
 | Reviewer's map | Reviewer's map (kept in English: the title is a fixed name, not a translation) |
 | Read in this order | 読む順序 |
-| What changed | 変更点 |
 | New concepts | 新しい概念 |
 | Evidence (ran just now) | 実行結果（直前に実行） |
 | Not verified | 未検証 |
@@ -203,7 +199,7 @@ evidence output **verbatim**. Mermaid node labels may be translated, but then th
 runs on the translated labels.
 
 Before applying:
-1. **Deletion test.** Remove "What changed" and "Evidence": the gist must still stand. Remove the gist: if what
+1. **Deletion test.** Remove "Read in this order" and "Evidence": the gist must still stand. Remove the gist: if what
    remains only reads the evidence aloud, rewrite the gist. Cut any section whose removal changes nothing.
 2. **Citation check.** `scripts/check-refs.py <body-file> --expect-head <headRefOid> [--root <dir>]` must exit 0:
    every backticked path or `path:line` in the body exists in the PR-head checkout. Fix or drop what it reports.
@@ -251,7 +247,7 @@ The `explainer` skill was tried once without its Node tooling (`npx skills use`)
   no-verdict rule). Every node carries a source location (`diagram.edges[].evidence`).
 - **mizchi/explainer**: paste executed output instead of retyping it, and mark unchecked claims "未検証" (Step 3,
   "Not verified"); check that a drawn figure's edges equal the edges claimed, both ways (Step 5); value before
-  mechanism and the deletion test (Step 7); literate-diff order (`review_order`); Mermaid first because GitHub
+  mechanism and the deletion test (Step 7); literate-diff order (`reading_order`); Mermaid first because GitHub
   renders it in a PR body (Step 5). Its persona building, `first-reader` simulation and `verify-doc.mjs` pipeline
   are not adopted: they need Node 24, Playwright and extra tools, and verification covers quoted output, not whether
   the explanation is right.

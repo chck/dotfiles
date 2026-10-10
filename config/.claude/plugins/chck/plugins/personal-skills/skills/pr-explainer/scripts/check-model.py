@@ -8,7 +8,7 @@ also compares the edges of the Mermaid fence in the section with `diagram.edges`
 directions; `from` and `to` in the model are the Mermaid node ids. A section with a verdict word
 (SAFE, LOW RISK, MERGEABLE, "no impact", 影響なし) fails, and so does one over 40000 characters (the
 whole PR body is limited to 65536, and the existing body counts too).
---files takes the output of `gh pr diff <n> --name-only`: every file must be covered by a `changes`
+--files takes the output of `gh pr diff <n> --name-only`: every file must be covered by a `reading_order`
 entry, either its exact path or a directory entry ending in `/`. --root checks that each
 `diagram.edges[].evidence` (`path:line`) names a line that exists.
 
@@ -33,8 +33,7 @@ DIAGRAM_TYPES = {"mermaid", "sequence", "data-flow", "architecture", "none"}
 
 # key -> (kind, required fields per entry)
 LISTS = {
-    "review_order": ("list", ("path", "why")),
-    "changes": ("list", ("path", "what")),
+    "reading_order": ("list", ("path", "what", "why")),
     "evidence": ("list", ("claim", "cmd", "output")),
     "unverified": ("list", ("claim", "why_not")),
     "review_focus": ("list", ("where", "what", "how_to_check")),
@@ -58,8 +57,8 @@ def check_model(model: dict) -> list[str]:
             for field in fields:
                 if not isinstance(entry, dict) or blank(entry.get(field)):
                     problems.append(f"{key}[{i}].{field}: empty or placeholder. Fill it in or drop the entry.")
-    if not model.get("review_order"):
-        problems.append("review_order: empty. A PR with files has an order to read them in.")
+    if not model.get("reading_order"):
+        problems.append("reading_order: empty. A PR with files has an order to read them in.")
     concepts = model.get("new_concepts")
     if not isinstance(concepts, list) or any(blank(c) for c in concepts):
         problems.append("new_concepts: must be a list of non-empty strings (empty list is fine).")
@@ -83,7 +82,7 @@ def check_model(model: dict) -> list[str]:
 
 
 def uncovered(model: dict, files: list[str]) -> list[str]:
-    paths = [c.get("path", "") for c in model.get("changes", []) if isinstance(c, dict)]
+    paths = [c.get("path", "") for c in model.get("reading_order", []) if isinstance(c, dict)]
     return [f for f in files if not any(f == p or (p.endswith("/") and f.startswith(p)) for p in paths)]
 
 
@@ -130,9 +129,9 @@ def main() -> int:
         names = [n for n in args.files.read_text().splitlines() if n.strip()]
         missing = uncovered(model, names)
         for name in missing[:10]:
-            problems.append(f"{name}: no `changes` entry covers this file. Add one, or a directory entry ending in `/`.")
+            problems.append(f"{name}: no `reading_order` entry covers this file. Add one, or a directory entry ending in `/`.")
         if len(missing) > 10:
-            problems.append(f"... and {len(missing) - 10} more files without a `changes` entry.")
+            problems.append(f"... and {len(missing) - 10} more files without a `reading_order` entry.")
     if args.root and not problems and model["diagram"]["type"] != "none":
         problems.extend(missing_evidence(model, args.root))
 
@@ -142,9 +141,9 @@ def main() -> int:
             problems.append(f"section contains the verdict word {m.group(0)!r}: this skill reads a diff and does not know runtime impact. Reword it as a fact or as the author's judgment.")
             break
         if len(text) > MAX_SECTION:
-            problems.append(f"section is {len(text)} characters (limit {MAX_SECTION}; the PR body is capped at 65536 and the existing body counts). Group `changes` by directory.")
+            problems.append(f"section is {len(text)} characters (limit {MAX_SECTION}; the PR body is capped at 65536 and the existing body counts). Group `reading_order` by directory.")
         elif len(text) > WARN_SECTION:
-            print(f"note: section is {len(text)} characters; consider grouping `changes` by area.", file=sys.stderr)
+            print(f"note: section is {len(text)} characters; consider grouping `reading_order` by area.", file=sys.stderr)
     if args.section and not problems and model["diagram"]["type"] == "mermaid":
         drawn = mermaid_edges(args.section.read_text())
         wanted = {(e["from"], e["to"]) for e in model["diagram"]["edges"]}
