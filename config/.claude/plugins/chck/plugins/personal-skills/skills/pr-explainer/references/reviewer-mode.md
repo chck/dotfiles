@@ -57,7 +57,9 @@ Set `"mode": "reviewer"` (required: `check-model.py` rejects the reviewer lists 
 
 One short Markdown report, in this order:
 
-1. The gist, then one line with the mode: "Mode: reviewer (author X, you Y; detected | forced with --as)".
+1. The gist, then one line with the mode and the commit the report was made at: "Mode: reviewer (author X, you Y;
+   detected | forced with --as). Target commit: <headRefOid, first 10 characters>". The report is a snapshot: later
+   commits can answer a question or overturn a gap, and the commit is the only way for a reader to tell.
 2. **Gaps in the description** (説明のずれ): only the `differs`, `partial` and `not_in_diff` claims and the `unmentioned`
    entries, one line each, after a single count line ("38 of 42 claims match the diff"). Do not list the claims that
    match. The `not_checked` claims go under "Not verified", not here, so they do not bury the real gaps.

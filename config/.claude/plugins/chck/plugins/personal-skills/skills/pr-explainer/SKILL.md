@@ -228,7 +228,7 @@ Headings by language (the marker lines are always the English comments, so a re-
 | Not verified | 未検証 |
 | Gaps in the description (reviewer report) | 説明のずれ |
 | Questions for the author (reviewer report) | 作者への質問 |
-| Mode: reviewer (author X, you Y; detected or forced) | モード: reviewer（作者 X、あなた Y。自動判定または指定） |
+| Mode: reviewer (author X, you Y; detected or forced). Target commit | モード: reviewer（作者 X、あなた Y。自動判定または指定）。対象 commit |
 | Evidence (ran just now) | 実行結果（直前に実行） |
 | Show the commands and output | コマンドと出力を表示 |
 | ★ = read closely | ★ = 重点的に見てほしいファイル |
