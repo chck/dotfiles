@@ -6,7 +6,7 @@ description: >
   from the diff. Use when the user wants an agent-made PR to be easier to review, or says "PR を読みやすくして",
   "レビュー用の説明を付けて", "PR explainer", "explain this PR", "make this PR reviewable". Simple diagrams go in
   the body as Mermaid; complex ones are exported with diagram-design and hosted on a `pr-assets` branch.
-argument-hint: "[PR number (defaults to the current branch's PR)]"
+argument-hint: "[PR number (defaults to the current branch's PR)] [--lang ja|en]"
 ---
 
 # PR Explainer
@@ -142,6 +142,22 @@ Build this section, then put it in the PR body between the markers so a re-run r
 <!-- pr-explainer:end -->
 ````
 
+Headings by language (the marker lines are always the English comments, so a re-run finds them):
+
+| `en` | `ja` |
+|------|------|
+| Reviewer's map | レビューの地図 |
+| Read in this order | 読む順序 |
+| What changed | 変更点 |
+| New concepts | 新しい概念 |
+| Evidence (ran just now) | 実行結果（直前に実行） |
+| Not verified | 未検証 |
+| Where it could be wrong (author's judgment) | 誤りうる箇所（作者の判断） |
+
+Translate the prose and the gist; keep paths, commands, identifiers, `path:line` citations and the pasted
+evidence output **verbatim**. Mermaid node labels may be translated, but then the edge comparison in Step 5
+runs on the translated labels.
+
 Before applying:
 1. **Deletion test.** Remove "What changed" and "Evidence": the gist must still stand. Remove the gist: if what
    remains only reads the evidence aloud, rewrite the gist. Cut any section whose removal changes nothing.
@@ -157,7 +173,9 @@ Then:
   marker text in prose (for example inside backticks); a substring match would cut there.
 - Read the body with `body=$(gh pr view <n> --json body -q .body)`; the command substitution drops the newline
   `gh` appends. Writing `gh`'s raw output back adds one blank line per round trip.
-- Write in the language the PR body already uses; default to the user's language.
+- Write the section in the **reviewer's language**: `--lang ja|en` if given, else the language the user writes to
+  you in (the user is the reviewer or answers for them), else the language the PR body already uses. The Japanese
+  headings are in the table below.
 - Apply with `gh pr edit <n> --body-file <file>`, then read the body back and confirm the text outside the
   markers is unchanged.
 - Report the PR URL, which sections were included, and what is in "Not verified". If the diagram was skipped,
