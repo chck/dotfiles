@@ -51,20 +51,27 @@ so they cannot disagree.
 ```
 
 Write the **whole** model before any prose: no placeholders, no stub entries. Then run
-`scripts/check-model.py pr-<n>.json`; it must exit 0 (it rejects empty entries, "...", TODO, a missing
-`coverage`, and an edge with no cited place). A PR of 100 files is where this gets skipped.
+`scripts/check-model.py pr-<n>.json --files <names.txt> --root <checkout>`, where `names.txt` is the output of
+`gh pr diff <n> --name-only`; it must exit 0. It rejects empty entries, "...", TODO, a missing `coverage`, an edge
+whose cited `path:line` does not exist, and any changed file that no `changes` entry covers. A PR of 100 files is
+where this gets skipped.
 
 Rules:
 - **Facts and judgment stay apart.** `changes`, `evidence` and `diagram.edges` are facts taken from the diff or from a
   run. `risks` is the author's judgment and the body labels it so. Never write a verdict word anywhere
   (SAFE, LOW RISK, MERGEABLE, "no impact"): this skill reads a diff, it does not know runtime impact.
 - `review_order` starts with the file where a wrong line costs the most; mechanical files (renames, lockfiles,
-  generated code) go last. Five or more of one kind become **one** entry that cites the directory (ending in
-  `/`) and gives the count, never one entry per file.
+  generated code) go last.
+- Five or more files of one kind (mechanical files, or the test files of one directory) become **one** `changes`
+  entry that cites the directory (ending in `/`), gives the count, and says what they cover; never one entry per
+  file. Whatever the grouping, every changed file is covered by some entry (`check-model.py --files` checks it).
+- Numbers in the body (cases, tests, lines, files) come from a command you ran, or are left out. Do not estimate.
 - Tests are a change like any other: say what behaviour they cover and roughly how much, in `changes`. A PR
   whose tests are only named reads as untested.
-- `coverage` is honest: `files_opened` counts the files you actually read, not the ones you skimmed in the
-  diff stat.
+- `coverage` is honest: a file is *opened* when you read its diff or its content. Seeing its name in the diff stat
+  or its title does not count. A file you read only in part is counted, and named under "Not verified".
+- Keep the section short enough to read: above about 15000 characters, group `changes` by area. The PR body is
+  capped at 65536 characters, the existing body included; `check-model.py --section` fails above 40000.
 - `new_concepts` lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
 - `risks` must name a place and a way to verify. A risk with neither is noise; drop it.
 - Every `diagram.edges` entry cites a place in the diff. An edge without one is not drawn.
@@ -84,9 +91,14 @@ PR-head checkout, and paste the output **verbatim**. Never retype or summarise o
   Operational steps the body lists (a flag to flip, a migration to run) are carried over there too, attributed to
   the PR body.
 - Dependencies missing in the checkout: do not install. Name the repo's own check command first in
-  `unverified`, and say it was not run.
+  `unverified`, one entry per toolchain (for example `makers` and `npm`), and say it was not run.
+- A copied claim you could check by reading the code (not by running it) is written as exactly that: "read the
+  code, did not run the test".
+- If a check used a scratch file the reviewer cannot see, put the script in `cmd` or write "scratch file, not in
+  the repo".
 - Name the exact command you ran. If it differs from the repo's wrapper (for example `makers`), say so.
-  Keep the exit status: do not let a pipe swallow it (`set -o pipefail`, or print `exit=$?`).
+  Keep the exit status: run the command without a pipe and print `exit=$?` on the next line (a pipe loses it, and
+  `PIPESTATUS` differs between bash and zsh). Avoid `sed -i` in scripts you give the reader: BSD and GNU differ.
 - When reporting a green result, say what was checked and over what range ("shellcheck on the one new script"),
   not just "passes".
 
@@ -103,9 +115,10 @@ Pick the cheaper tier that is enough.
 **Mermaid in the body** — when the diagram is a flowchart or sequence of up to about 6 nodes. GitHub renders a
 ```` ```mermaid ```` fence in a PR body, so nothing is exported or hosted.
 1. Write the fence from `diagram.edges` only.
-2. Run `scripts/check-model.py pr-<n>.json --section <section.md>`. It compares the fence's edges with
-   `diagram.edges` **in both directions** (an edge only in the source is invented, one only in the model is
-   missing); `from` and `to` in the model are the Mermaid node ids. Fix the source until it exits 0.
+2. Run `scripts/check-model.py pr-<n>.json --section <section.md>`. It also rejects verdict words and an
+   oversized section. It compares the fence's edges with `diagram.edges` **in both directions** (an edge only in the source is invented, one only in the model is
+   missing); `from` and `to` in the model are the Mermaid node ids. Fix the source until it exits 0. Label an
+   edge that only sometimes runs (`a -->|when X changed| b`); the label does not affect the comparison.
 3. When the flow needs more than about 6 nodes, or one diagram is not enough: draw only the path that changed
    and add one line under the diagram saying what is not drawn. Do not pack extra nodes in. If the PNG tier
    is the right one but publishing is not allowed (public repository, no consent yet), stay on Mermaid with
@@ -192,6 +205,8 @@ Before applying:
    every backticked path or `path:line` in the body exists in the PR-head checkout. Fix or drop what it reports.
    It prints the text of every cited line but only checks that the line exists, so read each printed line and
    confirm it says what the body claims.
+   Write the full repo-relative path on **every** mention, prose included: a bare `release.yml` fails. A bare name
+   with an unrecognised extension is not checked and is listed on stderr; add its extension to `_refs.py`.
    Cite a directory ending in `/`, never a glob (globs are skipped). Write a deleted file in plain text, without
    backticks: it is not tracked at HEAD. Routes such as `/privacy` are not checked either.
 3. **Link the citations.** After the check passes, run

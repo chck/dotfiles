@@ -19,6 +19,9 @@ file is not tracked at HEAD.
 For every cited `path:line` the script prints the text of that line. It only checks that the
 line exists, so read each printed line and confirm it says what the body claims.
 
+Spans that look like a bare file name but have an unrecognised extension are listed on stderr as
+not checked, so a missing extension in _refs.py is visible instead of silent.
+
 Exit 0: all cited paths verified. Exit 1: at least one problem. Exit 2: usage or git error.
 """
 
@@ -29,7 +32,7 @@ import pathlib
 import subprocess
 import sys
 
-from _refs import SPAN, parse_span
+from _refs import PATH, SPAN, parse_span
 
 
 def git(root: pathlib.Path, *args: str) -> str:
@@ -63,11 +66,14 @@ def main() -> int:
     tracked = set(git(args.root, "ls-files").splitlines())
     problems: list[str] = []
     cited_lines: list[str] = []
+    skipped: list[str] = []
     checked = 0
 
     for span in dict.fromkeys(SPAN.findall(args.body.read_text())):
         match = parse_span(span)
         if not match:
+            if PATH.fullmatch(span) and "/" not in span:
+                skipped.append(f"`{span}`")
             continue
         path = match["path"]
         checked += 1
@@ -89,12 +95,14 @@ def main() -> int:
                 break
             cited_lines.append(f"  {path}:{bound}: {file_lines[int(bound) - 1].strip()[:100]}")
 
-    for line in problems:
-        print(line)
-    if problems:
-        return 1
     for line in dict.fromkeys(cited_lines):
         print(line)
+    for line in problems:
+        print(line)
+    if skipped:
+        print(f"not checked as files (no slash, unrecognised extension): {', '.join(skipped[:12])}", file=sys.stderr)
+    if problems:
+        return 1
     print(f"ok: {checked} cited path(s) verified at {head[:10]}")
     return 0
 

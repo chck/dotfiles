@@ -9,7 +9,7 @@ import re
 BARE_EXTENSIONS = {
     "py", "sh", "md", "json", "toml", "yaml", "yml", "js", "ts", "tsx", "jsx", "rs", "go", "rb",
     "java", "kt", "swift", "c", "h", "cpp", "html", "css", "txt", "cfg", "ini", "lock", "tf",
-    "png", "svg", "jpg", "gif", "sql", "rake",
+    "png", "svg", "jpg", "gif", "sql", "rake", "jsonc", "mjs", "cjs", "mts", "cts", "vue", "svelte", "scss",
 }
 
 SPAN = re.compile(r"`([^`\n]+)`")
