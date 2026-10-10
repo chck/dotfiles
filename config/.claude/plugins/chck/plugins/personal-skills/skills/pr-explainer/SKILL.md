@@ -108,3 +108,16 @@ Build this section, then put it in the PR body between the markers so a re-run r
 - Write in the language the PR body already uses; default to the user's language.
 - Apply with `gh pr edit <n> --body-file <file>`.
 - Report the PR URL and which sections were included. If the diagram was skipped, say why.
+
+## Design sources
+
+Ideas from [ELI5 / Archify / Explainer skills (laiso)](https://blog.lai.so/eli5-archify-explainer-skills/), read as the article describes them (the linked repositories were not read):
+
+- Archify: build a typed intermediate representation first, then render from it (Step 2 model feeds the body and the diagram); choose the diagram type by what the change is.
+- Explainer: explain only the gap between what the reader knows and what is new (`new_concepts`).
+- ELI5: not adopted. It trades depth for accessibility; a reviewer needs the detail, so this skill orders the diff instead of replacing it.
+
+Also: `diagram-design`'s `references/export.md` says its PNG export is always transparent (`omit_background=True`).
+`scripts/rasterize.py` exists because of that; revisit it if the exporter gains a background option.
+
+The `pr-assets` branch, commit-pinned URLs, and marker-delimited body section are original to this skill.
