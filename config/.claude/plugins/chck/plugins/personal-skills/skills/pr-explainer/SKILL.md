@@ -185,10 +185,10 @@ Build this section, then put it in the PR body between the markers so a re-run r
 
 **{gist}**
 
-{Mermaid fence, or ![diagram](pinned image URL); omit when there is no diagram}
-
 ### New concepts
 - term — what and where
+
+{Mermaid fence, or ![diagram](pinned image URL); omit when there is no diagram}
 
 ### Read in this order
 ★ = read closely
@@ -198,15 +198,22 @@ Build this section, then put it in the PR body between the markers so a re-run r
 3. ...
 (files of one kind: one directory entry with the count; mechanical files last, one line)
 
+### Not verified
+- Opened {files_opened} of {files_total} files ({files_partial} only in part); the rest are described from the diff stat
+- {claim} — {why not}
+
 ### Evidence (ran just now)
+{one line: how many commands ran, and which check was not run}
+
+<details>
+<summary>Show the commands and output</summary>
+
 - {what was checked, over what range}
 ```
 {output pasted verbatim}
 ```
 
-### Not verified
-- Opened {files_opened} of {files_total} files ({files_partial} only in part); the rest are described from the diff stat
-- {claim} — {why not}
+</details>
 
 <!-- pr-explainer:end -->
 ````
@@ -218,14 +225,20 @@ Headings by language (the marker lines are always the English comments, so a re-
 | Reviewer's map | Reviewer's map (kept in English: the title is a fixed name, not a translation) |
 | New concepts | 新しい概念 |
 | Read in this order | 読む順序 |
-| Evidence (ran just now) | 実行結果（直前に実行） |
 | Not verified | 未検証 |
+| Evidence (ran just now) | 実行結果（直前に実行） |
+| Show the commands and output | コマンドと出力を表示 |
 | ★ = read closely | ★ = 重点的に見てほしいファイル |
 | Why look closely / Check by | 見る理由 / 確認方法 |
 
 Translate the prose and the gist; keep paths, commands, identifiers, `path:line` citations and the pasted
 evidence output **verbatim**. Mermaid node labels may be translated, but then the edge comparison in Step 5
 runs on the translated labels.
+
+The order follows what the reader needs next: the gist, the terms the rest uses, the diagram that maps onto the files, the
+files to read, what is left for the reader to check, and last the evidence. Evidence is the longest part and the least
+actionable, so it is folded in `<details>` with one visible summary line (author mode only: a terminal report is not
+folded). Leave a blank line after `<summary>` and before `</details>`, or GitHub shows the Markdown raw.
 
 Before applying:
 1. **Deletion test.** Remove "Read in this order" and "Evidence": the gist must still stand. Remove the gist: if what

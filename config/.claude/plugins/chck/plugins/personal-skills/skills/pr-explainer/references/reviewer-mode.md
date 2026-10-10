@@ -27,9 +27,9 @@ evidence, the ★ reading order and the citation links all apply unchanged; thes
   The size limit does not apply to a report, but `check-model.py --section` prints a note above 12000 characters.
 - **Output**, in the reviewer's language, as one short Markdown report: the gist; "Gaps in the description"
   (説明のずれ in Japanese), which lists **only** the claims whose status is not `matches` and the `unmentioned` files, one line each,
-  after a single line with the count ("17 of 24 claims match the diff"); then "New concepts", "Read in this order"
-  (★ lines and links), "Evidence", "Not verified"; and "Questions for the author" (about five at most), each with its
-  `path:line` link. Do not list the claims that match: you judge all of them, the reader reads only the gaps.
+  after a single line with the count ("17 of 24 claims match the diff"); then "New concepts", the diagram if there
+  is one, "Read in this order" (★ lines and links), "Questions for the author" (about five at most, each with its
+  `path:line` link), "Not verified", and "Evidence" last. Do not fold the evidence: the report is read in the terminal. Do not list the claims that match: you judge all of them, the reader reads only the gaps.
   The other headings come from the table in SKILL.md; the two that only a reviewer report has are "Gaps in the
   description" = 説明のずれ and "Questions for the author" = 作者への質問. Run the citation check and `link-refs.py` on it as in Step 7. Then:
   1. Print the report in the terminal. That is the primary output.
