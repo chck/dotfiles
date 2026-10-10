@@ -6,7 +6,7 @@ Usage: check-model.py <pr-N.json> [--section section.md] [--files names.txt] [--
 Fails on a missing key, an empty entry, or a placeholder ("...", TODO, TBD). With --section it
 also compares the edges of the Mermaid fence in the section with `diagram.edges`, in both
 directions; `from` and `to` in the model are the Mermaid node ids. Run it on the section after the
-citations are linked: links add about a third to the length. A section with a verdict word
+citations are linked: links add about 60% to the length. A section with a verdict word
 (SAFE, LOW RISK, MERGEABLE, "no impact", 影響なし) fails, and so does one over 45000 characters (the
 whole PR body is limited to 65536, and the existing body counts too).
 --files takes the output of `gh pr diff <n> --name-only`: every file must be covered by a `reading_order`

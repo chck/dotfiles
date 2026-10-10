@@ -65,7 +65,7 @@ Rules:
   Step 7 judges it; `check-model.py` only checks that it is not empty.
 - `reading_order` is one list that is both the order to read in and the per-file summary. It starts with the file
   where a wrong line costs the most, and `why` is its category: core, contract, migration, config, tests, docs or mechanical. That is the
-  default order, the costliest files first within a category. `what` is at most 300 characters. Mechanical files
+  default order, the costliest files first within a category. `what` is at most 300 characters. The order is advisory: `check-model.py` does not check it. Mechanical files
   (renames, lockfiles, generated code) go last.
 - Five or more files of one kind (mechanical files, or the test files of one directory) become **one** `reading_order`
   entry that cites the directory (ending in `/`), gives the count, and says what they cover; never one entry per
@@ -77,12 +77,14 @@ Rules:
 - Tests are a change like any other: say what behaviour they cover and roughly how much, in `reading_order`. A PR
   whose tests are only named reads as untested.
 - `coverage` is honest: a file is *opened* when you read its diff or its content. Seeing its name in the diff stat
-  or its title does not count. A file you read only in part is counted in `files_partial` and named under "Not verified".
+  or its title does not count. A file you read only in part is counted in `files_partial` and named under "Not verified". Partial means the head or
+  a slice of a long file, or one sample standing for a family of similar files (query caches, generated code, a
+  lockfile); say which in "Not verified".
   A starred file counts as opened: do not star a file you did not read. If fewer than half the files were opened,
   the gist or the first line of "Not verified" says so.
 - Keep the section short enough to read: above about 25000 characters of the final, linked section, group `reading_order` by
   area. The PR body is capped at 65536 characters, the existing body included; `check-model.py --section` fails above
-  45000. Links add about a third, so measure after linking.
+  45000. Links add about 60%, so measure after linking.
 - `new_concepts` comes before the reading order in the body, so the terms the order uses are already known. It lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
 - A `reading_order` entry gets a `focus` list, and a ★ in the body, when a wrong line there costs the most. Each
   focus names a place (`path:line`, which may be in another file the change affects) and a way to check it; one with
@@ -95,7 +97,8 @@ Rules:
 ## Step 3: Run before you write
 
 Anything the body would say passes, works, or renders needs an `evidence` entry: run the command now, in the
-PR-head checkout, and paste the output **verbatim**. Never retype or summarise output.
+PR-head checkout, and paste the output **verbatim**. Never retype or summarise output. A long output may be cut by a pattern (the summary
+  lines of a test run, say): show the command with its filter, and keep every pasted line exactly as printed.
 
 - Cheap checks to run when they apply: the test command, the linter named in AGENTS.md, `bash -n` and `shellcheck`
   for shell, a dry run of a new script.
@@ -218,7 +221,8 @@ Before applying:
    every backticked path or `path:line` in the body exists in the PR-head checkout. Fix or drop what it reports.
    It prints the text of every cited line but only checks that the line exists, so read each printed line and
    confirm it says what the body claims.
-   Write the full repo-relative path on **every** mention, prose included: a bare `release.yml` fails. A bare name
+   Every backticked mention uses the full repo-relative path: a bare `release.yml` fails. Each one becomes a link of
+   about 170 characters, so name a file once per entry and refer to it afterwards without backticks. A bare name
    with an unrecognised extension is not checked and is listed on stderr; add its extension to `_refs.py`.
    Cite a directory ending in `/`, never a glob (globs are skipped). Write a deleted file in plain text, without
    backticks: it is not tracked at HEAD. Routes such as `/privacy` are not checked either.
@@ -230,7 +234,7 @@ Before applying:
    otherwise to a permalink at the head commit (`.../blob/<sha>/<path>#L<line>`). Fenced code and existing links are
    left alone. Run `check-refs.py` once more on the linked text; it must still exit 0.
 4. **Size and edges on the final text.** Run `check-model.py pr-<n>.json --files <names.txt> --root <dir> --section <body-file>`
-   on the linked text, after the model-alone run of Step 2. Links add about a third to the length, so the size limit
+   on the linked text, after the model-alone run of Step 2. Links add about 60% to the length, so the size limit
    is judged here.
 
 Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.

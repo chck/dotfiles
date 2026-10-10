@@ -103,7 +103,10 @@ def main() -> int:
         print(f"note (not a failure): not checked as files, no slash and an unrecognised extension: {', '.join(skipped[:5])}", file=sys.stderr)
     if problems:
         return 1
+    shown = len(dict.fromkeys(cited_lines))
     print(f"ok: {checked} cited path(s) verified at {head[:10]}")
+    if shown:
+        print(f"Not done by this script: read the {shown} cited line(s) above and confirm each says what the body claims.")
     return 0
 
 
