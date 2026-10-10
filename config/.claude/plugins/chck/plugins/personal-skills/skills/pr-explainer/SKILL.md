@@ -34,7 +34,7 @@ so they cannot disagree.
 
 ```json
 {
-  "gist": "one sentence: what the PR does now that it did not before",
+  "gist": "one sentence: what happens once this is merged",
   "review_order": [{"path": "...", "why": "core logic | contract change | tests | mechanical"}],
   "changes": [{"path": "...", "what": "one line, from the diff"}],
   "new_concepts": ["term: what it is, where it lives"],
@@ -60,6 +60,9 @@ Rules:
 - **Facts and judgment stay apart.** `changes`, `evidence` and `diagram.edges` are facts taken from the diff or from a
   run. `review_focus` is the author's judgment: it asks the reviewer to look, it does not claim a defect, and its heading carries no label saying so. Never write a verdict word anywhere
   (SAFE, LOW RISK, MERGEABLE, "no impact"): this skill reads a diff, it does not know runtime impact.
+- `gist` is one sentence about the effect after merge, with a verb that says what now happens or what a user can
+  now do ("calling X now writes Y"). "Adds X" or "changes Y" alone is a label, not a gist. The deletion test in
+  Step 7 judges it; `check-model.py` only checks that it is not empty.
 - `review_order` starts with the file where a wrong line costs the most; mechanical files (renames, lockfiles,
   generated code) go last.
 - Five or more files of one kind (mechanical files, or the test files of one directory) become **one** `changes`
