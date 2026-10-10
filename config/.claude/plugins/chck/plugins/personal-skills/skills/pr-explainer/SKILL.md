@@ -182,6 +182,7 @@ begin the block with a `---` line so the generated part is set apart; when the b
 
 ````markdown
 <!-- pr-explainer:start -->
+<!-- pr-explainer:head {headRefOid} -->
 {--- only when the author's own text comes first}
 
 **{gist}**
@@ -283,6 +284,20 @@ Then:
   markers is unchanged.
 - Report the PR URL, which sections were included, and what is in "Not verified". If the diagram was skipped,
   say why.
+
+## Staleness
+
+A map and a report are snapshots of one commit. The block records it in its first comment line,
+`<!-- pr-explainer:head <headRefOid> -->`; a reviewer report names it on the Mode line ("Target commit"). A later
+commit can change a file the map cites, answer a question or overturn a gap, and nothing else says so.
+
+- `scripts/stale-check.py <file | --pr N>` compares the recorded commit with the current head and lists the cited
+  files that changed since (exit 0 current, 1 stale, 2 unknown).
+- The user's PostToolUse hooks run `scripts/nudge.py`: after `gh pr create` it reminds you to run this skill for the
+  new PR (a PUBLIC repository: privacy check and ask first; a draft may wait), and after `git push` it says so when the
+  PR's map is stale. It only reminds; run the skill yourself. `PR_EXPLAINER_AUTO=0` silences it.
+- A re-run replaces only the block between the markers. Do it when the PR is ready for review, or when asked; there is
+  no partial refresh.
 
 ## Reviewer mode (a PR someone else wrote)
 
