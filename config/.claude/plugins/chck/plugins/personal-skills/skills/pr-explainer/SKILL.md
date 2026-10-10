@@ -20,7 +20,7 @@ often describe intent, not result.
 - Use `$ARGUMENTS` as the PR number, else `gh pr view --json number` for the current branch.
 - `gh repo view --json visibility,nameWithOwner` — keep both. **PUBLIC** changes Steps 4 and 6. For another
   repository pass it positionally (`gh repo view <owner/repo>`); `-R <owner/repo>` belongs to `gh pr`.
-- `gh pr view <n> --json title,body,baseRefName,headRefOid`, `gh pr diff <n>`, and `gh pr diff <n> --name-only`
+- `gh pr view <n> --json title,body,baseRefName,baseRefOid,headRefOid`, `gh pr diff <n>`, and `gh pr diff <n> --name-only`
   for the file list: `gh pr view --json files` stops at 100 files.
 - Work from a checkout of the PR head; Steps 3 and 7 read files from it, and the scripts take `--root <dir>`.
   For your own open PR that is its worktree. For a merged PR or someone else's:
@@ -194,6 +194,13 @@ Before applying:
    confirm it says what the body claims.
    Cite a directory ending in `/`, never a glob (globs are skipped). Write a deleted file in plain text, without
    backticks: it is not tracked at HEAD. Routes such as `/privacy` are not checked either.
+3. **Link the citations.** After the check passes, run
+   `scripts/link-refs.py <body-file> --repo <owner/repo> --pr <n> --base-sha <baseRefOid> --head-sha <headRefOid> --write`
+   (`--root <dir>` for a fetched clone; it reads git objects, no checkout needed). Each backticked `path` or
+   `path:line` becomes a link: to the PR's Files changed view (`.../pull/<n>/changes#diff-<sha256 of path>R<line>`)
+   when the file is changed and every cited line sits inside a diff hunk, so the reviewer can comment on that line;
+   otherwise to a permalink at the head commit (`.../blob/<sha>/<path>#L<line>`). Fenced code and existing links are
+   left alone. Run `check-refs.py` once more on the linked text; it must still exit 0.
 
 Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.
 

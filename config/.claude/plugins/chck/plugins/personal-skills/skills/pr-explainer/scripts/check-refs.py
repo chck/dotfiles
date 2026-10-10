@@ -26,20 +26,10 @@ from __future__ import annotations
 
 import argparse
 import pathlib
-import re
 import subprocess
 import sys
 
-# A span with no "/" is read as a file name only when its extension is one of these,
-# so identifiers such as `ast.parse` or `os.path` are not mistaken for files.
-BARE_EXTENSIONS = {
-    "py", "sh", "md", "json", "toml", "yaml", "yml", "js", "ts", "tsx", "jsx", "rs", "go", "rb",
-    "java", "kt", "swift", "c", "h", "cpp", "html", "css", "txt", "cfg", "ini", "lock", "tf",
-    "png", "svg", "jpg", "gif", "sql", "rake",
-}
-
-SPAN = re.compile(r"`([^`\n]+)`")
-PATH = re.compile(r"(?P<path>[\w.@+()\[\]~-]+(?:/[\w.@+()\[\]~-]+)*(?:\.\w{1,8}|/))(?::(?P<start>\d+)(?:-(?P<end>\d+))?)?")
+from _refs import SPAN, parse_span
 
 
 def git(root: pathlib.Path, *args: str) -> str:
@@ -76,12 +66,10 @@ def main() -> int:
     checked = 0
 
     for span in dict.fromkeys(SPAN.findall(args.body.read_text())):
-        match = PATH.fullmatch(span)
+        match = parse_span(span)
         if not match:
             continue
         path = match["path"]
-        if "/" not in path and path.rsplit(".", 1)[-1] not in BARE_EXTENSIONS:
-            continue
         checked += 1
         if path.endswith("/"):
             if not any(f.startswith(path) for f in tracked):
