@@ -5,8 +5,7 @@ description: >
   one-line gist, new concepts, a reading order with a one-line summary per file and a star on the files to read
   closely, the checks you actually ran, what is not verified, and a diagram. For someone else's PR (reviewer mode) it
   prints a report in the terminal and a private Artifact instead: the PR's claims against the diff, changes the
-  description does not mention, test gaps, the reading order, and draft questions for the author; it never edits the
-  PR. Use when the user says "PR を読みやすくして", "レビュー用の説明を付けて", "この PR をレビューしたい",
+  description does not mention, the reading order, and draft questions for the author; it never edits the PR. Use when the user says "PR を読みやすくして", "レビュー用の説明を付けて", "この PR をレビューしたい",
   "この PR を理解したい", "PR explainer", "explain this PR", "make this PR reviewable", "review this PR".
   Small diagrams go in as Mermaid; large ones are exported with diagram-design and hosted on a `pr-assets` branch.
 argument-hint: "[PR number (defaults to the current branch's PR)] [--lang ja|en] [--as author|reviewer]"
@@ -26,7 +25,7 @@ often describe intent, not result.
   reviewer mode (`references/reviewer-mode.md`). `--as author|reviewer` overrides.
 - `gh repo view --json visibility,nameWithOwner` — keep both. **PUBLIC** changes Steps 4 and 6. For another
   repository pass it positionally (`gh repo view <owner/repo>`); `-R <owner/repo>` belongs to `gh pr`.
-- `gh pr view <n> --json title,body,baseRefName,baseRefOid,headRefOid`, `gh pr diff <n>`, and `gh pr diff <n> --name-only`
+- `gh pr view <n> --json title,body,commits,baseRefName,baseRefOid,headRefOid`, `gh pr diff <n>`, and `gh pr diff <n> --name-only`
   for the file list: `gh pr view --json files` stops at 100 files.
 - Work from a checkout of the PR head; Steps 3 and 7 read files from it, and the scripts take `--root <dir>`.
   For your own open PR that is its worktree. For a merged PR or someone else's:
@@ -93,7 +92,7 @@ Rules:
   the gist or the first line of "Not verified" says so.
 - Keep the section short enough to read: above about 25000 characters of the final, linked section, group `reading_order` by
   area. The PR body is capped at 65536 characters, the existing body included; `check-model.py --section` fails above
-  45000. Links add 40-60%, so measure after linking.
+  45000. Links add 30-60%, so measure after linking.
 - `new_concepts` comes before the reading order in the body, so the terms the order uses are already known. It lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
 - A `reading_order` entry gets a `focus` list, and a ★ in the body, when a wrong line there costs the most. Each
   focus names a place (`path:line`, which may be in another file the change affects) and a way to check it; one with
@@ -115,7 +114,7 @@ PR-head checkout, and paste the output **verbatim**. Never retype or summarise o
   unlabelled claim is not.
 - Claims copied from the PR body or commit messages ("278 tests pass") go to `unverified` unless you ran them.
   Operational steps the body lists (a flag to flip, a migration to run) are carried over there too, attributed to
-  the PR body.
+  the PR body. (In reviewer mode a copied claim is judged in `claims`; only the `not_checked` ones also go here.)
 - Dependencies missing in the checkout: do not install, and do not borrow another checkout's `node_modules` or build
   cache: a test run writes into the checkout. Name the repo's own check command first in
   `unverified`, one entry per toolchain (for example `cargo test` and `npm run check`), and say it was not run.
@@ -227,6 +226,9 @@ Headings by language (the marker lines are always the English comments, so a re-
 | New concepts | 新しい概念 |
 | Read in this order | 読む順序 |
 | Not verified | 未検証 |
+| Gaps in the description (reviewer report) | 説明のずれ |
+| Questions for the author (reviewer report) | 作者への質問 |
+| Mode: reviewer (author X, you Y; detected or forced) | モード: reviewer（作者 X、あなた Y。自動判定または指定） |
 | Evidence (ran just now) | 実行結果（直前に実行） |
 | Show the commands and output | コマンドと出力を表示 |
 | ★ = read closely | ★ = 重点的に見てほしいファイル |
@@ -262,7 +264,7 @@ Before applying:
    otherwise to a permalink at the head commit (`.../blob/<sha>/<path>#L<line>`). Fenced code and existing links are
    left alone. Run `check-refs.py` once more on the linked text; it must still exit 0.
 4. **Size and edges on the final text.** Run `check-model.py pr-<n>.json --files <names.txt> --root <dir> --section <body-file>`
-   on the linked text, after the model-alone run of Step 2. Links add 40-60% to the length, so the size limit
+   on the linked text, after the model-alone run of Step 2. Links add 30-60% to the length, so the size limit
    is judged here.
 
 Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.

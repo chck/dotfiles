@@ -34,18 +34,12 @@ import pathlib
 import subprocess
 import sys
 
-from _refs import PATH, SPAN, parse_span
+from _refs import PATH, SPAN, fenced_lines, parse_span
 
 
 def unfenced(text: str) -> str:
     """The text outside fenced code blocks: pasted output is not a citation (link-refs.py skips it too)."""
-    out, fenced = [], False
-    for line in text.splitlines():
-        if line.lstrip().startswith("```"):
-            fenced = not fenced
-        elif not fenced:
-            out.append(line)
-    return "\n".join(out)
+    return "\n".join(line for line, fenced in fenced_lines(text) if not fenced)
 
 
 def git(root: pathlib.Path, *args: str) -> str:

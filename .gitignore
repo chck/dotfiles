@@ -8,6 +8,6 @@ config/karabiner/automatic_backups/
 config/.vim/ftdetect/otty.vim
 config/.vim/syntax/otty.vim
 
-# Python bytecode (the pr-explainer scripts are imported by tests)
+# Python bytecode (running or importing the pr-explainer scripts creates it)
 __pycache__/
 *.pyc

@@ -30,7 +30,7 @@ import subprocess
 import sys
 from urllib.parse import quote
 
-from _refs import SPAN, parse_span
+from _refs import SPAN, fenced_lines, parse_span
 
 HUNK = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@")
 
@@ -66,21 +66,28 @@ def line_suffix(prefix: str, start: str | None, end: str | None) -> str:
 
 
 PROTECTED = re.compile(r"`[^`\n]+`|\[[^\]]*\]\([^)]*\)|https?://\S+")
-BARE_PATH = re.compile(r"(?<![\w/.@-])((?:[\w.@+()\[\]~-]+/)+[\w.@+()\[\]~-]+\.[A-Za-z0-9]{1,8})(:\d+(?:-\d+)?)?(?![\w/])")
-IDENT = re.compile(r"(?<![\w`])([A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+)(?![\w`])")
+ASCII = r"A-Za-z0-9_"
+PATHCH = r"[A-Za-z0-9_.@+()\[\]~-]"
+TOKEN = re.compile(
+    rf"(?<![{ASCII}/.@-])(?P<path>(?:{PATHCH}+/)+{PATHCH}+\.[A-Za-z0-9]{{1,8}})(?P<line>:\d+(?:-\d+)?)?(?![{ASCII}/])"
+    rf"|(?<![{ASCII}`])(?P<ident>[A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+)(?![{ASCII}`])"
+)
 
 
 def wrap_bare(line: str, tree: set[str]) -> str:
-    """Backtick bare repo paths and underscore identifiers in the parts of a line that are plain text."""
-    def plain(text: str) -> str:
-        text = BARE_PATH.sub(lambda m: f"`{m[0]}`" if m[1] in tree else m[0], text)
-        return IDENT.sub(lambda m: f"`{m[1]}`", text)
+    """Backtick bare repo paths and underscore identifiers in the plain-text parts of a line (one pass: a wrapped
+    path is never scanned again for identifiers, and the boundaries are ASCII so Japanese next to a name is fine)."""
+    def rep(m: re.Match[str]) -> str:
+        if m["path"]:
+            return f"`{m[0]}`" if m["path"] in tree else m[0]
+        return f"`{m['ident']}`"
+
     out, pos = [], 0
     for m in PROTECTED.finditer(line):
-        out.append(plain(line[pos:m.start()]))
+        out.append(TOKEN.sub(rep, line[pos:m.start()]))
         out.append(m[0])
         pos = m.end()
-    out.append(plain(line[pos:]))
+    out.append(TOKEN.sub(rep, line[pos:]))
     return "".join(out)
 
 
@@ -131,17 +138,13 @@ def main() -> int:
         return f"[`{span}`](https://github.com/{args.repo}/blob/{args.head_sha}/{quote(path, safe='/')}{line_suffix('L', start, end)})"
 
     out: list[str] = []
-    fenced = False
-    for line in args.section.read_text().splitlines():
-        if line.lstrip().startswith("```"):
-            fenced = not fenced
+    for line, in_fence in fenced_lines(args.section.read_text()):
+        if in_fence:
             out.append(line)
-        elif fenced:
-            out.append(line)
-        else:
-            if args.wrap_bare:
-                line = wrap_bare(line, tree)
-            out.append(re.sub(r"(?<!\[)`([^`\n]+)`(?!\]\()", link, line))
+            continue
+        if args.wrap_bare:
+            line = wrap_bare(line, tree)
+        out.append(re.sub(r"(?<!\[)`([^`\n]+)`(?!\]\()", link, line))
     text = "\n".join(out) + "\n"
 
     if args.write:

@@ -13,7 +13,32 @@ BARE_EXTENSIONS = {
 }
 
 SPAN = re.compile(r"`([^`\n]+)`")
-PATH = re.compile(r"(?P<path>[\w.@+()\[\]~-]+(?:/[\w.@+()\[\]~-]+)*(?:\.\w{1,8}|/))(?::(?P<start>\d+)(?:-(?P<end>\d+))?)?")
+DOTFILE = r"(?:[\w.@+()\[\]~-]+/)*\.(?:gitignore|gitattributes|editorconfig|dockerignore|npmrc|nvmrc)"
+PATH = re.compile(r"(?P<path>[\w.@+()\[\]~-]+(?:/[\w.@+()\[\]~-]+)*(?:\.\w{1,8}|/)|" + DOTFILE + r")(?::(?P<start>\d+)(?:-(?P<end>\d+))?)?")
+
+
+FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
+
+
+def fenced_lines(text: str):
+    """Yield (line, in_fence): a fence line and every line inside it count as fenced.
+
+    A fence closes only on a line of the same character that is at least as long as the opening one, so a
+    four-backtick block can show a three-backtick block.
+    """
+    opener: tuple[str, int] | None = None
+    for line in text.splitlines():
+        m = FENCE.match(line)
+        if opener is None:
+            if m:
+                opener = (m[1][0], len(m[1]))
+                yield line, True
+            else:
+                yield line, False
+        else:
+            yield line, True
+            if m and m[1][0] == opener[0] and len(m[1]) >= opener[1] and line.strip() == m[1]:
+                opener = None
 
 
 def parse_span(span: str) -> re.Match[str] | None:
@@ -22,6 +47,6 @@ def parse_span(span: str) -> re.Match[str] | None:
     if not match:
         return None
     path = match["path"]
-    if "/" not in path and path.rsplit(".", 1)[-1] not in BARE_EXTENSIONS:
+    if "/" not in path and path.rsplit(".", 1)[-1] not in BARE_EXTENSIONS and not path.startswith("."):
         return None
     return match

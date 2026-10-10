@@ -4,18 +4,21 @@
 Usage: check-model.py <pr-N.json> [--section section.md] [--files names.txt] [--root DIR] [--lang ja]
 
 --lang ja fails when a field the reader reads (gist, each `what`, focus text, new concepts, questions,
-unverified reasons) has no Japanese character, so a report meant for a Japanese reader cannot ship in English. A
-short quote of the author's own words may stay in its language inside a sentence that is Japanese.
+unverified reasons) is mostly not Japanese: outside code spans, fewer than 20% of its letters are kana or kanji. So a
+report meant for a Japanese reader cannot ship in English, even with one Japanese word in it. A short quote of the
+author's own words may stay in its language inside a Japanese sentence. --lang en fails a field that has Japanese
+text outside code spans. Only the model fields are checked, not the finished report.
 
-The model's optional "mode" is "author" (default) or "reviewer". A reviewer model also needs `claims`,
-`unmentioned` and `questions`; a `differs` or `partial` claim must cite a `path:line`; with --files every `unmentioned`
-path must be a changed file, or a directory ending in `/` whose `count` equals the changed files under it. A
+The model's optional "mode" is "author" (default) or "reviewer". A reviewer model must set "mode": "reviewer" and
+have `claims`, `unmentioned` and `questions`; each `claims[].source` is `title`, `body` or `commit <sha>`, and each
+`questions[].where` is a `path:line`; a `differs` or `partial` claim must cite a `path:line` (`base:path:line` for code the PR deleted); with --files every `unmentioned`
+path must be a changed file, or a directory ending in `/` whose `count` equals the changed files under it that no other `unmentioned` entry lists. A
 reviewer report is not a PR body: there is no size limit, only a note above 20000 characters of the linked text.
 
 Fails on a missing key, an empty entry, or a placeholder ("...", TODO, TBD). With --section it
 also compares the edges of the Mermaid fence in the section with `diagram.edges`, in both
 directions; `from` and `to` in the model are the Mermaid node ids. Run it on the section after the
-citations are linked: links add 40-60% to the length. A section with a verdict word
+citations are linked: links add 30-60% to the length. A section with a verdict word
 (SAFE, LOW RISK, MERGEABLE, "no impact", 影響なし) fails, and so does one over 45000 characters (the
 whole PR body is limited to 65536, and the existing body counts too).
 --files takes the output of `gh pr diff <n> --name-only`: every file must be covered by a `reading_order`
@@ -76,10 +79,14 @@ def reviewer_problems(model: dict) -> list[str]:
             for field in fields:
                 if not isinstance(entry, dict) or blank(entry.get(field)):
                     problems.append(f"{key}[{i}].{field}: empty or placeholder. Fill it in or drop the entry.")
+            if key == "questions" and isinstance(entry, dict) and not EVIDENCE.fullmatch(str(entry.get("where", ""))):
+                problems.append(f"questions[{i}].where: {entry.get('where')!r} is not a path:line.")
             if key == "claims" and isinstance(entry, dict):
+                if not re.fullmatch(r"title|body|commit [0-9a-f]{7,40}", str(entry.get("source", ""))):
+                    problems.append(f"claims[{i}].source: {entry.get('source')!r} is not title, body or commit <sha>.")
                 if entry.get("status") not in STATUS:
                     problems.append(f"claims[{i}].status: {entry.get('status')!r} is not one of {', '.join(STATUS)}.")
-                elif entry["status"] in ("differs", "partial") and not EVIDENCE.fullmatch(str(entry.get("evidence", ""))):
+                elif entry["status"] in ("differs", "partial") and not EVIDENCE.fullmatch(str(entry.get("evidence", "")).removeprefix("base:")):
                     problems.append(f"claims[{i}].evidence: a {entry['status']} claim cites a path:line in the diff, not {entry.get('evidence')!r}.")
             if key == "unmentioned" and isinstance(entry, dict) and str(entry.get("path", "")).endswith("/") \
                     and not (isinstance(entry.get("count"), int) and entry["count"] >= 1):
@@ -87,10 +94,18 @@ def reviewer_problems(model: dict) -> list[str]:
     return problems
 
 
+CODE_SPAN = re.compile(r"`[^`]*`")
+JA_SHARE = 0.2
+
+
+def ja_share(text: str) -> float | None:
+    """Share of kana and kanji among the letters outside code spans; None when there are no letters."""
+    plain = CODE_SPAN.sub("", text)
+    ja, ascii_letters = len(JA.findall(plain)), len(re.findall(r"[A-Za-z]", plain))
+    return ja / (ja + ascii_letters) if ja + ascii_letters else None
+
+
 def language_problems(model: dict, lang: str) -> list[str]:
-    """Only Japanese is checked: a field with no kana or kanji is, in practice, English."""
-    if lang != "ja":
-        return []
     texts: list[tuple[str, object]] = [("gist", model.get("gist"))]
     for i, c in enumerate(model.get("new_concepts") or []):
         texts.append((f"new_concepts[{i}]", c))
@@ -105,8 +120,16 @@ def language_problems(model: dict, lang: str) -> list[str]:
         for i, e in enumerate(model.get(key) or []):
             if isinstance(e, dict):
                 texts.append((f"{key}[{i}].{field}", e.get(field)))
-    return [f"{label}: has no Japanese character ({str(t)[:50]!r}...). Write it in Japanese; only a short quote of the author's words may stay in its language."
-            for label, t in texts if isinstance(t, str) and t.strip() and not JA.search(t)]
+    problems = []
+    for label, t in texts:
+        if not isinstance(t, str) or not t.strip():
+            continue
+        share = ja_share(t)
+        if lang == "ja" and share is not None and share < JA_SHARE:
+            problems.append(f"{label}: only {share:.0%} of its letters are Japanese ({t[:50]!r}...). Write it in Japanese; only a short quote of the author's words may stay in its language.")
+        if lang == "en" and JA.search(CODE_SPAN.sub("", t)):
+            problems.append(f"{label}: has Japanese text but the report language is English ({t[:50]!r}...).")
+    return problems
 
 
 def check_model(model: dict) -> list[str]:
@@ -116,6 +139,8 @@ def check_model(model: dict) -> list[str]:
         problems.append(f"mode: {mode!r} is not one of {', '.join(MODES)}.")
     elif mode == "reviewer":
         problems.extend(reviewer_problems(model))
+    elif any(k in model for k in ("claims", "unmentioned", "questions")):
+        problems.append("claims, unmentioned or questions are present but mode is not \"reviewer\": set \"mode\": \"reviewer\" so the reviewer checks run.")
     if blank(model.get("gist")):
         problems.append("gist: write one sentence saying what the PR does now that it did not before.")
     for key, (_, fields) in LISTS.items():
@@ -219,33 +244,39 @@ def missing_evidence(model: dict, root: pathlib.Path) -> list[str]:
     return problems
 
 
-NODE = re.compile(r"(\w+)(?:\[[^\]]*\]|\([^)]*\)|\{[^}]*\})?")
-
-
 def missing_claim_evidence(model: dict, root: pathlib.Path) -> list[str]:
     problems = []
     for i, c in enumerate(model.get("claims", [])):
         if not isinstance(c, dict) or c.get("status") not in ("differs", "partial"):
             continue
-        m = EVIDENCE.fullmatch(str(c.get("evidence", "")))
+        raw = str(c.get("evidence", ""))
+        if raw.startswith("base:"):
+            continue  # code the PR deleted is not in the head checkout
+        m = EVIDENCE.fullmatch(raw)
         target = root / m["path"] if m else None
         if not m or not target.is_file() or not 1 <= int(m["start"]) <= len(target.read_text(errors="replace").splitlines()):
             problems.append(f"claims[{i}].evidence: {c.get('evidence')!r} is not a file:line that exists under {root}.")
     return problems
 
 
+NODE = re.compile(r"(\w+)(?:\[[^\]]*\]|\([^)]*\)|\{[^}]*\})?")
+ARROW = re.compile(r"\s*(?:-->|==>|-\.->)(?:\|[^|]*\|)?\s*")
+
+
 def mermaid_edges(section: str) -> set[tuple[str, str]]:
-    """Edges of the first Mermaid fence; a chain `a --> b --> c` gives (a, b) and (b, c)."""
+    """Edges of the first Mermaid fence. A chain `a --> b --> c` gives (a, b) and (b, c); `a & b --> c` gives
+    (a, c) and (b, c); `==>` and `-.->` count as arrows."""
     blocks = re.findall(r"```mermaid\n(.*?)```", section, flags=re.S)
     if not blocks:
         return set()
     edges: set[tuple[str, str]] = set()
     for line in blocks[0].splitlines():
-        parts = re.split(r"\s*-->(?:\|[^|]*\|)?\s*", line.strip())
+        parts = ARROW.split(line.strip())
         if len(parts) < 2:
             continue
-        ids = [m.group(1) for m in (NODE.match(p) for p in parts) if m]
-        edges.update(zip(ids, ids[1:]))
+        groups = [[m.group(1) for m in (NODE.match(p.strip()) for p in part.split("&")) if m] for part in parts]
+        for left, right in zip(groups, groups[1:]):
+            edges.update((a, b) for a in left for b in right)
     return edges
 
 
@@ -276,12 +307,13 @@ def main() -> int:
                 if not isinstance(u, dict):
                     continue
                 path = str(u.get("path"))
+                listed = {str(x.get("path")) for x in model.get("unmentioned", []) if isinstance(x, dict)}
                 if path.endswith("/"):
-                    under = [n for n in names if n.startswith(path)]
+                    under = [n for n in names if n.startswith(path) and n not in listed]
                     if not under:
                         problems.append(f"unmentioned[{i}].path: no changed file is under {path!r}.")
                     elif isinstance(u.get("count"), int) and u["count"] != len(under):
-                        problems.append(f"unmentioned[{i}]: count is {u['count']} but {len(under)} changed files are under {path!r}.")
+                        problems.append(f"unmentioned[{i}]: count is {u['count']} but {len(under)} changed files are under {path!r} that no other unmentioned entry lists.")
                 elif path not in names:
                     problems.append(f"unmentioned[{i}].path: {path!r} is not a changed file of this PR.")
     if args.root and not problems and model["diagram"]["type"] != "none":
