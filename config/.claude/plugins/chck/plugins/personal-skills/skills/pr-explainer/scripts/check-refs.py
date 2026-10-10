@@ -69,7 +69,9 @@ def main() -> int:
                 problems.append(f"`{span}`: no tracked file under {path}. Fix the directory name or drop the claim.")
             continue
         if path not in tracked:
-            problems.append(f"`{span}`: {path} is not tracked at HEAD. Fix the path or drop the claim.")
+            same_name = sorted(f for f in tracked if f.rsplit("/", 1)[-1] == path)
+            hint = f" Use the repo-relative path: {', '.join(same_name[:3])}." if same_name else ""
+            problems.append(f"`{span}`: {path} is not tracked at HEAD.{hint} Otherwise fix the path or drop the claim.")
             continue
         for bound in (match["start"], match["end"]):
             if bound is None:
