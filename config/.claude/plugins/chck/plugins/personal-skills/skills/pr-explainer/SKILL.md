@@ -58,7 +58,7 @@ so they cannot disagree.
 
 Write the **whole** model before any prose: no placeholders, no stub entries. Then run
 `scripts/check-model.py pr-<n>.json --files <names.txt> --root <checkout>`, where `names.txt` is the output of
-`gh pr diff <n> --name-only`; it must exit 0. It rejects empty entries, "...", TODO, a missing `coverage`, a `why`
+`gh pr diff <n> --name-only`; it must exit 0; add `--lang ja` when the report language is Japanese, so a field written in English is rejected. It rejects empty entries, "...", TODO, a missing `coverage`, a `why`
 outside the list, a `what` over 300 characters, an edge whose cited `path:line` does not exist, any changed file that no
 `reading_order` entry covers, and a directory entry whose `count` is not the number of files it really covers. A PR of
 100 files is where this gets skipped.

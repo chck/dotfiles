@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Check that the pr-explainer model is complete before any prose is written.
 
-Usage: check-model.py <pr-N.json> [--section section.md] [--files names.txt] [--root DIR]
+Usage: check-model.py <pr-N.json> [--section section.md] [--files names.txt] [--root DIR] [--lang ja]
+
+--lang ja fails when a field the reader reads (gist, each `what`, focus text, new concepts, questions,
+unverified reasons) has no Japanese character, so a report meant for a Japanese reader cannot ship in English. A
+short quote of the author's own words may stay in its language inside a sentence that is Japanese.
 
 The model's optional "mode" is "author" (default) or "reviewer". A reviewer model also needs `claims`,
 `unmentioned` and `questions`; with --files every `unmentioned` path must be a changed file. A
@@ -36,6 +40,7 @@ MAX_SECTION = 45000
 WARN_SECTION = 25000
 WARN_REPORT = 12000
 MAX_WHAT = 300
+JA = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff]")
 MODES = ("author", "reviewer")
 STATUS = ("matches", "differs", "not_in_diff", "not_checked")
 WHY = ("core", "contract", "migration", "config", "tests", "docs", "mechanical")
@@ -73,6 +78,28 @@ def reviewer_problems(model: dict) -> list[str]:
             if key == "claims" and isinstance(entry, dict) and entry.get("status") not in STATUS:
                 problems.append(f"claims[{i}].status: {entry.get('status')!r} is not one of {', '.join(STATUS)}.")
     return problems
+
+
+def language_problems(model: dict, lang: str) -> list[str]:
+    """Only Japanese is checked: a field with no kana or kanji is, in practice, English."""
+    if lang != "ja":
+        return []
+    texts: list[tuple[str, object]] = [("gist", model.get("gist"))]
+    for i, c in enumerate(model.get("new_concepts") or []):
+        texts.append((f"new_concepts[{i}]", c))
+    for i, e in enumerate(model.get("reading_order") or []):
+        if not isinstance(e, dict):
+            continue
+        texts.append((f"reading_order[{i}].what", e.get("what")))
+        for j, f in enumerate(e.get("focus") or []):
+            if isinstance(f, dict):
+                texts += [(f"reading_order[{i}].focus[{j}].what", f.get("what")), (f"reading_order[{i}].focus[{j}].how_to_check", f.get("how_to_check"))]
+    for key, field in (("questions", "ask"), ("unmentioned", "what"), ("unverified", "why_not")):
+        for i, e in enumerate(model.get(key) or []):
+            if isinstance(e, dict):
+                texts.append((f"{key}[{i}].{field}", e.get(field)))
+    return [f"{label}: has no Japanese character ({str(t)[:50]!r}...). Write it in Japanese; only a short quote of the author's words may stay in its language."
+            for label, t in texts if isinstance(t, str) and t.strip() and not JA.search(t)]
 
 
 def check_model(model: dict) -> list[str]:
@@ -209,6 +236,7 @@ def main() -> int:
     parser.add_argument("--section", type=pathlib.Path)
     parser.add_argument("--files", type=pathlib.Path)
     parser.add_argument("--root", type=pathlib.Path)
+    parser.add_argument("--lang", choices=("ja", "en"))
     args = parser.parse_args()
 
     try:
@@ -218,6 +246,8 @@ def main() -> int:
         return 2
 
     problems = check_model(model)
+    if args.lang and not problems:
+        problems.extend(language_problems(model, args.lang))
 
     if args.files and not problems:
         names = [n for n in args.files.read_text().splitlines() if n.strip()]

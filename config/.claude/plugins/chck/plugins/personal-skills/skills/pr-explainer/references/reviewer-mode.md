@@ -25,7 +25,11 @@ evidence, the ★ reading order and the citation links all apply unchanged; thes
   Agent-written PRs overstate, so look first at "tests added", "no behaviour change" and "refactor only". A test
   gap is not a list of its own: put it in the ★ "why look closely" line of the file it concerns, or in a question.
   The size limit does not apply to a report, but `check-model.py --section` prints a note above 12000 characters.
-- **Output**, in the reviewer's language, as one short Markdown report: the gist; "Gaps in the description"
+- **Output**, entirely in the reviewer's language, as one short Markdown report. That includes every question for the
+  author and the wording of every gap: write them in the reviewer's language even when the PR, its commits and the
+  author are in English, and keep only a short quote of the author's own words in its language, inside a sentence in the
+  reviewer's language. When the user posts the questions, offer an English version if the author reads English.
+  Run `check-model.py --lang <ja|en>` so a Japanese report cannot ship in English. The report is: the gist; "Gaps in the description"
   (説明のずれ in Japanese), which lists **only** the claims whose status is not `matches` and the `unmentioned` files, one line each,
   after a single line with the count ("17 of 24 claims match the diff"); then "New concepts", the diagram if there
   is one, "Read in this order" (★ lines and links), "Questions for the author" (about five at most, each with its
