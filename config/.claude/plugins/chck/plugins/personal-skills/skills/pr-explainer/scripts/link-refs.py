@@ -2,7 +2,7 @@
 """Turn backticked file citations in a PR body section into links a reviewer can click and comment on.
 
 Usage: link-refs.py <section.md> --repo OWNER/REPO --pr N --base-sha SHA --head-sha SHA
-                    [--root DIR] [--blob-only] [--write]
+                    [--root DIR] [--blob-only] [--wrap-bare] [--write]
 
 `path` and `path:line` / `path:a-b` become [`path:line`](url):
   - a file the PR changes, with every cited line inside a diff hunk (3 lines of context included):
@@ -11,6 +11,9 @@ Usage: link-refs.py <section.md> --repo OWNER/REPO --pr N --base-sha SHA --head-
   - anything else that exists at the head commit: a permalink pinned to the head SHA,
     https://github.com/OWNER/REPO/blob/<head sha>/<path>#L<line>;
   - a directory ending in `/`: a tree link at the head SHA.
+--wrap-bare first puts bare repo paths (a path with a slash that exists at the head commit, with an optional :line)
+and identifiers with underscores in backticks, outside code, existing backticks, links and URLs: a reader's text has
+them bare, and outside backticks Markdown reads the underscores as emphasis.
 Citations that are not files at the head commit (deleted files, typos) are left as they are; run
 check-refs.py first and fix those. Fenced code blocks and spans that are already links are not touched.
 Reads git objects from --root (default "."), so a fetched PR head is enough; no checkout is needed.
@@ -62,6 +65,25 @@ def line_suffix(prefix: str, start: str | None, end: str | None) -> str:
     return f"#{prefix}{start}" if not end else f"#{prefix}{start}-{prefix}{end}"
 
 
+PROTECTED = re.compile(r"`[^`\n]+`|\[[^\]]*\]\([^)]*\)|https?://\S+")
+BARE_PATH = re.compile(r"(?<![\w/.@-])((?:[\w.@+()\[\]~-]+/)+[\w.@+()\[\]~-]+\.[A-Za-z0-9]{1,8})(:\d+(?:-\d+)?)?(?![\w/])")
+IDENT = re.compile(r"(?<![\w`])([A-Za-z][A-Za-z0-9]*(?:_[A-Za-z0-9]+)+)(?![\w`])")
+
+
+def wrap_bare(line: str, tree: set[str]) -> str:
+    """Backtick bare repo paths and underscore identifiers in the parts of a line that are plain text."""
+    def plain(text: str) -> str:
+        text = BARE_PATH.sub(lambda m: f"`{m[0]}`" if m[1] in tree else m[0], text)
+        return IDENT.sub(lambda m: f"`{m[1]}`", text)
+    out, pos = [], 0
+    for m in PROTECTED.finditer(line):
+        out.append(plain(line[pos:m.start()]))
+        out.append(m[0])
+        pos = m.end()
+    out.append(plain(line[pos:]))
+    return "".join(out)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("section", type=pathlib.Path)
@@ -71,6 +93,7 @@ def main() -> int:
     parser.add_argument("--head-sha", required=True)
     parser.add_argument("--root", type=pathlib.Path, default=pathlib.Path("."))
     parser.add_argument("--blob-only", action="store_true", help="always link the pinned file, never Files changed")
+    parser.add_argument("--wrap-bare", action="store_true")
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args()
 
@@ -116,6 +139,8 @@ def main() -> int:
         elif fenced:
             out.append(line)
         else:
+            if args.wrap_bare:
+                line = wrap_bare(line, tree)
             out.append(re.sub(r"(?<!\[)`([^`\n]+)`(?!\]\()", link, line))
     text = "\n".join(out) + "\n"
 

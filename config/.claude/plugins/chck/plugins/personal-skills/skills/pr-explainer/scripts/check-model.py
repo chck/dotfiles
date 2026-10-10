@@ -8,8 +8,9 @@ unverified reasons) has no Japanese character, so a report meant for a Japanese 
 short quote of the author's own words may stay in its language inside a sentence that is Japanese.
 
 The model's optional "mode" is "author" (default) or "reviewer". A reviewer model also needs `claims`,
-`unmentioned` and `questions`; with --files every `unmentioned` path must be a changed file. A
-reviewer report is not a PR body: there is no size limit, only a note above 12000 characters.
+`unmentioned` and `questions`; a `differs` or `partial` claim must cite a `path:line`; with --files every `unmentioned`
+path must be a changed file, or a directory ending in `/` whose `count` equals the changed files under it. A
+reviewer report is not a PR body: there is no size limit, only a note above 20000 characters of the linked text.
 
 Fails on a missing key, an empty entry, or a placeholder ("...", TODO, TBD). With --section it
 also compares the edges of the Mermaid fence in the section with `diagram.edges`, in both
@@ -38,11 +39,11 @@ PLACEHOLDER = re.compile(r"^\s*(\.\.\.|…|todo|tbd|placeholder|n/a|<.*>)?\s*$",
 VERDICT = re.compile(r"\bSAFE\b|\bLOW RISK\b|\bMERGEABLE\b|影響なし|\b[Nn][Oo] impact\b")
 MAX_SECTION = 45000
 WARN_SECTION = 25000
-WARN_REPORT = 12000
+WARN_REPORT = 20000
 MAX_WHAT = 300
 JA = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff]")
 MODES = ("author", "reviewer")
-STATUS = ("matches", "differs", "not_in_diff", "not_checked")
+STATUS = ("matches", "partial", "differs", "not_in_diff", "not_checked")
 WHY = ("core", "contract", "migration", "config", "tests", "docs", "mechanical")
 EVIDENCE = re.compile(r"(?P<path>.+?):(?P<start>\d+)(?:-(?P<end>\d+))?")
 DIAGRAM_TYPES = {"mermaid", "sequence", "data-flow", "architecture", "none"}
@@ -75,8 +76,14 @@ def reviewer_problems(model: dict) -> list[str]:
             for field in fields:
                 if not isinstance(entry, dict) or blank(entry.get(field)):
                     problems.append(f"{key}[{i}].{field}: empty or placeholder. Fill it in or drop the entry.")
-            if key == "claims" and isinstance(entry, dict) and entry.get("status") not in STATUS:
-                problems.append(f"claims[{i}].status: {entry.get('status')!r} is not one of {', '.join(STATUS)}.")
+            if key == "claims" and isinstance(entry, dict):
+                if entry.get("status") not in STATUS:
+                    problems.append(f"claims[{i}].status: {entry.get('status')!r} is not one of {', '.join(STATUS)}.")
+                elif entry["status"] in ("differs", "partial") and not EVIDENCE.fullmatch(str(entry.get("evidence", ""))):
+                    problems.append(f"claims[{i}].evidence: a {entry['status']} claim cites a path:line in the diff, not {entry.get('evidence')!r}.")
+            if key == "unmentioned" and isinstance(entry, dict) and str(entry.get("path", "")).endswith("/") \
+                    and not (isinstance(entry.get("count"), int) and entry["count"] >= 1):
+                problems.append(f"unmentioned[{i}]: a directory entry needs an integer `count` of the changed files under it.")
     return problems
 
 
@@ -215,6 +222,18 @@ def missing_evidence(model: dict, root: pathlib.Path) -> list[str]:
 NODE = re.compile(r"(\w+)(?:\[[^\]]*\]|\([^)]*\)|\{[^}]*\})?")
 
 
+def missing_claim_evidence(model: dict, root: pathlib.Path) -> list[str]:
+    problems = []
+    for i, c in enumerate(model.get("claims", [])):
+        if not isinstance(c, dict) or c.get("status") not in ("differs", "partial"):
+            continue
+        m = EVIDENCE.fullmatch(str(c.get("evidence", "")))
+        target = root / m["path"] if m else None
+        if not m or not target.is_file() or not 1 <= int(m["start"]) <= len(target.read_text(errors="replace").splitlines()):
+            problems.append(f"claims[{i}].evidence: {c.get('evidence')!r} is not a file:line that exists under {root}.")
+    return problems
+
+
 def mermaid_edges(section: str) -> set[tuple[str, str]]:
     """Edges of the first Mermaid fence; a chain `a --> b --> c` gives (a, b) and (b, c)."""
     blocks = re.findall(r"```mermaid\n(.*?)```", section, flags=re.S)
@@ -254,10 +273,21 @@ def main() -> int:
         problems.extend(coverage_problems(model, names))
         if model.get("mode") == "reviewer":
             for i, u in enumerate(model.get("unmentioned", [])):
-                if isinstance(u, dict) and u.get("path") not in names:
-                    problems.append(f"unmentioned[{i}].path: {u.get('path')!r} is not a changed file of this PR.")
+                if not isinstance(u, dict):
+                    continue
+                path = str(u.get("path"))
+                if path.endswith("/"):
+                    under = [n for n in names if n.startswith(path)]
+                    if not under:
+                        problems.append(f"unmentioned[{i}].path: no changed file is under {path!r}.")
+                    elif isinstance(u.get("count"), int) and u["count"] != len(under):
+                        problems.append(f"unmentioned[{i}]: count is {u['count']} but {len(under)} changed files are under {path!r}.")
+                elif path not in names:
+                    problems.append(f"unmentioned[{i}].path: {path!r} is not a changed file of this PR.")
     if args.root and not problems and model["diagram"]["type"] != "none":
         problems.extend(missing_evidence(model, args.root))
+    if args.root and not problems and model.get("mode") == "reviewer":
+        problems.extend(missing_claim_evidence(model, args.root))
 
     if args.section and not problems:
         text = args.section.read_text()

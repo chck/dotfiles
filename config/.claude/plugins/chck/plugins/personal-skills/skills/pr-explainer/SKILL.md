@@ -254,7 +254,8 @@ Before applying:
    backticks: it is not tracked at HEAD. Routes such as `/privacy` are not checked either.
 3. **Link the citations.** After the check passes, run
    `scripts/link-refs.py <body-file> --repo <owner/repo> --pr <n> --base-sha <baseRefOid> --head-sha <headRefOid> --write`
-   (`--root <dir>` for a fetched clone; it reads git objects, no checkout needed). Each backticked `path` or
+   (`--root <dir>` for a fetched clone; it reads git objects, no checkout needed; `--wrap-bare` first puts bare repo
+   paths and identifiers with underscores in backticks). Each backticked `path` or
    `path:line` becomes a link: to the PR's Files changed view (`.../pull/<n>/changes#diff-<sha256 of path>R<line>`)
    when the file is changed and every cited line sits inside a diff hunk, so the reviewer can comment on that line;
    otherwise to a permalink at the head commit (`.../blob/<sha>/<path>#L<line>`). Fenced code and existing links are
