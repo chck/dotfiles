@@ -46,5 +46,10 @@ Details that are easy to get wrong:
   fence; to show a fence inside a fence, open the outer one with four backticks.
 - `--expect-head` takes `headRefOid` from `gh pr view <n> --json headRefOid`.
 - The report may carry a Mermaid fence under the gist when the change has a flow worth drawing; otherwise set
-  `diagram.type` to `none`.
+  `diagram.type` to `none`. The model and the report must agree: a model that keeps a diagram needs its fence in the
+  report, or `--section` fails on the missing edges.
+- The 12000 limit counts characters, not bytes (`wc -c` counts bytes).
+- Put every identifier with underscores in backticks (`__pycache__`): outside them Markdown reads the underscores
+  as emphasis. Name the file after the PR (`pr-<n>-review.md`) so the Artifact has a meaningful title, and start it
+  with a one-line heading.
 - If the Artifact renders a link or a fence badly, the terminal copy is the reference.
