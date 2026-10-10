@@ -1,26 +1,31 @@
 ---
 name: pr-explainer
 description: >
-  Write a reviewer's map into a pull request body: one-line gist, a reading order with a one-line summary per file,
-  new concepts, evidence you actually ran, what is not verified, ★ on the files to read closely, and a diagram of the change, all derived
-  from the diff. Use when the user wants an agent-made PR to be easier to review, or says "PR を読みやすくして",
-  "レビュー用の説明を付けて", "PR explainer", "explain this PR", "make this PR reviewable". Simple diagrams go in
-  the body as Mermaid; complex ones are exported with diagram-design and hosted on a `pr-assets` branch.
-argument-hint: "[PR number (defaults to the current branch's PR)] [--lang ja|en]"
+  Make a pull request easy to review. For your own PR (author mode) it writes a reviewer's map into the PR body: a
+  one-line gist, new concepts, a reading order with a one-line summary per file and a star on the files to read
+  closely, the checks you actually ran, what is not verified, and a diagram. For someone else's PR (reviewer mode) it
+  prints a report in the terminal and a private Artifact instead: the PR's claims against the diff, changes the
+  description does not mention, the reading order, and draft questions for the author; it never edits the PR. Use when the user says "PR を読みやすくして", "レビュー用の説明を付けて", "この PR をレビューしたい",
+  "この PR を理解したい", "PR explainer", "explain this PR", "make this PR reviewable", "review this PR".
+  Small diagrams go in as Mermaid; large ones are exported with diagram-design and hosted on a `pr-assets` branch.
+argument-hint: "[PR number (defaults to the current branch's PR)] [--lang ja|en] [--as author|reviewer]"
 ---
 
 # PR Explainer
 
-Goal: the reviewer knows **what changed, where to look first, what was actually checked, and which files to read closely**
+Goal (author mode; for reviewer mode read `references/reviewer-mode.md`): the reviewer knows **what changed, where to look first, what was actually checked, and which files to read closely**
 before opening the diff. Describe the change from the diff, not from the commit messages: agent-written messages
 often describe intent, not result.
 
 ## Step 1: Resolve the PR and check visibility
 
 - Use `$ARGUMENTS` as the PR number, else `gh pr view --json number` for the current branch.
+- Pick the mode: the PR's author (`gh pr view <n> --json author -q .author.login`) against you (`gh api user -q .login`).
+  The same login is author mode, even for an agent-made PR opened under your account; a different one is
+  reviewer mode (`references/reviewer-mode.md`). `--as author|reviewer` overrides.
 - `gh repo view --json visibility,nameWithOwner` — keep both. **PUBLIC** changes Steps 4 and 6. For another
   repository pass it positionally (`gh repo view <owner/repo>`); `-R <owner/repo>` belongs to `gh pr`.
-- `gh pr view <n> --json title,body,baseRefName,baseRefOid,headRefOid`, `gh pr diff <n>`, and `gh pr diff <n> --name-only`
+- `gh pr view <n> --json title,body,commits,baseRefName,baseRefOid,headRefOid`, `gh pr diff <n>`, and `gh pr diff <n> --name-only`
   for the file list: `gh pr view --json files` stops at 100 files.
 - Work from a checkout of the PR head; Steps 3 and 7 read files from it, and the scripts take `--root <dir>`.
   For your own open PR that is its worktree. For a merged PR or someone else's:
@@ -34,6 +39,7 @@ so they cannot disagree.
 
 ```json
 {
+  "mode": "author",
   "gist": "one sentence: what happens once this is merged",
   "new_concepts": ["term: what it is, where it lives"],
   "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core | contract | migration | config | tests | docs | mechanical",
@@ -51,7 +57,7 @@ so they cannot disagree.
 
 Write the **whole** model before any prose: no placeholders, no stub entries. Then run
 `scripts/check-model.py pr-<n>.json --files <names.txt> --root <checkout>`, where `names.txt` is the output of
-`gh pr diff <n> --name-only`; it must exit 0. It rejects empty entries, "...", TODO, a missing `coverage`, a `why`
+`gh pr diff <n> --name-only`; it must exit 0; add `--lang ja` when the report language is Japanese, so a field written in English is rejected. It rejects empty entries, "...", TODO, a missing `coverage`, a `why`
 outside the list, a `what` over 300 characters, an edge whose cited `path:line` does not exist, any changed file that no
 `reading_order` entry covers, and a directory entry whose `count` is not the number of files it really covers. A PR of
 100 files is where this gets skipped.
@@ -74,17 +80,19 @@ Rules:
   compares it with the real number, so a group cannot silently swallow files. A deleted file is covered by an entry
   with its old path; write it in plain text in the body, not in backticks.
 - Numbers in the body (cases, tests, lines, files) come from a command you ran, or are left out. Do not estimate.
+  Count test cases with the runner when it can list them (`vitest list`, `cargo test -- --list`); a pattern count
+  must handle multi-line `it.each([`, and is called approximate.
 - Tests are a change like any other: say what behaviour they cover and roughly how much, in `reading_order`. A PR
   whose tests are only named reads as untested.
 - `coverage` is honest: a file is *opened* when you read its diff or its content. Seeing its name in the diff stat
   or its title does not count. A file you read only in part is counted in `files_partial` and named under "Not verified". Partial means the head or
   a slice of a long file, or one sample standing for a family of similar files (query caches, generated code, a
   lockfile); say which in "Not verified".
-  A starred file counts as opened: do not star a file you did not read. If fewer than half the files were opened,
+  A starred file counts as opened: do not star a file you did not read (`check-model.py` can only compare the number of starred entries with `files_opened`). If fewer than half the files were opened,
   the gist or the first line of "Not verified" says so.
 - Keep the section short enough to read: above about 25000 characters of the final, linked section, group `reading_order` by
   area. The PR body is capped at 65536 characters, the existing body included; `check-model.py --section` fails above
-  45000. Links add about 60%, so measure after linking.
+  45000. Links add 30-60%, so measure after linking.
 - `new_concepts` comes before the reading order in the body, so the terms the order uses are already known. It lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
 - A `reading_order` entry gets a `focus` list, and a ★ in the body, when a wrong line there costs the most. Each
   focus names a place (`path:line`, which may be in another file the change affects) and a way to check it; one with
@@ -106,8 +114,9 @@ PR-head checkout, and paste the output **verbatim**. Never retype or summarise o
   unlabelled claim is not.
 - Claims copied from the PR body or commit messages ("278 tests pass") go to `unverified` unless you ran them.
   Operational steps the body lists (a flag to flip, a migration to run) are carried over there too, attributed to
-  the PR body.
-- Dependencies missing in the checkout: do not install. Name the repo's own check command first in
+  the PR body. (In reviewer mode a copied claim is judged in `claims`; only the `not_checked` ones also go here.)
+- Dependencies missing in the checkout: do not install, and do not borrow another checkout's `node_modules` or build
+  cache: a test run writes into the checkout. Name the repo's own check command first in
   `unverified`, one entry per toolchain (for example `cargo test` and `npm run check`), and say it was not run.
 - A copied claim you could check by reading the code (not by running it) is written as exactly that: "read the
   code, did not run the test".
@@ -116,7 +125,8 @@ PR-head checkout, and paste the output **verbatim**. Never retype or summarise o
   check reads backticked names as repo paths.
 - Name the exact command you ran. If it differs from the repo's wrapper (a Makefile or task-runner target), say so.
   Keep the exit status: run the command without a pipe and print `exit=$?` on the next line (a pipe loses it, and
-  `PIPESTATUS` differs between bash and zsh). A `cmd; echo exit=$?` sequence is fine. Avoid `sed -i` in scripts you give the reader: BSD and GNU differ.
+  `PIPESTATUS` differs between bash and zsh). A `cmd; echo exit=$?` sequence is fine, and a loop prints one line per pass
+  (`for f in ...; do cmd "$f"; echo "exit=$? $f"; done`). Avoid `sed -i` in scripts you give the reader: BSD and GNU differ.
 - When reporting a green result, say what was checked and over what range ("shellcheck on the one new script"),
   not just "passes".
 
@@ -164,18 +174,22 @@ It creates `pr-assets` as an orphan branch on first use, commits `pr-<n>/diagram
 
 ## Step 7: Write the body section
 
-Build this section, then put it in the PR body between the markers so a re-run replaces it in place:
+(Author mode. In reviewer mode nothing is written to the PR: see `references/reviewer-mode.md`.)
+
+Build this section, then put it in the PR body between the markers so a re-run replaces it in place. It has no title
+(the body is the map, and it starts with the gist). If the PR body already holds the author's own text above the block,
+begin the block with a `---` line so the generated part is set apart; when the block is the whole body, leave it out.
 
 ````markdown
 <!-- pr-explainer:start -->
-## Reviewer's map
+{--- only when the author's own text comes first}
 
 **{gist}**
 
-{Mermaid fence, or ![diagram](pinned image URL); omit when there is no diagram}
-
 ### New concepts
 - term — what and where
+
+{Mermaid fence, or ![diagram](pinned image URL); omit when there is no diagram}
 
 ### Read in this order
 ★ = read closely
@@ -185,15 +199,22 @@ Build this section, then put it in the PR body between the markers so a re-run r
 3. ...
 (files of one kind: one directory entry with the count; mechanical files last, one line)
 
+### Not verified
+- Opened {files_opened} of {files_total} files ({files_partial} only in part); the rest are described from the diff stat
+- {claim} — {why not}
+
 ### Evidence (ran just now)
+{one line: how many commands ran, and which check was not run}
+
+<details>
+<summary>Show the commands and output</summary>
+
 - {what was checked, over what range}
 ```
 {output pasted verbatim}
 ```
 
-### Not verified
-- Opened {files_opened} of {files_total} files ({files_partial} only in part); the rest are described from the diff stat
-- {claim} — {why not}
+</details>
 
 <!-- pr-explainer:end -->
 ````
@@ -202,17 +223,25 @@ Headings by language (the marker lines are always the English comments, so a re-
 
 | `en` | `ja` |
 |------|------|
-| Reviewer's map | Reviewer's map (kept in English: the title is a fixed name, not a translation) |
 | New concepts | 新しい概念 |
 | Read in this order | 読む順序 |
-| Evidence (ran just now) | 実行結果（直前に実行） |
 | Not verified | 未検証 |
+| Gaps in the description (reviewer report) | 説明のずれ |
+| Questions for the author (reviewer report) | 作者への質問 |
+| Mode: reviewer (author X, you Y; detected or forced). Target commit | モード: reviewer（作者 X、あなた Y。自動判定または指定）。対象 commit |
+| Evidence (ran just now) | 実行結果（直前に実行） |
+| Show the commands and output | コマンドと出力を表示 |
 | ★ = read closely | ★ = 重点的に見てほしいファイル |
 | Why look closely / Check by | 見る理由 / 確認方法 |
 
 Translate the prose and the gist; keep paths, commands, identifiers, `path:line` citations and the pasted
 evidence output **verbatim**. Mermaid node labels may be translated, but then the edge comparison in Step 5
 runs on the translated labels.
+
+The order follows what the reader needs next: the gist, the terms the rest uses, the diagram that maps onto the files, the
+files to read, what is left for the reader to check, and last the evidence. Evidence is the longest part and the least
+actionable, so it is folded in `<details>` with one visible summary line (author mode only: a terminal report is not
+folded). Leave a blank line after `<summary>` and before `</details>`, or GitHub shows the Markdown raw.
 
 Before applying:
 1. **Deletion test.** Remove "Read in this order" and "Evidence": the gist must still stand. Remove the gist: if what
@@ -228,13 +257,14 @@ Before applying:
    backticks: it is not tracked at HEAD. Routes such as `/privacy` are not checked either.
 3. **Link the citations.** After the check passes, run
    `scripts/link-refs.py <body-file> --repo <owner/repo> --pr <n> --base-sha <baseRefOid> --head-sha <headRefOid> --write`
-   (`--root <dir>` for a fetched clone; it reads git objects, no checkout needed). Each backticked `path` or
+   (`--root <dir>` for a fetched clone; it reads git objects, no checkout needed; `--wrap-bare` first puts bare repo
+   paths and identifiers with underscores in backticks). Each backticked `path` or
    `path:line` becomes a link: to the PR's Files changed view (`.../pull/<n>/changes#diff-<sha256 of path>R<line>`)
    when the file is changed and every cited line sits inside a diff hunk, so the reviewer can comment on that line;
    otherwise to a permalink at the head commit (`.../blob/<sha>/<path>#L<line>`). Fenced code and existing links are
    left alone. Run `check-refs.py` once more on the linked text; it must still exit 0.
 4. **Size and edges on the final text.** Run `check-model.py pr-<n>.json --files <names.txt> --root <dir> --section <body-file>`
-   on the linked text, after the model-alone run of Step 2. Links add about 60% to the length, so the size limit
+   on the linked text, after the model-alone run of Step 2. Links add 30-60% to the length, so the size limit
    is judged here.
 
 Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.
@@ -253,6 +283,12 @@ Then:
   markers is unchanged.
 - Report the PR URL, which sections were included, and what is in "Not verified". If the diagram was skipped,
   say why.
+
+## Reviewer mode (a PR someone else wrote)
+
+Read `references/reviewer-mode.md` as soon as Step 1 picks reviewer mode. The model gets `"mode": "reviewer"` and three more lists (`claims`,
+`unmentioned`, `questions`). Nothing is written to the PR: the report goes to the terminal and a private
+Artifact, and the questions for the author are displayed only. Never run the PR's code unless it is trusted.
 
 ## Design sources
 

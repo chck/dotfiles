@@ -19,6 +19,8 @@ file is not tracked at HEAD.
 For every cited `path:line` the script prints the text of that line. It only checks that the
 line exists, so read each printed line and confirm it says what the body claims.
 
+Fenced code blocks are skipped (pasted output is not a citation), as link-refs.py does.
+
 Spans that look like a bare file name but have an unrecognised extension are listed on stderr as
 not checked, so a missing extension in _refs.py is visible instead of silent.
 
@@ -32,7 +34,12 @@ import pathlib
 import subprocess
 import sys
 
-from _refs import PATH, SPAN, parse_span
+from _refs import PATH, SPAN, fenced_lines, parse_span
+
+
+def unfenced(text: str) -> str:
+    """The text outside fenced code blocks: pasted output is not a citation (link-refs.py skips it too)."""
+    return "\n".join(line for line, fenced in fenced_lines(text) if not fenced)
 
 
 def git(root: pathlib.Path, *args: str) -> str:
@@ -69,7 +76,10 @@ def main() -> int:
     skipped: list[str] = []
     checked = 0
 
-    for span in dict.fromkeys(SPAN.findall(args.body.read_text())):
+    for span in dict.fromkeys(SPAN.findall(unfenced(args.body.read_text()))):
+        if span.endswith(":") and parse_span(span[:-1]):
+            problems.append(f"`{span}`: ends with a colon and no line number. Add the line (path:line) or drop the colon.")
+            continue
         match = parse_span(span)
         if not match:
             if PATH.fullmatch(span) and "/" not in span:
