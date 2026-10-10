@@ -100,7 +100,7 @@ def main() -> int:
     for line in problems:
         print(line)
     if skipped:
-        print(f"not checked as files (no slash, unrecognised extension): {', '.join(skipped[:12])}", file=sys.stderr)
+        print(f"note (not a failure): not checked as files, no slash and an unrecognised extension: {', '.join(skipped[:5])}", file=sys.stderr)
     if problems:
         return 1
     print(f"ok: {checked} cited path(s) verified at {head[:10]}")

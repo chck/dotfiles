@@ -36,11 +36,11 @@ so they cannot disagree.
 {
   "gist": "one sentence: what happens once this is merged",
   "new_concepts": ["term: what it is, where it lives"],
-  "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core logic | contract change | tests | mechanical",
+  "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core | contract | migration | config | tests | docs | mechanical",
                      "focus": [{"where": "path:line", "what": "why this place deserves a close read", "how_to_check": "..."}]}],
   "evidence": [{"claim": "...", "cmd": "...", "output": "pasted verbatim"}],
   "unverified": [{"claim": "...", "why_not": "..."}],
-  "coverage": {"files_total": 0, "files_opened": 0},
+  "coverage": {"files_total": 0, "files_opened": 0, "files_partial": 0},
   "diagram": {
     "type": "mermaid | sequence | data-flow | architecture | none",
     "focus": ["1-2 nodes that changed"],
@@ -51,9 +51,10 @@ so they cannot disagree.
 
 Write the **whole** model before any prose: no placeholders, no stub entries. Then run
 `scripts/check-model.py pr-<n>.json --files <names.txt> --root <checkout>`, where `names.txt` is the output of
-`gh pr diff <n> --name-only`; it must exit 0. It rejects empty entries, "...", TODO, a missing `coverage`, an edge
-whose cited `path:line` does not exist, and any changed file that no `reading_order` entry covers. A PR of 100 files is
-where this gets skipped.
+`gh pr diff <n> --name-only`; it must exit 0. It rejects empty entries, "...", TODO, a missing `coverage`, a `why`
+outside the list, a `what` over 300 characters, an edge whose cited `path:line` does not exist, any changed file that no
+`reading_order` entry covers, and a directory entry whose `count` is not the number of files it really covers. A PR of
+100 files is where this gets skipped.
 
 Rules:
 - **Facts and judgment stay apart.** `reading_order` (its `what`), `evidence` and `diagram.edges` are facts taken from the diff or from a
@@ -63,18 +64,25 @@ Rules:
   now do ("calling X now writes Y"). "Adds X" or "changes Y" alone is a label, not a gist. The deletion test in
   Step 7 judges it; `check-model.py` only checks that it is not empty.
 - `reading_order` is one list that is both the order to read in and the per-file summary. It starts with the file
-  where a wrong line costs the most, and `why` says in a few words why it sits there. Mechanical files (renames,
-  lockfiles, generated code) go last.
+  where a wrong line costs the most, and `why` is its category: core, contract, migration, config, tests, docs or mechanical. That is the
+  default order, the costliest files first within a category. `what` is at most 300 characters. Mechanical files
+  (renames, lockfiles, generated code) go last.
 - Five or more files of one kind (mechanical files, or the test files of one directory) become **one** `reading_order`
   entry that cites the directory (ending in `/`), gives the count, and says what they cover; never one entry per
   file. Whatever the grouping, every changed file is covered by some entry (`check-model.py --files` checks it).
+- A directory entry carries a `count`: the changed files under it that no other entry lists. `check-model.py --files`
+  compares it with the real number, so a group cannot silently swallow files. A deleted file is covered by an entry
+  with its old path; write it in plain text in the body, not in backticks.
 - Numbers in the body (cases, tests, lines, files) come from a command you ran, or are left out. Do not estimate.
 - Tests are a change like any other: say what behaviour they cover and roughly how much, in `reading_order`. A PR
   whose tests are only named reads as untested.
 - `coverage` is honest: a file is *opened* when you read its diff or its content. Seeing its name in the diff stat
-  or its title does not count. A file you read only in part is counted, and named under "Not verified".
-- Keep the section short enough to read: above about 15000 characters, group `reading_order` by area. The PR body is
-  capped at 65536 characters, the existing body included; `check-model.py --section` fails above 40000.
+  or its title does not count. A file you read only in part is counted in `files_partial` and named under "Not verified".
+  A starred file counts as opened: do not star a file you did not read. If fewer than half the files were opened,
+  the gist or the first line of "Not verified" says so.
+- Keep the section short enough to read: above about 25000 characters of the final, linked section, group `reading_order` by
+  area. The PR body is capped at 65536 characters, the existing body included; `check-model.py --section` fails above
+  45000. Links add about a third, so measure after linking.
 - `new_concepts` comes before the reading order in the body, so the terms the order uses are already known. It lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
 - A `reading_order` entry gets a `focus` list, and a ★ in the body, when a wrong line there costs the most. Each
   focus names a place (`path:line`, which may be in another file the change affects) and a way to check it; one with
@@ -97,14 +105,15 @@ PR-head checkout, and paste the output **verbatim**. Never retype or summarise o
   Operational steps the body lists (a flag to flip, a migration to run) are carried over there too, attributed to
   the PR body.
 - Dependencies missing in the checkout: do not install. Name the repo's own check command first in
-  `unverified`, one entry per toolchain (for example `makers` and `npm`), and say it was not run.
+  `unverified`, one entry per toolchain (for example `cargo test` and `npm run check`), and say it was not run.
 - A copied claim you could check by reading the code (not by running it) is written as exactly that: "read the
   code, did not run the test".
 - If a check used a scratch file the reviewer cannot see, put the script in `cmd` or write "scratch file, not in
-  the repo".
-- Name the exact command you ran. If it differs from the repo's wrapper (for example `makers`), say so.
+  the repo". Write its name in plain text or inside the fenced `cmd`, never in backticks in the body: the citation
+  check reads backticked names as repo paths.
+- Name the exact command you ran. If it differs from the repo's wrapper (a Makefile or task-runner target), say so.
   Keep the exit status: run the command without a pipe and print `exit=$?` on the next line (a pipe loses it, and
-  `PIPESTATUS` differs between bash and zsh). Avoid `sed -i` in scripts you give the reader: BSD and GNU differ.
+  `PIPESTATUS` differs between bash and zsh). A `cmd; echo exit=$?` sequence is fine. Avoid `sed -i` in scripts you give the reader: BSD and GNU differ.
 - When reporting a green result, say what was checked and over what range ("shellcheck on the one new script"),
   not just "passes".
 
@@ -167,9 +176,9 @@ Build this section, then put it in the PR body between the markers so a re-run r
 
 ### Read in this order
 ★ = read closely
-1. ★ `path` — what changed ({why it is here})
+1. ★ `path` — what changed ({category})
    - Why look closely: `path:line` — reason. Check by: how
-2. `path` — what changed ({why it is here})
+2. `path` — what changed ({category})
 3. ...
 (files of one kind: one directory entry with the count; mechanical files last, one line)
 
@@ -180,7 +189,7 @@ Build this section, then put it in the PR body between the markers so a re-run r
 ```
 
 ### Not verified
-- Opened {files_opened} of {files_total} files; the rest are described from the diff stat
+- Opened {files_opened} of {files_total} files ({files_partial} only in part); the rest are described from the diff stat
 - {claim} — {why not}
 
 <!-- pr-explainer:end -->
@@ -220,6 +229,9 @@ Before applying:
    when the file is changed and every cited line sits inside a diff hunk, so the reviewer can comment on that line;
    otherwise to a permalink at the head commit (`.../blob/<sha>/<path>#L<line>`). Fenced code and existing links are
    left alone. Run `check-refs.py` once more on the linked text; it must still exit 0.
+4. **Size and edges on the final text.** Run `check-model.py pr-<n>.json --files <names.txt> --root <dir> --section <body-file>`
+   on the linked text, after the model-alone run of Step 2. Links add about a third to the length, so the size limit
+   is judged here.
 
 Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.
 
