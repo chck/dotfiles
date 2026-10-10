@@ -35,8 +35,8 @@ so they cannot disagree.
 ```json
 {
   "gist": "one sentence: what happens once this is merged",
-  "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core logic | contract change | tests | mechanical"}],
   "new_concepts": ["term: what it is, where it lives"],
+  "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core logic | contract change | tests | mechanical"}],
   "evidence": [{"claim": "...", "cmd": "...", "output": "pasted verbatim"}],
   "unverified": [{"claim": "...", "why_not": "..."}],
   "review_focus": [{"where": "path:line", "what": "why this place deserves a close read", "how_to_check": "..."}],
@@ -75,7 +75,7 @@ Rules:
   or its title does not count. A file you read only in part is counted, and named under "Not verified".
 - Keep the section short enough to read: above about 15000 characters, group `reading_order` by area. The PR body is
   capped at 65536 characters, the existing body included; `check-model.py --section` fails above 40000.
-- `new_concepts` lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
+- `new_concepts` comes before the reading order in the body, so the terms the order uses are already known. It lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
 - `review_focus` must name a place and a way to check it. An entry with neither is noise; drop it. Write each as a
   reason to read closely, not as a verdict that something is broken.
 - Every `diagram.edges` entry cites a place in the diff. An edge without one is not drawn.
@@ -160,13 +160,13 @@ Build this section, then put it in the PR body between the markers so a re-run r
 
 {Mermaid fence, or ![diagram](pinned image URL); omit when there is no diagram}
 
+### New concepts
+- term — what and where
+
 ### Read in this order
 1. `path` — what changed ({why it is here})
 2. ...
 (files of one kind: one directory entry with the count; mechanical files last, one line)
-
-### New concepts
-- term — what and where
 
 ### Evidence (ran just now)
 - {what was checked, over what range}
@@ -188,8 +188,8 @@ Headings by language (the marker lines are always the English comments, so a re-
 | `en` | `ja` |
 |------|------|
 | Reviewer's map | Reviewer's map (kept in English: the title is a fixed name, not a translation) |
-| Read in this order | 読む順序 |
 | New concepts | 新しい概念 |
+| Read in this order | 読む順序 |
 | Evidence (ran just now) | 実行結果（直前に実行） |
 | Not verified | 未検証 |
 | Review focus | 重点的に見てほしい箇所 |
