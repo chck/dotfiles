@@ -13,7 +13,7 @@ evidence, the ★ reading order and the citation links all apply unchanged; thes
   running anything.
 - **The author's account is the text outside the markers, plus the title and the commit messages.** Fetch
   `gh pr view <n> --json title,body,commits` and join each commit's `messageHeadline` and `messageBody` (a long headline
-  continues in the body). If the body holds a pr-explainer block (between the `<!-- pr-explainer:start -->` and `end`
+  continues in the body). If the body holds a block this skill wrote (between the `<!-- pr-explainer:start -->` and `end`
   lines), a tool wrote it: take no claim from it. When nothing is left outside the markers, the title and the commits
   are the whole account; say so in the Mode line.
 - **Write everything in the reviewer's language**: every question, every gap, even when the PR, its commits and the

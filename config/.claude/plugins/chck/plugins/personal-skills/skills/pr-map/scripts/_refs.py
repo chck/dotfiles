@@ -1,4 +1,4 @@
-"""Shared parsing of backticked file citations (`path`, `path:line`, `path:a-b`) for the pr-explainer scripts."""
+"""Shared parsing of backticked file citations (`path`, `path:line`, `path:a-b`) for the pr-map scripts."""
 
 from __future__ import annotations
 

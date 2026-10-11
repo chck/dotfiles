@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check that the pr-explainer model is complete before any prose is written.
+"""Check that the pr-map model is complete before any prose is written.
 
 Usage: check-model.py <pr-N.json> [--section section.md] [--files names.txt] [--root DIR] [--lang ja]
 
