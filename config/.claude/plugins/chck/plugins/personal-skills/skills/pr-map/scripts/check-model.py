@@ -152,6 +152,22 @@ def check_model(model: dict) -> list[str]:
             for field in fields:
                 if not isinstance(entry, dict) or blank(entry.get(field)):
                     problems.append(f"{key}[{i}].{field}: empty or placeholder. Fill it in or drop the entry.")
+    for i, entry in enumerate(model.get("evidence") if isinstance(model.get("evidence"), list) else []):
+        if not isinstance(entry, dict):
+            continue
+        if "rerun" in entry and not isinstance(entry["rerun"], bool):
+            problems.append(f"evidence[{i}].rerun: must be true or false.")
+        if entry.get("rerun") is False and blank(entry.get("why_not_rerun")):
+            problems.append(f"evidence[{i}].why_not_rerun: a command marked rerun: false needs the reason it cannot be re-run.")
+        masks = entry.get("mask", [])
+        if not isinstance(masks, list) or not all(isinstance(m, str) for m in masks):
+            problems.append(f"evidence[{i}].mask: must be a list of regular-expression strings.")
+        else:
+            for m in masks:
+                try:
+                    re.compile(m)
+                except re.error as exc:
+                    problems.append(f"evidence[{i}].mask: {m!r} is not a valid regular expression ({exc}).")
     if not model.get("reading_order"):
         problems.append("reading_order: empty. A PR with files has an order to read them in.")
     entries = model.get("reading_order") if isinstance(model.get("reading_order"), list) else []
