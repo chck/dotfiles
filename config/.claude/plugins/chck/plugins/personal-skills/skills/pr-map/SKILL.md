@@ -44,7 +44,7 @@ so they cannot disagree.
   "new_concepts": ["term: what it is, where it lives"],
   "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core | contract | migration | config | tests | docs | mechanical",
                      "focus": [{"where": "path:line", "what": "why this place deserves a close read", "how_to_check": "..."}]}],
-  "evidence": [{"claim": "...", "cmd": "...", "output": "pasted verbatim"}],
+  "evidence": [{"claim": "...", "cmd": "runs verbatim from the checkout root", "output": "pasted verbatim", "rerun": true}],
   "unverified": [{"claim": "...", "why_not": "..."}],
   "coverage": {"files_total": 0, "files_opened": 0, "files_partial": 0},
   "diagram": {
@@ -108,6 +108,11 @@ Anything the body would say passes, works, or renders needs an `evidence` entry:
 PR-head checkout, and paste the output **verbatim**. Never retype or summarise output. A long output may be cut by a pattern (the summary
   lines of a test run, say): show the command with its filter, and keep every pasted line exactly as printed.
 
+- Write each `cmd` so it runs verbatim from the checkout root (`cd` inside it if needed). `scripts/verify-evidence.py`
+  re-runs it before you apply the body and compares its output with what you pasted. A command that cannot be re-run
+  (a scratch file the reader cannot see, another system such as a database or a cloud service, an output that
+  changes on every run) is marked `"rerun": false` with a `"why_not_rerun"`; a part that changes on every run (a
+  duration, a date) is hidden with `"mask"`, a list of regular expressions.
 - Cheap checks to run when they apply: the test command, the linter named in AGENTS.md, `bash -n` and `shellcheck`
   for shell, a dry run of a new script.
 - A claim you did not or could not run goes to `unverified` with the reason. "Not run" is a fine answer; an
@@ -205,7 +210,7 @@ begin the block with a `---` line so the generated part is set apart; when the b
 - {claim} — {why not}
 
 ### Evidence (ran just now)
-{one line: how many commands ran, and which check was not run}
+{one line: how many commands ran, how many were re-run and matched before applying, and which check was not run}
 
 <details>
 <summary>Show the commands and output</summary>
@@ -267,6 +272,10 @@ Before applying:
 4. **Size and edges on the final text.** Run `check-model.py pr-<n>.json --files <names.txt> --root <dir> --section <body-file>`
    on the linked text, after the model-alone run of Step 2. Links add 30-60% to the length, so the size limit
    is judged here.
+5. **Evidence re-run.** `scripts/verify-evidence.py pr-<n>.json --root <dir>` must exit 0: it runs every `cmd` again and
+   fails when a pasted output is not what the command prints now (it does not prove the command checks the right
+   thing). Say in the evidence line how many were re-run and matched, and give the reason of each one marked
+   `rerun: false` in its entry or under "Not verified".
 
 Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.
 
