@@ -224,7 +224,7 @@ Headings by language (the marker lines are always the English comments, so a re-
 
 | `en` | `ja` |
 |------|------|
-| New concepts | 新しい概念 |
+| New concepts | 新要素 |
 | Read in this order | 読む順序 |
 | Not verified | 未検証 |
 | Gaps in the description (reviewer report) | 説明のずれ |
