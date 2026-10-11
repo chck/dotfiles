@@ -75,9 +75,13 @@ def emit(message: str) -> None:
 #   - Review is a property of the repository far more than of the PR: the share of merged PRs with a human review was
 #     0% in every repository the author merges alone and 32-99% in the repositories with colleagues (lab-wide: 24%, and
 #     size barely moved it there). So the repository's own history is the first signal, size the second.
+#   - Many files with few lines is rare (12 of 761 PRs had 8+ files but under 100 lines: renames, mass edits) and light: no
+#     changes requested and a median lead time of 0.17 h, like a small PR (PRs with 8+ files and 100+ lines: 10.4% and 1.08 h).
+#     So a file count only counts when it comes with at least FILES_NEED_LINES changed lines.
 # A GitHub review undercounts the reader of an agent-made PR in a repository merged alone: the author reads it before
 # merging, which is the case the map was made for, so a large PR still earns a recommendation there.
 LARGE_FILES, LARGE_LINES = 8, 300        # top quartile of the author's PRs: the bar when the author is the only reader
+FILES_NEED_LINES = 100                   # a file count only counts with at least this many changed lines (a rename touches many files)
 MEDIUM_FILES, MEDIUM_LINES = 6, 200      # where review effort starts to climb: the bar when colleagues review the repository
 TINY_FILES, TINY_LINES = 2, 50           # at or below both, a map costs more than the diff
 REVIEW_CULTURE = 0.25                    # a repository whose recent merged PRs got a human review at least this often
@@ -121,12 +125,12 @@ def size_advice(owner: str, repo: str, number: str, cwd: str) -> str:
     history = review_history(owner, repo, cwd)
     if history and history[0] >= 10 and history[1] / history[0] >= REVIEW_CULTURE:
         n, reviewed = history
-        if files >= MEDIUM_FILES or lines >= MEDIUM_LINES:
+        if lines >= MEDIUM_LINES or (files >= MEDIUM_FILES and lines >= FILES_NEED_LINES):
             return (f"{size}, and {reviewed} of the last {n} merged PRs in this repository had a human review, so a colleague probably "
                     "reads it: recommend running it.")
         return f"{size}, below the bar even though {reviewed} of the last {n} merged PRs here had a human review: recommend skipping it."
     seen = f" ({history[1]} of the last {history[0]} merged PRs here had a human review)" if history else ""
-    if files >= LARGE_FILES or lines >= LARGE_LINES:
+    if lines >= LARGE_LINES or (files >= LARGE_FILES and lines >= FILES_NEED_LINES):
         return (f"{size}, which is large{seen}: the author is probably its only reader, but a large agent-made PR is hard to "
                 "review alone: recommend running it.")
     return f"{size}{seen}, and nobody else is likely to review it: recommend skipping it."
