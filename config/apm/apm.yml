@@ -79,6 +79,13 @@ dependencies:
     # cookbooks/agent-browser (Apache-2.0). The skill is a discovery stub; the
     # CLI serves the version-matched guide via `agent-browser skills get core`.
     - vercel-labs/agent-browser/skills/agent-browser
+    # mizchi/explainer — persona-calibrated explainers whose claims and figures are
+    # checked by tools (MIT). `explainer` runs the checks; `first-reader` is the
+    # draft-reading step it hands over to (the README installs them together).
+    # The scripts need Node 24+ and the npm packages of the explainer workspace,
+    # which are installed there and not in the repository being explained.
+    - mizchi/explainer/skills/explainer
+    - mizchi/explainer/skills/first-reader
   # Context7 is registered in the apm MCP registry and can be deployed to each
   # target. MCP entries are registry-resolved by apm, even when a URL is also
   # supplied, so keep unregistered servers out of this manifest.
