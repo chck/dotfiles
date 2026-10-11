@@ -72,5 +72,26 @@
   "skipWorkflowUsageWarning": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true,
-  "model": "sonnet"
+  "model": "sonnet",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(gh pr create*)",
+            "command": "python3 \"$HOME/.config/claude/skills/pr-explainer/scripts/nudge.py\" create 2>/dev/null || true",
+            "timeout": 20
+          },
+          {
+            "type": "command",
+            "if": "Bash(git push*)",
+            "command": "python3 \"$HOME/.config/claude/skills/pr-explainer/scripts/nudge.py\" push 2>/dev/null || true",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
 }
