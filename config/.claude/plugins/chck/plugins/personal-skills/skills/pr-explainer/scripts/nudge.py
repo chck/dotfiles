@@ -11,6 +11,8 @@ Usage (from settings.json, stdin is the hook's JSON): nudge.py create | push
           the current head. Says which cited files changed since. Silent for a PR with no map, and when the map is current.
 
 A hook can add context for Claude but cannot run Claude, so this only reminds; the skill does the work.
+It acts only when the command really runs `gh pr create` or `git push` (a heredoc body, an echo or a grep that merely
+mentions the text does not count).
 It never blocks and never fails the tool call: any problem means silence and exit 0.
 PR_EXPLAINER_AUTO=0 turns it off; =always makes `create` say to run the skill without asking.
 """
@@ -27,6 +29,18 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 from _stale import check  # noqa: E402
+
+HEREDOC = re.compile(r"<<-?\s*['\"]?(\w+)['\"]?[^\n]*\n.*?\n\s*\1\b", re.S)
+CREATE = r"gh\s+pr\s+create"
+PUSH = r"git\s+(?:-[Cc]\s+\S+\s+)*push"
+
+
+def runs(command: str, what: str) -> bool:
+    """True when `what` is run at a command position (the start, or after ; & | ( or a newline, or after VAR=value),
+    not merely mentioned in text: heredoc bodies, echo and grep arguments, comments."""
+    body = HEREDOC.sub("", command)
+    return re.search(r"(?:^|[;&|(\n])\s*(?:\w+=\S*\s+)*" + what + r"(?:\s|$|\))", body) is not None
+
 
 PR_URL = re.compile(r"https://github\.com/([^/\s]+)/([^/\s]+)/pull/(\d+)")
 
@@ -130,9 +144,9 @@ def main() -> int:
         data = json.load(sys.stdin)
         command = str((data.get("tool_input") or {}).get("command", ""))
         cwd = str(data.get("cwd") or ".")
-        if sys.argv[1] == "create" and "gh pr create" in command:
+        if sys.argv[1] == "create" and runs(command, CREATE):
             on_create(command, flatten(data.get("tool_response")) + "\n" + flatten(data.get("tool_output")), cwd, mode)
-        elif sys.argv[1] == "push" and "git push" in command:
+        elif sys.argv[1] == "push" and runs(command, PUSH):
             on_push(cwd)
     except Exception:  # a reminder must never break the tool call it follows
         return 0
