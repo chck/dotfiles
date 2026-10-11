@@ -4,8 +4,8 @@
 Usage (from settings.json, stdin is the hook's JSON): nudge.py create | push
 
   create  after `gh pr create`: tells Claude to ASK the user whether to run pr-explainer for the new PR, with a
-          recommendation from the PR's size and whether a reviewer is requested (a small PR nobody else reviews is
-          probably self-merged, and the map is not worth its tokens). A PUBLIC repository adds "privacy check and confirm
+          recommendation from the PR's size, whether a reviewer is requested and how often this repository's recent PRs got a
+          human review (a small PR nobody else reviews is probably self-merged, and the map is not worth its tokens). A PUBLIC repository adds "privacy check and confirm
           first"; a draft may wait. PR_EXPLAINER_AUTO=always drops the question and says to run it.
   push    after `git push`: only when this branch's PR body already holds a map whose recorded commit differs from
           the current head. Says which cited files changed since. Silent for a PR with no map, and when the map is current.
@@ -67,12 +67,46 @@ def emit(message: str) -> None:
     print(json.dumps({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": message}}, ensure_ascii=False))
 
 
-LARGE_FILES = 8
-LARGE_LINES = 300
+# Thresholds come from data, not a guess. October 2026, 761 merged PRs in the repositories the author was most active in
+# (15 repositories, last 100 merged PRs each) and, for context, 10,209 merged PRs lab-wide (a BigQuery PR-facts view):
+#   - PR size (files / changed lines): median 3 / 97, 75th percentile 8 / 319, 90th percentile 16 / 1,570.
+#   - From about 6-8 files or 200-400 lines the share of PRs that got a human review rose from about 27% to 47-51%, the
+#     share with changes requested from 3% to 10-19%, and the median lead time from 0.1 h to 0.5-3 h.
+#   - Review is a property of the repository far more than of the PR: the share of merged PRs with a human review was
+#     0% in every repository the author merges alone and 32-99% in the repositories with colleagues (lab-wide: 24%, and
+#     size barely moved it there). So the repository's own history is the first signal, size the second.
+# A GitHub review undercounts the reader of an agent-made PR in a repository merged alone: the author reads it before
+# merging, which is the case the map was made for, so a large PR still earns a recommendation there.
+LARGE_FILES, LARGE_LINES = 8, 300        # top quartile of the author's PRs: the bar when the author is the only reader
+MEDIUM_FILES, MEDIUM_LINES = 6, 200      # where review effort starts to climb: the bar when colleagues review the repository
+TINY_FILES, TINY_LINES = 2, 50           # at or below both, a map costs more than the diff
+REVIEW_CULTURE = 0.25                    # a repository whose recent merged PRs got a human review at least this often
+HISTORY = 30                             # recent merged PRs read to judge it
+
+
+def review_history(owner: str, repo: str, cwd: str) -> tuple[int, int] | None:
+    """(merged PRs read, how many had a human review by someone other than the author), or None when it cannot be read."""
+    raw = gh("pr", "list", "-R", f"{owner}/{repo}", "--state", "merged", "--limit", str(HISTORY), "--json", "author,reviews", cwd=cwd)
+    try:
+        prs = json.loads(raw or "")
+    except ValueError:
+        return None
+    if not isinstance(prs, list) or not prs:
+        return None
+
+    def human(login: str | None, author: str | None) -> bool:
+        return bool(login) and login != author and not login.endswith("[bot]") and login not in ("github-actions", "dependabot", "Copilot", "copilot-pull-request-reviewer")
+
+    reviewed = 0
+    for pr in prs:
+        author = (pr.get("author") or {}).get("login")
+        if any(human((rv.get("author") or {}).get("login"), author) for rv in pr.get("reviews") or []):
+            reviewed += 1
+    return len(prs), reviewed
 
 
 def size_advice(owner: str, repo: str, number: str, cwd: str) -> str:
-    """One sentence: how big the PR is and whether a reviewer's map is likely worth its cost."""
+    """One sentence: the PR's size, the repository's review habit, and whether a reviewer's map is likely worth its cost."""
     raw = gh("pr", "view", number, "-R", f"{owner}/{repo}", "--json", "changedFiles,additions,deletions,reviewRequests", cwd=cwd)
     try:
         d = json.loads(raw or "")
@@ -82,9 +116,20 @@ def size_advice(owner: str, repo: str, number: str, cwd: str) -> str:
     size = f"It changes {files} file(s) and {lines} line(s)"
     if reviewers:
         return f"{size} and a reviewer is requested: recommend running it."
+    if files <= TINY_FILES and lines < TINY_LINES:
+        return f"{size}, which is tiny: recommend skipping it."
+    history = review_history(owner, repo, cwd)
+    if history and history[0] >= 10 and history[1] / history[0] >= REVIEW_CULTURE:
+        n, reviewed = history
+        if files >= MEDIUM_FILES or lines >= MEDIUM_LINES:
+            return (f"{size}, and {reviewed} of the last {n} merged PRs in this repository had a human review, so a colleague probably "
+                    "reads it: recommend running it.")
+        return f"{size}, below the bar even though {reviewed} of the last {n} merged PRs here had a human review: recommend skipping it."
+    seen = f" ({history[1]} of the last {history[0]} merged PRs here had a human review)" if history else ""
     if files >= LARGE_FILES or lines >= LARGE_LINES:
-        return f"{size}, which is large: recommend running it."
-    return f"{size} and no reviewer is requested, so it is probably merged by its author: recommend skipping it."
+        return (f"{size}, which is large{seen}: the author is probably its only reader, but a large agent-made PR is hard to "
+                "review alone: recommend running it.")
+    return f"{size}{seen}, and nobody else is likely to review it: recommend skipping it."
 
 
 def on_create(command: str, output: str, cwd: str, mode: str) -> None:

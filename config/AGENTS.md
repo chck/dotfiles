@@ -74,8 +74,8 @@ src/app_name
 
 - After creating a PR (`gh pr create`), ask the user whether to run the `pr-explainer` skill (author mode) for it; do
   not run it unasked. Most of these PRs are merged by their author and do not need a reviewer's map, and the run
-  costs tokens. A PostToolUse hook prompts the question with a recommendation from the PR's size and whether a
-  reviewer is requested. If the user runs it, the PR body is the skill's output and nothing hand-written (on a public
+  costs tokens. A PostToolUse hook prompts the question with a recommendation from the PR's size, whether a
+  reviewer is requested and how often the repository's recent PRs got a human review. If the user runs it, the PR body is the skill's output and nothing hand-written (on a public
   repository: privacy check and confirm first); if not, a short plain summary. After a `git push`, a second hook
   speaks only when a map already in the body has gone stale. `PR_EXPLAINER_AUTO=0` silences the hooks, `=always`
   makes the first one say to run the skill without asking.
