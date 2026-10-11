@@ -78,7 +78,8 @@ with a one-line heading, so the Artifact has a meaningful title.
 
 ## Checks and output
 
-1. `check-model.py <model> --files <names.txt> --root <checkout> --lang <ja|en>` before writing the report.
+1. `check-model.py <model> --files <names.txt> --root <checkout> --lang <ja|en>` before writing the report, and
+   `verify-evidence.py <model> --root <checkout>`, which re-runs the evidence and must exit 0 before you print it.
 2. Run `link-refs.py --wrap-bare --write` on the report: it puts bare repo paths and identifiers with underscores in
    backticks (outside them Markdown reads the underscores as emphasis) and then links the citations. Run
    `check-refs.py` before and after, and `check-model.py --section` on the linked report.
