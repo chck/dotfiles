@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Say whether a pr-explainer map or report has gone stale because the PR moved on.
+"""Say whether a map or a reviewer report has gone stale because the PR moved on.
 
 Usage: stale-check.py <file.md> [--root DIR] [--head SHA]
        stale-check.py --pr N [--repo OWNER/REPO] [--root DIR] [--head SHA]

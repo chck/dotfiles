@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""PostToolUse hook: remind Claude to run pr-explainer after a PR is created, and when a push made the map stale.
+"""PostToolUse hook: remind Claude to run pr-map after a PR is created, and when a push made the map stale.
 
 Usage (from settings.json, stdin is the hook's JSON): nudge.py create | push
 
-  create  after `gh pr create`: tells Claude to ASK the user whether to run pr-explainer for the new PR, with a
+  create  after `gh pr create`: tells Claude to ASK the user whether to run pr-map for the new PR, with a
           recommendation from the PR's size, whether a reviewer is requested and how often this repository's recent PRs got a
           human review (a small PR nobody else reviews is probably self-merged, and the map is not worth its tokens). A PUBLIC repository adds "privacy check and confirm
-          first"; a draft may wait. PR_EXPLAINER_AUTO=always drops the question and says to run it.
+          first"; a draft may wait. PR_MAP_AUTO=always drops the question and says to run it.
   push    after `git push`: only when this branch's PR body already holds a map whose recorded commit differs from
           the current head. Says which cited files changed since. Silent for a PR with no map, and when the map is current.
 
@@ -14,7 +14,7 @@ A hook can add context for Claude but cannot run Claude, so this only reminds; t
 It acts only when the command really runs `gh pr create` or `git push` (a heredoc body, an echo or a grep that merely
 mentions the text does not count).
 It never blocks and never fails the tool call: any problem means silence and exit 0.
-PR_EXPLAINER_AUTO=0 turns it off; =always makes `create` say to run the skill without asking.
+PR_MAP_AUTO=0 turns it off; =always makes `create` say to run the skill without asking.
 """
 
 from __future__ import annotations
@@ -151,9 +151,9 @@ def on_create(command: str, output: str, cwd: str, mode: str) -> None:
     else:
         privacy = "Could not read the repository's visibility: treat it as public (privacy check, confirm before writing)."
     if mode == "always":
-        parts = [f"PR #{number} was created ({url}). The user's setting is to always run the pr-explainer skill (author mode) for it and make its output the PR body.", privacy]
+        parts = [f"PR #{number} was created ({url}). The user's setting is to always run the pr-map skill (author mode) for it and make its output the PR body.", privacy]
     else:
-        parts = [f"PR #{number} was created ({url}). Do not run the pr-explainer skill on your own: ask the user whether to run it for this PR "
+        parts = [f"PR #{number} was created ({url}). Do not run the pr-map skill on your own: ask the user whether to run it for this PR "
                  "(AskUserQuestion, options: run it, skip), because a PR that only its author merges rarely needs a reviewer's map and the run costs tokens.",
                  size_advice(owner, repo, number, cwd), privacy,
                  "If the user skips, leave the body as a short plain summary of the change."]
@@ -176,14 +176,14 @@ def on_push(cwd: str) -> None:
     cited = result["cited_changed"]
     detail = (f" Files it cites that changed since: {', '.join(cited[:8])}{' ...' if len(cited) > 8 else ''}." if cited
               else " None of the files it cites changed.")
-    emit(f"PR #{data['number']}'s pr-explainer map was made at {result['recorded'][:10]}; the branch is now at {result['current'][:10]} "
-         f"({len(result['changed'])} file(s) changed).{detail} The map is stale: re-run pr-explainer when the PR is ready for review, "
+    emit(f"PR #{data['number']}'s map was made at {result['recorded'][:10]}; the branch is now at {result['current'][:10]} "
+         f"({len(result['changed'])} file(s) changed).{detail} The map is stale: re-run pr-map when the PR is ready for review, "
          "or now if the user asks. Re-running replaces only the block between its markers.")
 
 
 def main() -> int:
     try:
-        mode = os.environ.get("PR_EXPLAINER_AUTO", "ask")
+        mode = os.environ.get("PR_MAP_AUTO", os.environ.get("PR_EXPLAINER_AUTO", "ask"))  # the old name still works
         if mode == "0" or len(sys.argv) < 2:
             return 0
         data = json.load(sys.stdin)
