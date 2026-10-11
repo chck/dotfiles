@@ -41,9 +41,10 @@ so they cannot disagree.
 {
   "mode": "author",
   "gist": "one sentence: what happens once this is merged",
+  "before_merge": [{"check": "what to confirm before merging", "how": "command or step", "pass_when": "the result that lets the merge go ahead"}],
   "new_concepts": ["term: what it is, where it lives"],
   "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core | contract | migration | config | tests | docs | mechanical",
-                     "focus": [{"where": "path:line", "what": "why this place deserves a close read", "how_to_check": "..."}]}],
+                     "focus": [{"where": "path:line", "what": "why this place deserves a close read", "how_to_check": "optional: only when it is not a before_merge item"}]}],
   "evidence": [{"claim": "...", "cmd": "...", "output": "pasted verbatim"}],
   "unverified": [{"claim": "...", "why_not": "..."}],
   "coverage": {"files_total": 0, "files_opened": 0, "files_partial": 0},
@@ -66,6 +67,11 @@ Rules:
 - **Facts and judgment stay apart.** `reading_order` (its `what`), `evidence` and `diagram.edges` are facts taken from the diff or from a
   run. A `focus` entry is the author's judgment: it asks the reviewer to look, it does not claim a defect. The ★ and the "Why look closely" line set it apart from the facts around it. Never write a verdict word anywhere
   (SAFE, LOW RISK, MERGEABLE, "no impact"): this skill reads a diff, it does not know runtime impact.
+- `before_merge` is the shortest list that lets the reader decide, at most 5 items, each with the check, how to do
+  it, and the result that lets the merge go ahead (`pass_when`). Take them from the `focus` places and from the
+  `unverified` claims whose failure would hurt most; a `focus` whose check is here leaves out its own
+  `how_to_check`, so nothing is said twice. It is a to-do list for the reader, never a verdict: do not write "OK to merge" or "no
+  problem found". An empty list is for a PR with nothing to check by hand, and the gist says so.
 - `gist` is one sentence about the effect after merge, with a verb that says what now happens or what a user can
   now do ("calling X now writes Y"). "Adds X" or "changes Y" alone is a label, not a gist. The deletion test in
   Step 7 judges it; `check-model.py` only checks that it is not empty.
@@ -187,6 +193,10 @@ begin the block with a `---` line so the generated part is set apart; when the b
 
 **{gist}**
 
+### Before merging
+1. what to confirm — how. Passes when: the result
+2. ...
+
 ### New concepts
 - term — what and where
 
@@ -195,7 +205,7 @@ begin the block with a `---` line so the generated part is set apart; when the b
 ### Read in this order
 ★ = read closely
 1. ★ `path` — what changed ({category})
-   - Why look closely: `path:line` — reason. Check by: how
+   - Why look closely: `path:line` — reason. {Check by: how — only when the focus has `how_to_check`}
 2. `path` — what changed ({category})
 3. ...
 (files of one kind: one directory entry with the count; mechanical files last, one line)
@@ -224,6 +234,7 @@ Headings by language (the marker lines are always the English comments, so a re-
 
 | `en` | `ja` |
 |------|------|
+| Before merging | マージ前に確かめること |
 | New concepts | 新要素 |
 | Read in this order | 読む順序 |
 | Not verified | 未検証 |
@@ -234,18 +245,19 @@ Headings by language (the marker lines are always the English comments, so a re-
 | Show the commands and output | コマンドと出力を表示 |
 | ★ = read closely | ★ = 重点的に見てほしいファイル |
 | Why look closely / Check by | 見る理由 / 確認方法 |
+| Passes when | 合格の条件 |
 
 Translate the prose and the gist; keep paths, commands, identifiers, `path:line` citations and the pasted
 evidence output **verbatim**. Mermaid node labels may be translated, but then the edge comparison in Step 5
 runs on the translated labels.
 
-The order follows what the reader needs next: the gist, the terms the rest uses, the diagram that maps onto the files, the
+The order follows what the reader needs next: the gist, what to check before merging, the terms the rest uses, the diagram that maps onto the files, the
 files to read, what is left for the reader to check, and last the evidence. Evidence is the longest part and the least
 actionable, so it is folded in `<details>` with one visible summary line (author mode only: a terminal report is not
 folded). Leave a blank line after `<summary>` and before `</details>`, or GitHub shows the Markdown raw.
 
 Before applying:
-1. **Deletion test.** Remove "Read in this order" and "Evidence": the gist must still stand. Remove the gist: if what
+1. **Deletion test.** Remove "Read in this order" and "Evidence": the gist and "Before merging" must still stand. Remove the gist: if what
    remains only reads the evidence aloud, rewrite the gist. Cut any section whose removal changes nothing.
 2. **Citation check.** `scripts/check-refs.py <body-file> --expect-head <headRefOid> [--root <dir>]` must exit 0:
    every backticked path or `path:line` in the body exists in the PR-head checkout. Fix or drop what it reports.

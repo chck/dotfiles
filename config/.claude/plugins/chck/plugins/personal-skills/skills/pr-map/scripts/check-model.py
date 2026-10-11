@@ -44,6 +44,7 @@ MAX_SECTION = 45000
 WARN_SECTION = 25000
 WARN_REPORT = 20000
 MAX_WHAT = 300
+MAX_BEFORE_MERGE = 5
 JA = re.compile(r"[\u3040-\u30ff\u4e00-\u9fff]")
 MODES = ("author", "reviewer")
 STATUS = ("matches", "partial", "differs", "not_in_diff", "not_checked")
@@ -116,6 +117,9 @@ def language_problems(model: dict, lang: str) -> list[str]:
         for j, f in enumerate(e.get("focus") or []):
             if isinstance(f, dict):
                 texts += [(f"reading_order[{i}].focus[{j}].what", f.get("what")), (f"reading_order[{i}].focus[{j}].how_to_check", f.get("how_to_check"))]
+    for i, e in enumerate(model.get("before_merge") or []):
+        if isinstance(e, dict):
+            texts += [(f"before_merge[{i}].{f}", e.get(f)) for f in ("check", "how", "pass_when")]
     for key, field in (("questions", "ask"), ("unmentioned", "what"), ("unverified", "why_not")):
         for i, e in enumerate(model.get(key) or []):
             if isinstance(e, dict):
@@ -129,6 +133,20 @@ def language_problems(model: dict, lang: str) -> list[str]:
             problems.append(f"{label}: only {share:.0%} of its letters are Japanese ({t[:50]!r}...). Write it in Japanese; only a short quote of the author's words may stay in its language.")
         if lang == "en" and JA.search(CODE_SPAN.sub("", t)):
             problems.append(f"{label}: has Japanese text but the report language is English ({t[:50]!r}...).")
+    return problems
+
+
+def before_merge_problems(model: dict) -> list[str]:
+    items = model.get("before_merge")
+    if not isinstance(items, list):
+        return ["before_merge: missing. List the checks to make before merging, or an empty list when there are none."]
+    problems = []
+    if len(items) > MAX_BEFORE_MERGE:
+        problems.append(f"before_merge: {len(items)} items (limit {MAX_BEFORE_MERGE}). Keep the ones that decide the merge; the rest are \"Not verified\".")
+    for i, item in enumerate(items):
+        for field in ("check", "how", "pass_when"):
+            if not isinstance(item, dict) or blank(item.get(field)):
+                problems.append(f"before_merge[{i}].{field}: empty or placeholder. Say what to check, how, and what result lets the merge go ahead.")
     return problems
 
 
@@ -152,6 +170,8 @@ def check_model(model: dict) -> list[str]:
             for field in fields:
                 if not isinstance(entry, dict) or blank(entry.get(field)):
                     problems.append(f"{key}[{i}].{field}: empty or placeholder. Fill it in or drop the entry.")
+    if mode == "author":
+        problems.extend(before_merge_problems(model))
     if not model.get("reading_order"):
         problems.append("reading_order: empty. A PR with files has an order to read them in.")
     entries = model.get("reading_order") if isinstance(model.get("reading_order"), list) else []
@@ -161,9 +181,11 @@ def check_model(model: dict) -> list[str]:
             problems.append(f"reading_order[{i}].focus: must be a list.")
             continue
         for j, item in enumerate(focus):
-            for field in ("where", "what", "how_to_check"):
+            for field in ("where", "what"):
                 if not isinstance(item, dict) or blank(item.get(field)):
-                    problems.append(f"reading_order[{i}].focus[{j}].{field}: empty or placeholder. Name a place and a way to check it, or drop the focus.")
+                    problems.append(f"reading_order[{i}].focus[{j}].{field}: empty or placeholder. Name a place and the reason to read it closely, or drop the focus.")
+            if isinstance(item, dict) and "how_to_check" in item and blank(item["how_to_check"]):
+                problems.append(f"reading_order[{i}].focus[{j}].how_to_check: empty or placeholder. Fill it in, or leave the key out and put the check in before_merge.")
     for i, entry in enumerate(entries):
         if not isinstance(entry, dict):
             continue
