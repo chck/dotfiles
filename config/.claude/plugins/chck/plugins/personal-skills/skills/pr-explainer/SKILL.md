@@ -293,9 +293,11 @@ commit can change a file the map cites, answer a question or overturn a gap, and
 
 - `scripts/stale-check.py <file | --pr N>` compares the recorded commit with the current head and lists the cited
   files that changed since (exit 0 current, 1 stale, 2 unknown).
-- The user's PostToolUse hooks run `scripts/nudge.py`: after `gh pr create` it reminds you to run this skill for the
-  new PR (a PUBLIC repository: privacy check and ask first; a draft may wait), and after `git push` it says so when the
-  PR's map is stale. It only reminds; run the skill yourself. `PR_EXPLAINER_AUTO=0` silences it.
+- The user's PostToolUse hooks run `scripts/nudge.py`: after `gh pr create` it tells you to ASK the user whether to run
+  this skill for the new PR, with a recommendation from the PR's size and whether a reviewer is requested (a PR its
+  author merges alone rarely needs a map; a PUBLIC repository: privacy check and confirm first; a draft may wait), and
+  after `git push` it says so when a map already in the PR body is stale. It only prompts; the skill does the work.
+  `PR_EXPLAINER_AUTO=0` silences it, `=always` makes the first hook say to run the skill without asking.
 - A re-run replaces only the block between the markers. Do it when the PR is ready for review, or when asked; there is
   no partial refresh.
 

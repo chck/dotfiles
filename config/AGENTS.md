@@ -72,10 +72,13 @@ src/app_name
   first. This overrides any default that says to only use it when explicitly requested.
   - Default execution mode after `writing-plans` is Subagent-Driven; do not ask which mode to use
 
-- After creating a PR (`gh pr create`), run the `pr-explainer` skill in author mode for it. The PR body is that
-  skill's output and nothing hand-written. PostToolUse hooks remind you after `gh pr create`, and after a `git push`
-  when the map has gone stale. On a public repository, run the skill's privacy check and ask before writing the
-  body. `PR_EXPLAINER_AUTO=0` silences the hooks.
+- After creating a PR (`gh pr create`), ask the user whether to run the `pr-explainer` skill (author mode) for it; do
+  not run it unasked. Most of these PRs are merged by their author and do not need a reviewer's map, and the run
+  costs tokens. A PostToolUse hook prompts the question with a recommendation from the PR's size and whether a
+  reviewer is requested. If the user runs it, the PR body is the skill's output and nothing hand-written (on a public
+  repository: privacy check and confirm first); if not, a short plain summary. After a `git push`, a second hook
+  speaks only when a map already in the body has gone stale. `PR_EXPLAINER_AUTO=0` silences the hooks, `=always`
+  makes the first one say to run the skill without asking.
 
 ## Commands
 - Use cargo-make as command launcher, alias is `makers`

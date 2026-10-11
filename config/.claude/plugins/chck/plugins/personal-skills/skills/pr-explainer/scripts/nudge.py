@@ -3,14 +3,16 @@
 
 Usage (from settings.json, stdin is the hook's JSON): nudge.py create | push
 
-  create  after `gh pr create`: "PR #N exists: run pr-explainer (author mode) and write the result as its body".
-          A PUBLIC repository gets "run the privacy check and ask the user first"; a draft gets "may wait until ready".
+  create  after `gh pr create`: tells Claude to ASK the user whether to run pr-explainer for the new PR, with a
+          recommendation from the PR's size and whether a reviewer is requested (a small PR nobody else reviews is
+          probably self-merged, and the map is not worth its tokens). A PUBLIC repository adds "privacy check and confirm
+          first"; a draft may wait. PR_EXPLAINER_AUTO=always drops the question and says to run it.
   push    after `git push`: only when this branch's PR body already holds a map whose recorded commit differs from
           the current head. Says which cited files changed since. Silent for a PR with no map, and when the map is current.
 
 A hook can add context for Claude but cannot run Claude, so this only reminds; the skill does the work.
 It never blocks and never fails the tool call: any problem means silence and exit 0.
-PR_EXPLAINER_AUTO=0 turns it off.
+PR_EXPLAINER_AUTO=0 turns it off; =always makes `create` say to run the skill without asking.
 """
 
 from __future__ import annotations
@@ -51,7 +53,27 @@ def emit(message: str) -> None:
     print(json.dumps({"hookSpecificOutput": {"hookEventName": "PostToolUse", "additionalContext": message}}, ensure_ascii=False))
 
 
-def on_create(command: str, output: str, cwd: str) -> None:
+LARGE_FILES = 8
+LARGE_LINES = 300
+
+
+def size_advice(owner: str, repo: str, number: str, cwd: str) -> str:
+    """One sentence: how big the PR is and whether a reviewer's map is likely worth its cost."""
+    raw = gh("pr", "view", number, "-R", f"{owner}/{repo}", "--json", "changedFiles,additions,deletions,reviewRequests", cwd=cwd)
+    try:
+        d = json.loads(raw or "")
+        files, lines, reviewers = int(d["changedFiles"]), int(d["additions"]) + int(d["deletions"]), len(d.get("reviewRequests") or [])
+    except (ValueError, KeyError, TypeError):
+        return "Its size could not be read; recommend asking without a default."
+    size = f"It changes {files} file(s) and {lines} line(s)"
+    if reviewers:
+        return f"{size} and a reviewer is requested: recommend running it."
+    if files >= LARGE_FILES or lines >= LARGE_LINES:
+        return f"{size}, which is large: recommend running it."
+    return f"{size} and no reviewer is requested, so it is probably merged by its author: recommend skipping it."
+
+
+def on_create(command: str, output: str, cwd: str, mode: str) -> None:
     m = PR_URL.search(output)
     if m:
         owner, repo, number = m[1], m[2], m[3]
@@ -63,13 +85,19 @@ def on_create(command: str, output: str, cwd: str) -> None:
         owner, repo, number, url = m[1], m[2], m[3], m[0]
     visibility = (gh("repo", "view", f"{owner}/{repo}", "--json", "visibility", "-q", ".visibility", cwd=cwd) or "").strip()
     draft = bool(re.search(r"(^|\s)(--draft|-d)(\s|$)", command))
-    parts = [f"PR #{number} was created ({url}). The user's workflow: run the pr-explainer skill (author mode) for it and make its output the PR body; do not hand-write the body."]
     if visibility == "PUBLIC":
-        parts.append("The repository is PUBLIC: run the skill's privacy check and ask the user before writing the body or pushing an image.")
+        privacy = "The repository is PUBLIC: run the skill's privacy check and confirm with the user before writing the body or pushing an image."
     elif visibility == "PRIVATE":
-        parts.append("The repository is private: run it now.")
+        privacy = "The repository is private."
     else:
-        parts.append("Could not read the repository's visibility: treat it as public and ask the user before writing the body.")
+        privacy = "Could not read the repository's visibility: treat it as public (privacy check, confirm before writing)."
+    if mode == "always":
+        parts = [f"PR #{number} was created ({url}). The user's setting is to always run the pr-explainer skill (author mode) for it and make its output the PR body.", privacy]
+    else:
+        parts = [f"PR #{number} was created ({url}). Do not run the pr-explainer skill on your own: ask the user whether to run it for this PR "
+                 "(AskUserQuestion, options: run it, skip), because a PR that only its author merges rarely needs a reviewer's map and the run costs tokens.",
+                 size_advice(owner, repo, number, cwd), privacy,
+                 "If the user skips, leave the body as a short plain summary of the change."]
     if draft:
         parts.append("It is a draft: the map may wait until the PR is marked ready for review.")
     emit(" ".join(parts))
@@ -96,13 +124,14 @@ def on_push(cwd: str) -> None:
 
 def main() -> int:
     try:
-        if os.environ.get("PR_EXPLAINER_AUTO") == "0" or len(sys.argv) < 2:
+        mode = os.environ.get("PR_EXPLAINER_AUTO", "ask")
+        if mode == "0" or len(sys.argv) < 2:
             return 0
         data = json.load(sys.stdin)
         command = str((data.get("tool_input") or {}).get("command", ""))
         cwd = str(data.get("cwd") or ".")
         if sys.argv[1] == "create" and "gh pr create" in command:
-            on_create(command, flatten(data.get("tool_response")) + "\n" + flatten(data.get("tool_output")), cwd)
+            on_create(command, flatten(data.get("tool_response")) + "\n" + flatten(data.get("tool_output")), cwd, mode)
         elif sys.argv[1] == "push" and "git push" in command:
             on_push(cwd)
     except Exception:  # a reminder must never break the tool call it follows
