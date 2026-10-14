@@ -71,7 +71,10 @@ Rules:
   it, and the result that lets the merge go ahead (`pass_when`). Take them from the `focus` places and from the
   `unverified` claims whose failure would hurt most; a `focus` whose check is here leaves out its own
   `how_to_check`, so nothing is said twice. It is a to-do list for the reader, never a verdict: do not write "OK to merge" or "no
-  problem found". An empty list is for a PR with nothing to check by hand, and the gist says so.
+  problem found". An empty list is for a PR with nothing to check by hand, and the gist says so. Backtick any
+  command inside `check`, `how`, or `pass_when` (`` `npm test` ``, not `npm test`): `--lang ja` strips code spans
+  before counting the Japanese ratio, so an un-backticked command's ASCII letters count against it and can fail
+  the check on an otherwise-Japanese field.
 - `gist` is one sentence about the effect after merge, with a verb that says what now happens or what a user can
   now do ("calling X now writes Y"). "Adds X" or "changes Y" alone is a label, not a gist. The deletion test in
   Step 7 judges it; `check-model.py` only checks that it is not empty.
@@ -158,33 +161,43 @@ Pick the cheaper tier that is enough.
    is the right one but publishing is not allowed (public repository, no consent yet), stay on Mermaid with
    that line.
 
-**PNG** — when Mermaid cannot express it or the diagram is larger. Use the `diagram-design` skill with the model's
-`diagram` block: at most 9 nodes, colour only the `focus` nodes, show the change and not the whole system.
-1. Export with `scripts/rasterize.py <diagram.html> <diagram.png>`. The `diagram-design` exporter writes a
-   transparent PNG, unreadable on GitHub's dark theme; this script flattens it onto an opaque background. If it
-   reports Playwright missing, give the user the install command it prints and stop; do not install anything.
-2. Read the PNG back; check the labels are legible and match `diagram.edges` in both directions.
-
-## Step 6: Publish the image (PNG tier only)
-
-Host the PNG on the `pr-assets` branch so it never enters the PR diff or `main`:
-
-```bash
-scripts/publish-asset.sh <owner/repo> <pr-number> <diagram.png>   # prints the pinned image URL
-```
-
-It creates `pr-assets` as an orphan branch on first use, commits `pr-<n>/diagram.png` through the contents API
-(no checkout, no worktree), and prints a URL pinned to the commit SHA.
-
-**On a PUBLIC repo, show the PNG path and ask before running it.** On a private repo, run it.
+**PNG** — when Mermaid cannot express it or the diagram is larger: read `references/png-diagram.md` for the
+export, review and publishing steps (this is the old Step 6; it now lives there since most runs are Mermaid-only
+and never need it).
 
 ## Step 7: Write the body section
 
 (Author mode. In reviewer mode nothing is written to the PR: see `references/reviewer-mode.md`.)
 
-Build this section, then put it in the PR body between the markers so a re-run replaces it in place. It has no title
-(the body is the map, and it starts with the gist). If the PR body already holds the author's own text above the block,
-begin the block with a `---` line so the generated part is set apart; when the block is the whole body, leave it out.
+`scripts/render-section.py` builds this section from the model (the judgment is already in the JSON; do not
+retype it as prose) and runs every check below in one command instead of five separate ones. Put the result in the
+PR body between the markers so a re-run replaces it in place. It has no title (the body is the map, and it starts
+with the gist). If the PR body already holds the author's own text above the block, pass `--prefix-dash` so a `---`
+line sets the generated part apart; when the block is the whole body, omit it.
+
+1. **Deletion test, on the model, before rendering.** Remove `before_merge` and `reading_order` from the judgment:
+   the `gist` must still stand on its own. If `gist` only reads the evidence aloud, rewrite it first — rendering a
+   weak gist just makes it official.
+2. A diagram is not auto-drawn: when `diagram.type` is not `"none"`, write its body to a file — the Mermaid lines with
+   no fence delimiters, or one `![diagram](pinned image URL)` line for the PNG tier — and pass `--diagram-file`.
+3. Run:
+   ```
+   scripts/render-section.py pr-<n>.json --head-sha <headRefOid> --lang ja|en -o <body-file> \
+     --root <checkout> --files <names.txt> [--diagram-file <file>] [--prefix-dash] \
+     --repo <owner/repo> --pr <n> --base-sha <baseRefOid> [--wrap-bare]
+   ```
+   This validates the model (Step 2's check), writes `<body-file>`, checks its citations, links them (Files changed
+   view when a cited line sits in a diff hunk, else a permalink at the head commit; `--wrap-bare` first backticks bare
+   repo paths and underscored identifiers so Markdown does not read them as emphasis), re-checks the linked
+   citations, and re-validates the model against the final linked text (size, Mermaid edges both ways, no verdict
+   word). A `reading_order` path not tracked at the head commit is written in plain text, without backticks (a
+   deleted file), automatically. Omit `--repo`/`--pr`/`--base-sha` to get the unlinked text only (for example, to
+   look at it before the PR exists).
+4. Exit 0: `<body-file>` is ready to apply. Exit 1: a check failed; its output names the field or line. Fix the model
+   JSON or the diagram file and rerun — never apply past a failure. Exit 2: usage, or `--diagram-file` was required
+   and missing.
+
+The template it renders, for reference (the headings-by-language table below is what `--lang` selects):
 
 ````markdown
 <!-- pr-explainer:start -->
@@ -256,31 +269,20 @@ files to read, what is left for the reader to check, and last the evidence. Evid
 actionable, so it is folded in `<details>` with one visible summary line (author mode only: a terminal report is not
 folded). Leave a blank line after `<summary>` and before `</details>`, or GitHub shows the Markdown raw.
 
-Before applying:
-1. **Deletion test.** Remove "Read in this order" and "Evidence": the gist and "Before merging" must still stand. Remove the gist: if what
-   remains only reads the evidence aloud, rewrite the gist. Cut any section whose removal changes nothing.
-2. **Citation check.** `scripts/check-refs.py <body-file> --expect-head <headRefOid> [--root <dir>]` must exit 0:
-   every backticked path or `path:line` in the body exists in the PR-head checkout. Fix or drop what it reports.
-   It prints the text of every cited line but only checks that the line exists, so read each printed line and
-   confirm it says what the body claims.
-   Every backticked mention uses the full repo-relative path: a bare `release.yml` fails. Each one becomes a link of
-   about 170 characters, so name a file once per entry and refer to it afterwards without backticks. A bare name
-   with an unrecognised extension is not checked and is listed on stderr; add its extension to `_refs.py`.
-   Cite a directory ending in `/`, never a glob (globs are skipped). Write a deleted file in plain text, without
-   backticks: it is not tracked at HEAD. Routes such as `/privacy` are not checked either.
-3. **Link the citations.** After the check passes, run
-   `scripts/link-refs.py <body-file> --repo <owner/repo> --pr <n> --base-sha <baseRefOid> --head-sha <headRefOid> --write`
-   (`--root <dir>` for a fetched clone; it reads git objects, no checkout needed; `--wrap-bare` first puts bare repo
-   paths and identifiers with underscores in backticks). Each backticked `path` or
-   `path:line` becomes a link: to the PR's Files changed view (`.../pull/<n>/changes#diff-<sha256 of path>R<line>`)
-   when the file is changed and every cited line sits inside a diff hunk, so the reviewer can comment on that line;
-   otherwise to a permalink at the head commit (`.../blob/<sha>/<path>#L<line>`). Fenced code and existing links are
-   left alone. Run `check-refs.py` once more on the linked text; it must still exit 0.
-4. **Size and edges on the final text.** Run `check-model.py pr-<n>.json --files <names.txt> --root <dir> --section <body-file>`
-   on the linked text, after the model-alone run of Step 2. Links add 30-60% to the length, so the size limit
-   is judged here.
+What `render-section.py` checks for you, in order: the model (Step 2's rules), the unlinked citations, the model
+again against the unlinked text (size, Mermaid edges, no verdict word), the links, the linked citations, and the
+model again against the linked text. Facts worth knowing about that pipeline:
+- A citation names the full repo-relative path: a bare `release.yml` fails `check-refs.py`. Each one becomes a link
+  of about 170 characters, so name a file once per `reading_order` entry and refer to it afterwards without
+  backticks. A bare name with an unrecognised extension is not checked and is listed on stderr; add its extension
+  to `_refs.py`.
+- Cite a directory ending in `/`, never a glob (globs are skipped). Routes such as `/privacy` are not checked
+  either.
+- `check-refs.py` prints the text of every cited line but only checks that the line exists: after it passes, read
+  each printed line yourself and confirm it says what the body claims — the script cannot judge that.
 
-Apply only when the citation check exited 0. If it did not, fix the body and run it again; never apply past a failure.
+Apply only when `render-section.py` exits 0. If it does not, fix the model or the diagram file and run it again;
+never apply past a failure.
 
 Then:
 - Existing body has the markers: replace between them. Otherwise append the section after the existing body.
@@ -289,9 +291,9 @@ Then:
   marker text in prose (for example inside backticks); a substring match would cut there.
 - Read the body with `body=$(gh pr view <n> --json body -q .body)`; the command substitution drops the newline
   `gh` appends. Writing `gh`'s raw output back adds one blank line per round trip.
-- Write the section in the **reviewer's language**: `--lang ja|en` if given, else the language the user writes to
-  you in (the user is the reviewer or answers for them), else the language the PR body already uses. The Japanese
-  headings are in the table below.
+- Write the section in the **reviewer's language**: pass it as `render-section.py --lang ja|en` — `ja|en` if given,
+  else the language the user writes to you in (the user is the reviewer or answers for them), else the language the
+  PR body already uses. The Japanese headings are in the table above.
 - Apply with `gh pr edit <n> --body-file <file>`, then read the body back and confirm the text outside the
   markers is unchanged.
 - Report the PR URL, which sections were included, and what is in "Not verified". If the diagram was skipped,
@@ -299,23 +301,8 @@ Then:
 
 ## Staleness
 
-(The marker names in a PR body, `<!-- pr-explainer:start -->`, `end` and `head`, keep the skill's old name on purpose:
-they are invisible to readers, already sit in existing PR bodies, and a re-run finds its block by them. Do not
-rename them. The old environment variable `PR_EXPLAINER_AUTO` still works as `PR_MAP_AUTO`.)
-
-A map and a report are snapshots of one commit. The block records it in its first comment line,
-`<!-- pr-explainer:head <headRefOid> -->`; a reviewer report names it on the Mode line ("Target commit"). A later
-commit can change a file the map cites, answer a question or overturn a gap, and nothing else says so.
-
-- `scripts/stale-check.py <file | --pr N>` compares the recorded commit with the current head and lists the cited
-  files that changed since (exit 0 current, 1 stale, 2 unknown).
-- The user's PostToolUse hooks run `scripts/nudge.py`: after `gh pr create` it tells you to ASK the user whether to run
-  this skill for the new PR, with a recommendation from the PR's size, whether a reviewer is requested and how often the repository's recent PRs got a
-  human review (a PR its author merges alone rarely needs a map; a PUBLIC repository: privacy check and confirm first; a draft may wait), and
-  after `git push` it says so when a map already in the PR body is stale. It only prompts; the skill does the work.
-  `PR_MAP_AUTO=0` silences it, `=always` makes the first hook say to run the skill without asking.
-- A re-run replaces only the block between the markers. Do it when the PR is ready for review, or when asked; there is
-  no partial refresh.
+Read `references/staleness.md`: when a map goes stale, `scripts/stale-check.py`, the PostToolUse hooks that nudge
+re-running this skill, and what the `pr-explainer:*` marker names mean.
 
 ## Reviewer mode (a PR someone else wrote)
 
