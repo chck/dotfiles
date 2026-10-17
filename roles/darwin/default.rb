@@ -81,6 +81,7 @@ include_cookbook 'ollama'
 include_cookbook 'ax'
 include_cookbook 'aqua-voice'
 include_cookbook 'orca'
+include_cookbook 'agentsview'
 
 # --- languages / build tooling ---
 include_cookbook 'pipx'
