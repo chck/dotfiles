@@ -3,9 +3,9 @@
 
 Usage (from settings.json, stdin is the hook's JSON): nudge.py create | push
 
-  create  after `gh pr create`: tells Claude to ASK the user whether to run pr-map for the new PR, with a
-          recommendation from the PR's size, whether a reviewer is requested and how often this repository's recent PRs got a
-          human review (a small PR nobody else reviews is probably self-merged, and the map is not worth its tokens). A PUBLIC repository adds "privacy check and confirm
+  create  after `gh pr create`: tells Claude to ASK the user whether to run pr-map for the new PR only when the PR's size, whether a
+          reviewer is requested and how often this repository's recent PRs got a human review say a map is worth its tokens;
+          otherwise (a small PR nobody else reviews is probably self-merged) it says NOT to ask and to leave a plain summary. A PUBLIC repository adds "privacy check and confirm
           first"; a draft may wait. PR_MAP_AUTO=always drops the question and says to run it.
   push    after `git push`: only when this branch's PR body already holds a map whose recorded commit differs from
           the current head. Says which cited files changed since. Silent for a PR with no map, and when the map is current.
@@ -109,31 +109,32 @@ def review_history(owner: str, repo: str, cwd: str) -> tuple[int, int] | None:
     return len(prs), reviewed
 
 
-def size_advice(owner: str, repo: str, number: str, cwd: str) -> str:
-    """One sentence: the PR's size, the repository's review habit, and whether a reviewer's map is likely worth its cost."""
+def size_advice(owner: str, repo: str, number: str, cwd: str) -> tuple[bool | None, str]:
+    """(worth a map: True / False / None when its size cannot be read, one sentence saying why): the PR's size, the
+    repository's review habit, and whether a reviewer's map is likely worth its cost."""
     raw = gh("pr", "view", number, "-R", f"{owner}/{repo}", "--json", "changedFiles,additions,deletions,reviewRequests", cwd=cwd)
     try:
         d = json.loads(raw or "")
         files, lines, reviewers = int(d["changedFiles"]), int(d["additions"]) + int(d["deletions"]), len(d.get("reviewRequests") or [])
     except (ValueError, KeyError, TypeError):
-        return "Its size could not be read; recommend asking without a default."
+        return None, "Its size could not be read; ask without a default."
     size = f"It changes {files} file(s) and {lines} line(s)"
     if reviewers:
-        return f"{size} and a reviewer is requested: recommend running it."
+        return True, f"{size} and a reviewer is requested: recommend running it."
     if files <= TINY_FILES and lines < TINY_LINES:
-        return f"{size}, which is tiny: recommend skipping it."
+        return False, f"{size}, which is tiny."
     history = review_history(owner, repo, cwd)
     if history and history[0] >= 10 and history[1] / history[0] >= REVIEW_CULTURE:
         n, reviewed = history
         if lines >= MEDIUM_LINES or (files >= MEDIUM_FILES and lines >= FILES_NEED_LINES):
-            return (f"{size}, and {reviewed} of the last {n} merged PRs in this repository had a human review, so a colleague probably "
-                    "reads it: recommend running it.")
-        return f"{size}, below the bar even though {reviewed} of the last {n} merged PRs here had a human review: recommend skipping it."
+            return True, (f"{size}, and {reviewed} of the last {n} merged PRs in this repository had a human review, so a colleague probably "
+                          "reads it: recommend running it.")
+        return False, f"{size}, below the bar even though {reviewed} of the last {n} merged PRs here had a human review."
     seen = f" ({history[1]} of the last {history[0]} merged PRs here had a human review)" if history else ""
     if lines >= LARGE_LINES or (files >= LARGE_FILES and lines >= FILES_NEED_LINES):
-        return (f"{size}, which is large{seen}: the author is probably its only reader, but a large agent-made PR is hard to "
-                "review alone: recommend running it.")
-    return f"{size}{seen}, and nobody else is likely to review it: recommend skipping it."
+        return True, (f"{size}, which is large{seen}: the author is probably its only reader, but a large agent-made PR is hard to "
+                      "review alone: recommend running it.")
+    return False, f"{size}{seen}, and nobody else is likely to review it."
 
 
 def on_create(command: str, output: str, cwd: str, mode: str) -> None:
@@ -157,9 +158,14 @@ def on_create(command: str, output: str, cwd: str, mode: str) -> None:
     if mode == "always":
         parts = [f"PR #{number} was created ({url}). The user's setting is to always run the pr-map skill (author mode) for it and make its output the PR body.", privacy]
     else:
+        worth, advice = size_advice(owner, repo, number, cwd)
+        if worth is False:
+            emit(f"PR #{number} was created ({url}). {advice} A map is not worth its cost here: do NOT ask the user about pr-map and do not "
+                 "run it. Leave the body as a short plain summary of the change.")
+            return
         parts = [f"PR #{number} was created ({url}). Do not run the pr-map skill on your own: ask the user whether to run it for this PR "
-                 "(AskUserQuestion, options: run it, skip), because a PR that only its author merges rarely needs a reviewer's map and the run costs tokens.",
-                 size_advice(owner, repo, number, cwd), privacy,
+                 "(AskUserQuestion, options: run it, skip), because the run costs tokens.",
+                 advice, privacy,
                  "If the user skips, leave the body as a short plain summary of the change."]
     if draft:
         parts.append("It is a draft: the map may wait until the PR is marked ready for review.")

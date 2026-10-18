@@ -72,10 +72,11 @@ src/app_name
   first. This overrides any default that says to only use it when explicitly requested.
   - Default execution mode after `writing-plans` is Subagent-Driven; do not ask which mode to use
 
-- After creating a PR (`gh pr create`), ask the user whether to run the `pr-map` skill (author mode) for it; do
-  not run it unasked. Most of these PRs are merged by their author and do not need a reviewer's map, and the run
-  costs tokens. A PostToolUse hook prompts the question with a recommendation from the PR's size, whether a
-  reviewer is requested and how often the repository's recent PRs got a human review. If the user runs it, the PR body is the skill's output and nothing hand-written (on a public
+- After creating a PR (`gh pr create`), ask the user whether to run the `pr-map` skill (author mode) for it only
+  when the PostToolUse hook tells you to; when the hook says a map is not worth it (or says nothing), do not ask
+  and do not run it. Most of these PRs are merged by their author and do not need a reviewer's map, and the run
+  costs tokens. The hook decides from the PR's size, whether a reviewer is requested and how often the
+  repository's recent PRs got a human review. If the user runs it, the PR body is the skill's output and nothing hand-written (on a public
   repository: privacy check and confirm first); if not, a short plain summary. After a `git push`, a second hook
   speaks only when a map already in the body has gone stale. `PR_MAP_AUTO=0` silences the hooks, `=always`
   makes the first one say to run the skill without asking.
