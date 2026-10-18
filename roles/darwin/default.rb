@@ -195,7 +195,6 @@ include_cookbook 'amazon-photos'
 include_cookbook 'scrcpy'
 
 # --- desktop / window management ---
-include_cookbook 'dockdoor'
 include_cookbook 'raycast'
 include_cookbook 'bettertouchtool'
 include_cookbook 'karabiner-elements'
