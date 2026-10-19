@@ -41,7 +41,7 @@ so they cannot disagree.
 {
   "mode": "author",
   "gist": "one sentence: what happens once this is merged",
-  "before_merge": [{"check": "what to confirm before merging", "how": "command or step", "pass_when": "the result that lets the merge go ahead"}],
+  "before_merge": [{"check": "what to confirm before merging", "how": "backtick a command here, e.g. run `npm test`", "pass_when": "backtick it here too, e.g. `npm test` exits 0"}],
   "new_concepts": ["term: what it is, where it lives"],
   "reading_order": [{"path": "...", "what": "one line, from the diff", "why": "core | contract | migration | config | tests | docs | mechanical",
                      "focus": [{"where": "path:line", "what": "why this place deserves a close read", "how_to_check": "optional: only when it is not a before_merge item"}]}],
@@ -74,7 +74,12 @@ Rules:
   problem found". An empty list is for a PR with nothing to check by hand, and the gist says so. Backtick any
   command inside `check`, `how`, or `pass_when` (`` `npm test` ``, not `npm test`): `--lang ja` strips code spans
   before counting the Japanese ratio, so an un-backticked command's ASCII letters count against it and can fail
-  the check on an otherwise-Japanese field.
+  the check on an otherwise-Japanese field. Two backticking mistakes fail `check-refs.py` instead (it reads any
+  backticked span with a recognised extension as a path citation): a command run as `./script.sh` fails because
+  git tracks it as `script.sh`, not `./script.sh` — drop the `./`, or drop the backticks if it is not really a
+  citation; and a bare filename used as a generic example (`` `default.rb` `` meaning "any recipe file", not one
+  real path) fails because no file is tracked under that exact bare name — leave it unbackticked, or name the one
+  real path you mean.
 - `gist` is one sentence about the effect after merge, with a verb that says what now happens or what a user can
   now do ("calling X now writes Y"). "Adds X" or "changes Y" alone is a label, not a gist. The deletion test in
   Step 7 judges it; `check-model.py` only checks that it is not empty.
@@ -102,7 +107,9 @@ Rules:
 - Keep the section short enough to read: above about 25000 characters of the final, linked section, group `reading_order` by
   area. The PR body is capped at 65536 characters, the existing body included; `check-model.py --section` fails above
   45000. Links add 30-60%, so measure after linking.
-- `new_concepts` comes before the reading order in the body, so the terms the order uses are already known. It lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states.
+- `new_concepts` comes before the reading order in the body, so the terms the order uses are already known. It lists only what the PR introduces. Do not re-explain what AGENTS.md or the code already states. Do not
+  backtick a bare filename used as a stand-in for a category (`` `default.rb` `` meaning "any recipe file"):
+  `check-refs.py` reads it as a path citation and fails because no file is tracked under that exact bare name.
 - A `reading_order` entry gets a `focus` list, and a ★ in the body, when a wrong line there costs the most. Each
   focus names a place (`path:line`, which may be in another file the change affects) and a way to check it; one with
   neither is noise, drop it. Write it as a reason to read closely, not as a verdict that something is broken. Star
