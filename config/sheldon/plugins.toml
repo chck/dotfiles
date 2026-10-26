@@ -15,7 +15,7 @@ shell = "zsh"
 [templates]
 # declare lazy load
 defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}"
-fzf-install = "{{ dir }}/install --bin > /dev/null \n[[ ! $PATH =~ {{ dir }} ]] && export PATH=\"$PATH:{{ dir }}/bin\"\n"
+fzf-install = "[[ ! $PATH =~ {{ dir }} ]] && export PATH=\"$PATH:{{ dir }}/bin\"\ncommand -v fzf > /dev/null || {{ dir }}/install --bin > /dev/null\n"
 fzf-source = "{% for file in files %}source \"{{ file }}\"\n{% endfor %}"
 
 [plugins]
@@ -35,7 +35,7 @@ inline = 'autoload -Uz colors && zsh-defer colors'
 
 # completions
 [plugins.zsh-completions]
-github = "zsh-users/zsh-completions" 
+github = "zsh-users/zsh-completions"
 
 # auto suggestion
 [plugins.zsh-autosuggestions]
@@ -74,4 +74,3 @@ apply = ["defer", "fzf-install", "fzf-source"]
 # time tracking for commands
 [plugins.wakatime]
 github = "wbingli/zsh-wakatime"
-
