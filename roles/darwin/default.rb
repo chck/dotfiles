@@ -192,6 +192,7 @@ include_cookbook 'adobe-creative-cloud'
 include_cookbook 'penpot'
 include_cookbook 'firealpaca'
 include_cookbook 'pureref'
+include_cookbook 'evoto'
 include_cookbook 'amazon-photos'
 include_cookbook 'scrcpy'
 
