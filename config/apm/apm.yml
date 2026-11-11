@@ -56,7 +56,7 @@ dependencies:
     # stablyai/orca — Orca CLI skills, paired with cookbooks/orca (MIT)
     - stablyai/orca/skills/orca-cli
     - stablyai/orca/skills/orca-linear
-    - stablyai/orca/skills/computer-use
+    - stablyai/orca/skills/orca-computer-use
     - stablyai/orca/skills/orchestration
     # mattpocock/skills — engineering and productivity skills (MIT). Carried by
     # apm rather than the plugin marketplace it also publishes to: the package

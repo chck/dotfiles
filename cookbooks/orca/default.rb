@@ -10,9 +10,11 @@ else
   raise NotImplementedError
 end
 
-# The orca-cli, orca-linear, computer-use and orchestration agent skills are
+# The orca-cli, orca-linear, orca-computer-use and orchestration agent skills are
 # declared in config/apm/apm.yml under stablyai/orca/skills/ and deployed by
 # the `apm install -g` in cookbooks/claude, which writes them to
 # ~/.config/claude/skills/ for Claude Code and ~/.agents/skills/ for every
 # other agent. Do not run `npx skills add ... --global` here: it installs to one
-# directory only and leaves no declaration in this repository.
+# directory only and leaves no declaration in this repository. Likewise do not
+# run `orca skills install/update` or the app's "Update skills": Orca treats the
+# apm-written copies as its own and overwrites them, which drifts apm.lock.yaml.
