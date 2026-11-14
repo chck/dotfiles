@@ -53,7 +53,7 @@
 	required = true
 [credential]
 	credentialStore = gpg
-	helper =
+	helper = 
 	helper = /usr/local/share/gcm-core/git-credential-manager
 [gpg]
 	program = /opt/homebrew/bin/gpg
@@ -72,10 +72,10 @@
 	basedir = .worktrees
 	copy = .env
 [credential "https://github.com"]
-	helper =
+	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [credential "https://gist.github.com"]
-	helper =
+	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [credential "https://dev.azure.com"]
 	useHttpPath = true
