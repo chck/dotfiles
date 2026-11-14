@@ -8,6 +8,9 @@
 // command palette
 {
   "cli_default_open_behavior": "existing_window",
+  "auto_install_extensions": {
+    "latex": true
+  },
   "project_panel": {
     "dock": "left"
   },
@@ -55,8 +58,10 @@
     }
   },
   "agent": {
+    "threads_sidebar": {
+      "position": "right"
+    },
     "show_turn_stats": false,
-    "sidebar_side": "right",
     "dock": "right",
     "tool_permissions": {
       "default": "allow"
