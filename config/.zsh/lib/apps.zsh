@@ -33,3 +33,6 @@ eval "$(git wt --init zsh)"
 export CLAUDE_CONFIG_DIR=$XDG_CONFIG_HOME/claude
 # aqua
 export PATH="$HOME/.local/share/aquaproj-aqua/bin:$PATH"
+
+# agentsview
+export AGENTSVIEW_TELEMETRY_ENABLED=0
