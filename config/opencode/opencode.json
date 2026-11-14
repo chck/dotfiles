@@ -22,5 +22,14 @@
         }
       }
     }
+  },
+  "mcp": {
+    "claude-mem": {
+      "type": "local",
+      "command": [
+        "{env:HOME}/.local/share/mise/installs/bun/1.4.0/bin/bun",
+        "{env:HOME}/.config/claude/plugins/marketplaces/thedotmack/plugin/scripts/mcp-server.cjs"
+      ]
+    }
   }
 }
