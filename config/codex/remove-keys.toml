@@ -1,4 +1,5 @@
 # Explicitly retired keys. Paths are arrays so dotted/quoted keys are unambiguous.
 # Example: remove = [["tui", "obsolete_setting"]]
 # Removing a key from config.toml alone releases management and preserves it live.
-remove = []
+# apm's registry metadata is not a supported Codex MCP setting.
+remove = [["mcp_servers", "context7", "id"]]

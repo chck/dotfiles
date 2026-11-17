@@ -182,6 +182,13 @@ when 'darwin'
   # ~/.codex/config.toml stays empty and apm still reports success.
   execute 'CODEX_HOME="$HOME/.codex" mise exec -- apm install -g --only mcp --target claude,gemini,codex'
 
+  # apm can write registry metadata that Codex rejects (context7.id). Apply
+  # the removal policy again after deployment so it cannot restore that key.
+  execute 'remove unsupported Codex settings after MCP deployment' do
+    command sync_command
+    not_if "#{sync_command} --check"
+  end
+
   # Fails the provision when the deploy above reports success without writing
   # the block. grep, not rg: cookbooks/ripgrep is included after this recipe in
   # the darwin role, so rg does not exist yet on a fresh machine.
