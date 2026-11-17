@@ -42,11 +42,33 @@ SPAs or full Chrome/CDP compatibility. The playground can change independently
 of the installed client. Agent-browser may identify its advertised Chrome user
 agent as outdated; that does not mean it connected to a local Chrome instance.
 
-Start with a public page on the credential-free playground:
+Start with a public page on the credential-free playground in a real interactive
+terminal:
 
 ```sh
 kitesurf --playground --mode=ansi https://example.com/
 ```
+
+### Non-interactive command runners
+
+ANSI selects a rendering protocol; it does not remove the TTY requirement.
+Without a controlling terminal, CLI 0.0.5 fails with
+`Device not configured (os error 6)` when it enables terminal raw mode. This was
+reproduced on macOS; allocating a PTY made the same command render successfully.
+
+For an agent runner, request a PTY (`tty: true` for an execution tool that supports
+it) and bound the run with `--seconds`. If the runner cannot request a PTY, macOS
+`script` can allocate one. Set its dimensions explicitly: a PTY inherited from a
+non-interactive runner can have zero rows/columns, which instead produces
+`Kitesurf.startSceneStream: invalid scene stream parameters`.
+
+```sh
+/usr/bin/script -q /dev/null /bin/sh -c 'stty rows 24 cols 80; exec kitesurf --playground --mode=ansi --seconds 5 https://example.com/'
+```
+
+Both a runner-allocated PTY and the sized `script` command were verified to render
+scenes and exit successfully. Their output contains terminal escape sequences;
+use agent-browser over CDP for structured page content.
 
 For a finite connection/rendering smoke check without terminal graphics:
 
