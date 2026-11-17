@@ -88,6 +88,10 @@ src/app_name
 
 ## Tools
 - For HTTP requests and HTML extraction, ax is installed. Run `ax agent-context` to learn it — use it instead of curl + throwaway scripts
+- For interactive terminal browsing or an explicitly requested Kitesurf engine check, use `kitesurf` (`kitesurf --help`). It is experimental: its ANSI output is a terminal display, not structured page extraction, and CDP support is partial. Keep ax for HTTP/extraction and the existing browser skills for routine web automation.
+- Kitesurf's default backend uses Cloudflare Browser Run and may start OAuth. `--playground` uses the public remote engine without login; use it only for public pages. A remote engine cannot reach this machine's localhost or inherit its browser login. Use a local engine explicitly for local services.
+- Honor a requested browser/tool; otherwise use Orca's embedded browser in Orca and agent-browser for ordinary web automation outside it. Use orca-computer-use for native apps, browser chrome and GUI controls these cannot reach. These routing rules take precedence over a skill's general browser preference.
+- Keep browser sessions separate (`agent-browser --session <task>`). After switching tools or engines, inspect fresh state: sessions, cookies and element refs are not interchangeable. Do not silently switch engines after a failure.
 - For searching file contents, use ripgrep (`rg`) instead of `grep` — it is faster and respects `.gitignore`
 - For finding files by name, use `fd` instead of `find` — it is faster and respects `.gitignore`
 - Before reading a large source file, run `zat <file>` — it prints top-level declarations with their line numbers, so you can then read only the ranges you need. One file per run, no flags, no directories; C/C++/C#/Go/Haskell/Java/JS/TS/Kotlin/Markdown/Python/Ruby/Rust/Swift only, not shell
