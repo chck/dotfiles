@@ -13,6 +13,18 @@ MItamae::RecipeContext.class_eval do
     include_recipe File.join(root_dir, 'roles', name, 'default')
   end
 
+  PROFILES = %w[private work].freeze
+
+  # Includes roles/<platform>/<profile>.rb, the cookbooks that differ between
+  # the private and the work machine.
+  def include_profile(platform, profile)
+    unless PROFILES.include?(profile)
+      raise "DOTFILES_PROFILE must be one of #{PROFILES.join(', ')}, got #{profile.inspect}. " \
+            "Run `DOTFILES_PROFILE=<profile> ./install.sh` once; it is remembered afterwards."
+    end
+    include_recipe File.join(dotfiles_root, 'roles', platform, profile)
+  end
+
   def has_package?(name)
     result = run_command("dpkg-query -f '${Status}' -W #{name.shellescape} | grep -E '^(install|hold) ok installed$'", error: false)
     result.exit_status == 0

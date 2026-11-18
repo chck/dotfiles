@@ -1,0 +1,11 @@
+# Cookbooks installed only on the private machine (DOTFILES_PROFILE=private).
+include_cookbook 'steam'
+include_cookbook 'bathyscaphe'
+include_cookbook 'obs'
+include_cookbook 'displaylink'
+include_cookbook 'logitech-g-hub'
+include_cookbook 'elgato-stream-deck'
+include_cookbook 'elgato-control-center'
+include_cookbook 'elgato-wave-link'
+include_cookbook 'elgato-capture-device-utility'
+include_cookbook 'elgato-camera-hub'
