@@ -17,9 +17,3 @@ if [ -f ~/.zshrc.local ]; then zsh-defer source ~/.zshrc.local; fi
 
 # restore built-in source function
 zsh-defer unfunction source
-
-# Added by Antigravity IDE
-export PATH="$HOME/.antigravity-ide/antigravity-ide/bin:$PATH"
-
-# bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
