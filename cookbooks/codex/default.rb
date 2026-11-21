@@ -180,7 +180,7 @@ when 'darwin'
   # CODEX_HOME is pinned because Codex resolves its home from that variable, and
   # a launcher that exports its own (Orca does) otherwise takes the block while
   # ~/.codex/config.toml stays empty and apm still reports success.
-  execute 'CODEX_HOME="$HOME/.codex" mise exec -- apm install -g --only mcp --target claude,gemini,codex'
+  execute 'CODEX_HOME="$HOME/.codex" mise exec -- apm install -g --only mcp --target claude,agy,codex'
 
   # apm can write registry metadata that Codex rejects (context7.id). Apply
   # the removal policy again after deployment so it cannot restore that key.

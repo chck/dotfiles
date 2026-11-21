@@ -7,9 +7,9 @@ when 'darwin'
   execute 'brew install --cask google-gemini' do
     not_if 'test -d /Applications/Gemini.app/'
   end
-  # The CLI is declared as gemini in config/mise/config.toml, which resolves it
-  # through mise's npm backend. brew's gemini-cli formula is deprecated upstream
-  # and its replacement cask, antigravity-cli, ships the separate `agy` binary.
+  # The CLI is declared as agy in config/mise/config.toml (Antigravity CLI,
+  # via mise's aqua backend). Gemini CLI is retired upstream and brew's
+  # gemini-cli formula is deprecated, so neither is installed.
   dotfile "AGENTS.md" do
     destination "#{ENV['HOME']}/.gemini"
   end
@@ -22,10 +22,10 @@ when 'darwin'
   end
 
   # MCP servers are declared once in config/apm/apm.yml and written to
-  # ~/.gemini/settings.json by cookbooks/claude, which runs the deploy for
-  # gemini and codex together. Splitting it per cookbook does not work: each
-  # `--target` run prunes the runtimes outside its own target list, so the
-  # second run would empty what the first wrote.
+  # ~/.gemini/config/mcp_config.json (Antigravity CLI) by cookbooks/codex, which
+  # runs the deploy for claude, agy and codex together. Splitting it per
+  # cookbook does not work: each `--target` run prunes the runtimes outside its
+  # own target list, so the second run would empty what the first wrote.
 else
   raise NotImplementedError
 end

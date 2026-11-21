@@ -22,7 +22,7 @@ bun = "latest"
 "npm:@openai/codex" = "latest"
 # Qwen Code, paired with cookbooks/qwen-code. Talks to the local Ollama model.
 "npm:@qwen-code/qwen-code" = "latest"
-gemini = "latest"       # npm:@google/gemini-cli, deprecated in homebrew/core
+agy = "latest"          # Antigravity CLI, Google's replacement for the retired Gemini CLI
 java = "latest"
 node = "latest"
 pnpm = "latest"
