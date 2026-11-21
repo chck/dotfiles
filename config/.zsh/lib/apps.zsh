@@ -27,6 +27,7 @@ export PRE_COMMIT_COLOR=always
 export GHQ_ROOT=~/Works
 # Antigravity
 export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity-ide/antigravity-ide/bin:$PATH"
 # git-wt
 eval "$(git wt --init zsh)"
 # claude
