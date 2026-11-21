@@ -100,7 +100,7 @@ when 'darwin'
   # `--only apm` keeps this run off the MCP config. Without it apm resolves the
   # MCP target set from `targets:` in the manifest and prunes context7 from
   # every runtime outside it, so a plain `apm install -g` — the redeploy command
-  # in AGENTS.md — silently strips the server from Codex and Gemini. The single
+  # in AGENTS.md — silently strips the server from Codex and Antigravity. The single
   # `--only mcp` run in cookbooks/codex is the one authority over MCP.
   execute 'mise exec -- apm install -g --only apm'
 
@@ -207,11 +207,11 @@ when 'darwin'
   end
 
   # Shared MCP servers are declared in config/apm/apm.yml alongside the skills,
-  # and deployed by cookbooks/codex in a single run covering claude, gemini and
+  # and deployed by cookbooks/codex in a single run covering claude, agy and
   # codex. It belongs there because that recipe puts ~/.codex/config.toml in
   # place first, and apm would otherwise create the file itself.
   #
-  # gemini and codex are deliberately absent from that manifest's `targets:` — a
+  # agy and codex are deliberately absent from that manifest's `targets:` — a
   # full target also copies every skill into ~/.gemini/ or ~/.codex/, which
   # neither CLI reads.
 else
