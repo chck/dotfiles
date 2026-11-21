@@ -5,6 +5,7 @@ when 'darwin'
   # cookbooks/claude, so this recipe pulls it in rather than relying on the
   # order of the darwin role.
   include_cookbook 'claude'
+  include_cookbook 'jq'
   execute 'brew install --cask chatgpt' do
     not_if 'test -d /Applications/ChatGPT.app/'
   end
@@ -187,6 +188,14 @@ when 'darwin'
   execute 'remove unsupported Codex settings after MCP deployment' do
     command sync_command
     not_if "#{sync_command} --check"
+  end
+
+  # apm's agy target still writes Gemini CLI's `httpUrl` key, while Antigravity
+  # only accepts `url` (or `serverUrl`) for Streamable HTTP MCP servers.
+  agy_mcp_config = "$HOME/.gemini/config/mcp_config.json"
+  execute 'normalize Antigravity MCP HTTP URL key' do
+    command %(umask 077 && tmp=$(mktemp "#{agy_mcp_config}.XXXXXX") && trap 'rm -f "$tmp"' EXIT && jq '.mcpServers |= with_entries(if (.value | type) == "object" and (.value | has("httpUrl")) then .value |= ((if has("url") then . else . + {url: .httpUrl} end) | del(.httpUrl)) else . end)' "#{agy_mcp_config}" > "$tmp" && mv "$tmp" "#{agy_mcp_config}")
+    not_if %(jq -e '[(.mcpServers // {})[] | objects | select(has("httpUrl"))] | length == 0' "#{agy_mcp_config}" >/dev/null 2>&1)
   end
 
   # Fails the provision when the deploy above reports success without writing
