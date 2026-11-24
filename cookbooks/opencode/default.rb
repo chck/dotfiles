@@ -38,5 +38,6 @@ else
   raise NotImplementedError
 end
 
-# No alias here: `oc` points at OpenCode 2 (cookbooks/opencode2), which is the
-# daily driver. v1 remains the stable fallback and is reachable as `opencode`.
+# No alias here: `oc` is defined in config/.zsh/lib/aliases.zsh and points at
+# this `opencode`. The Homebrew formula ships the 2.x line, so the separate
+# npm-installed `opencode2` beta is no longer needed.
