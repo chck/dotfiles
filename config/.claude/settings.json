@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_MEM_SKIP_SHELL_RC": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(git fetch:*)",
